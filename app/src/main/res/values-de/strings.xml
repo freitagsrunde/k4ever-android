@@ -1,0 +1,14 @@
+<resources>
+    <string name="menu_item_products">Produkte</string>
+    <string name="menu_item_settings">Einstellungen</string>
+    <string name="menu_item_about">Über</string>
+
+    <string name="refresh">Aktualisieren</string>
+    <string name="sort_order">Sortierung</string>
+
+    <string name="no_items_found">Keine Einträge gefunden</string>
+
+    <string name="error">Fehler</string>
+    <string name="exception_raised">Ausnahme aufgetreten</string>
+    <string name="unknown_error">Unbekannter Fehler</string>
+</resources>
