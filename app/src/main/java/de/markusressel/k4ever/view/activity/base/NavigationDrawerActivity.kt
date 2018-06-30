@@ -2,6 +2,7 @@ package de.markusressel.k4ever.view.activity.base
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.View
 import com.github.ajalt.timberkt.Timber
 import com.mikepenz.materialdrawer.AccountHeader
@@ -236,9 +237,9 @@ abstract class NavigationDrawerActivity : DaggerSupportActivityBase() {
         }
 
         // special case for preferences
-        val preferenceFragment = navigator
-                .currentFragment
-        if (preferenceFragment is PreferencesFragment) {
+        val preferenceFragment: Fragment? = supportFragmentManager
+                .findFragmentByTag(navigator.currentState.drawerMenuItem.navigationPage.tag)
+        if (preferenceFragment is PreferencesFragment && preferenceFragment.isVisible) {
             if (preferenceFragment.onBackPressed()) {
                 return
             }
@@ -247,7 +248,6 @@ abstract class NavigationDrawerActivity : DaggerSupportActivityBase() {
         val previousPage = navigator
                 .navigateBack()
         if (previousPage != null) {
-
             navigator
                     .drawer
                     .setSelection(previousPage.drawerMenuItem.identifier, false)
