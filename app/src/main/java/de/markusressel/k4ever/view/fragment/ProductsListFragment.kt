@@ -87,6 +87,14 @@ class ProductsListFragment : DaggerSupportFragmentBase() {
                 .onCreateView(inflater, parent, savedInstanceState)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super
+                .onActivityCreated(savedInstanceState)
+
+        loadingComponent
+                .showContent()
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
