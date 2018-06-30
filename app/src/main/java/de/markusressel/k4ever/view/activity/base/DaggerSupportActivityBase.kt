@@ -7,6 +7,7 @@ import android.support.annotation.LayoutRes
 import android.support.v4.app.Fragment
 import android.view.Window
 import android.view.WindowManager
+import com.github.ajalt.timberkt.Timber
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -14,8 +15,9 @@ import dagger.android.HasFragmentInjector
 import dagger.android.support.HasSupportFragmentInjector
 import de.markusressel.k4ever.navigation.Navigator
 import de.markusressel.k4ever.view.IconHandler
+import de.markusressel.k4ever.view.ThemeHelper
+import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
 import kotlinx.android.synthetic.main.view__toolbar.*
-import java.util.*
 import javax.inject.Inject
 
 /**
@@ -32,7 +34,13 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
     internal lateinit var navigator: Navigator
 
     @Inject
+    lateinit var kutePreferencesHolder: KutePreferencesHolder
+
+    @Inject
     lateinit var iconHandler: IconHandler
+
+    @Inject
+    lateinit var themeHelper: ThemeHelper
 
     /**
      * @return true if this activity should use a dialog theme instead of a normal activity theme
@@ -59,11 +67,8 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
         AndroidInjection
                 .inject(this)
 
-        // apply forced locale (if set in developer options)
-        //        initLocale()
-
         // set Theme before anything else in onCreate();
-        //        initTheme()
+        initTheme()
 
         if (style == FULLSCREEN) {
             supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -105,22 +110,21 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
                 .setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
-    private fun setLocale(locale: Locale) {
-        val res = resources
-        // Change locale settings in the app.
-        val dm = res
-                .displayMetrics
-        val conf = res
-                .configuration
+    private fun initTheme() {
+        val theme = kutePreferencesHolder
+                .themePreference
+                .persistedValue
 
-        conf
-                .locale = locale
-        conf
-                .setLocale(locale)
-        res
-                .updateConfiguration(conf, dm)
-
-        onConfigurationChanged(conf)
+        if (style == DIALOG) {
+            // TODO: Dialog theming
+            Timber
+                    .w { "Dialog Theming is not yet supported" }
+            //            themeHelper
+            //                    .applyDialogTheme(this, theme) //set up notitle
+        } else {
+            themeHelper
+                    .applyTheme(this, theme)
+        }
     }
 
     @IntDef(DEFAULT, DIALOG)

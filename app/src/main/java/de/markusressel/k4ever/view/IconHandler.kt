@@ -118,8 +118,10 @@ class IconHandler @Inject constructor() {
      * @return an icon for a preference
      */
     fun getPreferenceIcon(icon: IIcon): Drawable {
-        val color = ContextCompat
-                .getColor(context, android.R.color.white)
+        val color = themeHelper
+                .getThemeAttrColor(context, android.R.attr.textColorPrimary)
+        //        val color = ContextCompat
+        //                .getColor(context, android.R.color.white)
         return getIcon(icon, color = color, sizeDp = 36)
     }
 
