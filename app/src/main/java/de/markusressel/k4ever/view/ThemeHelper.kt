@@ -5,6 +5,8 @@ import android.content.Context
 import android.support.annotation.AttrRes
 import android.support.annotation.ColorInt
 import android.support.annotation.StyleRes
+import android.support.design.widget.BottomSheetDialogFragment
+import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import de.markusressel.k4ever.R
@@ -106,12 +108,12 @@ class ThemeHelper @Inject constructor(private var context: Context) {
      *
      * @param fragment Fragment to apply theme on
      */
-    //    fun applyTheme(fragment: BottomSheetDialogFragment, theme: String) {
-    //        when (theme) {
-    //            lightThemeValue -> fragment.setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeLight)
-    //            darkThemeValue -> fragment.setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeDark)
-    //            else -> fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeDark)
-    //        }
-    //    }
+    fun applyTheme(fragment: BottomSheetDialogFragment, theme: String) {
+        when (theme) {
+            lightThemeValue -> fragment.setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeLight)
+            darkThemeValue -> fragment.setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeDark)
+            else -> fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeDark)
+        }
+    }
 
 }

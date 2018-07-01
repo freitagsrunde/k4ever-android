@@ -19,6 +19,7 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.extensions.isTablet
 import de.markusressel.k4ever.navigation.DrawerItemHolder
 import de.markusressel.k4ever.navigation.DrawerItemHolder.About
+import de.markusressel.k4ever.navigation.DrawerItemHolder.Account
 import de.markusressel.k4ever.navigation.DrawerItemHolder.ProductList
 import de.markusressel.k4ever.navigation.DrawerItemHolder.Settings
 import de.markusressel.k4ever.navigation.DrawerMenuItem
@@ -192,7 +193,7 @@ abstract class NavigationDrawerActivity : DaggerSupportActivityBase() {
                 }
 
 
-        listOf(ProductList)
+        listOf(ProductList, Account)
                 .forEach {
                     menuItemList
                             .add(createPrimaryMenuItem(it, clickListener))

@@ -10,6 +10,7 @@ import de.markusressel.k4ever.R
 object DrawerItemHolder {
 
     val ProductList = DrawerMenuItem(title = R.string.menu_item_products, icon = MaterialDesignIconic.Icon.gmi_shopping_basket, selectable = true, navigationPage = NavigationPageHolder.ProductsList)
+    val Account = DrawerMenuItem(title = R.string.menu_item_account, icon = MaterialDesignIconic.Icon.gmi_account, selectable = true, navigationPage = NavigationPageHolder.Account)
 
     val Settings = DrawerMenuItem(title = R.string.menu_item_settings, icon = MaterialDesignIconic.Icon.gmi_settings, selectable = false, navigationPage = NavigationPageHolder.Settings)
 
@@ -18,6 +19,7 @@ object DrawerItemHolder {
     fun fromId(drawerItemIdentifier: Long): DrawerMenuItem? {
         return when (drawerItemIdentifier) {
             ProductList.identifier -> ProductList
+            Account.identifier -> Account
             Settings.identifier -> Settings
             About.identifier -> About
             else -> {
