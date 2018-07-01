@@ -12,9 +12,9 @@ abstract class StateFragmentBase : Fragment() {
     private val stateBundle = Bundle()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
+        savedInstanceState?.let {
             stateBundle
-                    .putAll(savedInstanceState.getBundle(KEY_BUNDLE))
+                    .putAll(it.getBundle(KEY_BUNDLE))
         }
 
         super
