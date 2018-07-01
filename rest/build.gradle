@@ -28,17 +28,17 @@ dependencies {
 
     // TODO: use when REST api is available
 
-//    //for JVM
-//    implementation "com.github.kittinunf.fuel:fuel:${fuelVersion}"
-//    //for RxJava support
-//    implementation "com.github.kittinunf.fuel:fuel-rxjava:${fuelVersion}"
-//    //for Gson support
-//    implementation "com.github.kittinunf.fuel:fuel-gson:${fuelVersion}"
-//    //for Android
-//    implementation "com.github.kittinunf.fuel:fuel-android:${fuelVersion}"
-//
-//    // Kotlin bindings for GSON
-//    implementation "com.github.salomonbrys.kotson:kotson:${kotsonVersion}"
+    //for JVM
+    implementation "com.github.kittinunf.fuel:fuel:${fuelVersion}"
+    //for RxJava support
+    implementation "com.github.kittinunf.fuel:fuel-rxjava:${fuelVersion}"
+    //for Gson support
+    implementation "com.github.kittinunf.fuel:fuel-gson:${fuelVersion}"
+    //for Android
+    implementation "com.github.kittinunf.fuel:fuel-android:${fuelVersion}"
+
+    // Kotlin bindings for GSON
+    implementation "com.github.salomonbrys.kotson:kotson:${kotsonVersion}"
 
 
     testImplementation 'junit:junit:4.12'
