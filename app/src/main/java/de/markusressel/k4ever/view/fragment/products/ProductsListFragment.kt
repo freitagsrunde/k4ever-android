@@ -1,19 +1,25 @@
 package de.markusressel.k4ever.view.fragment.products
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.design.widget.BottomSheetBehavior
-import android.view.*
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
+import android.view.View
+import com.github.nitrico.lastadapter.LastAdapter
+import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.business.ShoppingBag
-import de.markusressel.k4ever.view.component.LoadingComponent
-import de.markusressel.k4ever.view.component.OptionsMenuComponent
-import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
+import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
+import de.markusressel.k4ever.data.persistence.base.entity.ProductEntity
+import de.markusressel.k4ever.data.persistence.base.manager.ProductPersistenceManager
+import de.markusressel.k4ever.databinding.ListItemProductBinding
+import de.markusressel.k4ever.rest.model.ProductModel
+import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
+import de.markusressel.k4ever.view.fragment.base.SortOption
 import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
+import io.reactivex.Single
 import kotlinx.android.synthetic.main.bottom_sheet__shopping_bag.*
+import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import javax.inject.Inject
 
 
@@ -22,7 +28,41 @@ import javax.inject.Inject
  *
  * Created by Markus on 07.01.2018.
  */
-class ProductsListFragment : DaggerSupportFragmentBase() {
+class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
+
+    @Inject
+    lateinit var persistenceManager: ProductPersistenceManager
+
+    override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
+
+    override fun createAdapter(): LastAdapter {
+        return LastAdapter(listValues, BR.item)
+                .map<ProductEntity, ListItemProductBinding>(R.layout.list_item__product) {
+                    onCreate {
+                        it
+                                .binding
+                                .presenter = this@ProductsListFragment
+                    }
+                    onClick {
+                        openDetailView(listValues[it.adapterPosition])
+                    }
+                }
+                .into(recyclerView)
+    }
+
+    override fun loadListDataFromSource(): Single<List<ProductModel>> {
+        // TODO:
+        return Single.fromCallable { emptyList<ProductModel>() }
+    }
+
+    override fun mapToEntity(it: ProductModel): ProductEntity {
+        return ProductEntity(0, 0, "", "", 0.0, 0.0)
+    }
+
+    override fun getAllSortCriteria(): List<SortOption<ProductEntity>> {
+        // TODO
+        return listOf()
+    }
 
     override val layoutRes: Int
         get() = R.layout.fragment__products
@@ -33,57 +73,6 @@ class ProductsListFragment : DaggerSupportFragmentBase() {
     @Inject
     lateinit var shoppingBag: ShoppingBag
 
-    private val loadingComponent by lazy { LoadingComponent(this) }
-
-    private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_list, onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
-            // set refresh icon
-            val sortOrderIcon = iconHandler
-                    .getOptionsMenuIcon(MaterialDesignIconic.Icon.gmi_sort)
-            menu
-                    ?.findItem(R.id.sortOrder)
-                    ?.icon = sortOrderIcon
-
-            val refreshIcon = iconHandler
-                    .getOptionsMenuIcon(MaterialDesignIconic.Icon.gmi_refresh)
-            menu
-                    ?.findItem(R.id.refresh)
-                    ?.icon = refreshIcon
-        }, onOptionsMenuItemClicked = {
-            when {
-                it.itemId == R.id.refresh -> {
-
-                    // TODO: disconnect and reconnect
-
-                    true
-                }
-                else -> false
-            }
-        })
-    }
-
-    override fun initComponents(context: Context) {
-        super
-                .initComponents(context)
-        loadingComponent
-        optionsMenuComponent
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super
-                .onCreateOptionsMenu(menu, inflater)
-        optionsMenuComponent
-                .onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (super.onOptionsItemSelected(item)) {
-            return true
-        }
-        return optionsMenuComponent
-                .onOptionsItemSelected(item)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super
                 .onCreate(savedInstanceState)
@@ -91,20 +80,6 @@ class ProductsListFragment : DaggerSupportFragmentBase() {
         val host = preferencesHolder
                 .connectionUriPreference
                 .persistedValue
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val parent = super.onCreateView(inflater, container, savedInstanceState) as ViewGroup
-        return loadingComponent
-                .onCreateView(inflater, parent, savedInstanceState)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super
-                .onActivityCreated(savedInstanceState)
-
-        loadingComponent
-                .showContent()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -139,6 +114,10 @@ class ProductsListFragment : DaggerSupportFragmentBase() {
             }
         })
 
+    }
+
+    fun openDetailView(productEntity: ProductEntity) {
+        // TODO:
     }
 
 }

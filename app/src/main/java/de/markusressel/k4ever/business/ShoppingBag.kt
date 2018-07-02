@@ -1,9 +1,6 @@
 package de.markusressel.k4ever.business
 
-import com.eightbitlab.rxbus.Bus
-import de.markusressel.k4ever.ProductEntity
-import de.markusressel.k4ever.event.ProductAddedToShoppingBagEvent
-import de.markusressel.k4ever.event.ProductRemovedFromShoppingBagEvent
+import de.markusressel.k4ever.rest.model.ProductModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +10,7 @@ class ShoppingBag @Inject constructor() {
     /**
      * Map of shoppingBag and their amount
      */
-    val shoppingBag: MutableMap<ProductEntity, Int> = mutableMapOf()
+    val shoppingBag: MutableMap<ProductModel, Int> = mutableMapOf()
 
     /**
      * Add a product to the shopping bag
@@ -21,12 +18,10 @@ class ShoppingBag @Inject constructor() {
      * @param product the product to add
      * @param amount the amount of items to add
      */
-    fun add(product: ProductEntity, amount: Int) {
+    fun add(product: ProductModel, amount: Int) {
         val currentAmount = shoppingBag.getOrPut(product) { 0 }
         val newAmount = currentAmount + amount
         shoppingBag[product] = newAmount
-
-        Bus.send(ProductAddedToShoppingBagEvent(product, amount))
     }
 
     /**
@@ -35,7 +30,7 @@ class ShoppingBag @Inject constructor() {
      * @param product the product to remove
      * @param amount the amount to remove
      */
-    fun remove(product: ProductEntity, amount: Int) {
+    fun remove(product: ProductModel, amount: Int) {
         val currentAmount = shoppingBag.getOrPut(product) { amount }
         val newAmount = currentAmount - amount
 
@@ -44,8 +39,6 @@ class ShoppingBag @Inject constructor() {
         } else {
             shoppingBag[product] = newAmount
         }
-
-        Bus.send(ProductRemovedFromShoppingBagEvent(product, amount))
     }
 
 }

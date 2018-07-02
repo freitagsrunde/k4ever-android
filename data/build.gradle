@@ -36,12 +36,34 @@ android {
 }
 
 dependencies {
+
+    // Dagger 2
+    implementation "com.google.dagger:dagger:${rootProject.ext.dagger2Version}"
+    kapt "com.google.dagger:dagger-compiler:${rootProject.ext.dagger2Version}"
+
+    // if you use the support libraries
+    kapt "com.google.dagger:dagger-android-processor:${rootProject.ext.dagger2Version}"
+    implementation "com.google.dagger:dagger-android:${rootProject.ext.dagger2Version}"
+    implementation "com.google.dagger:dagger-android-support:${rootProject.ext.dagger2Version}"
+
+    implementation "com.google.code.gson:gson:${rootProject.ext.gsonVersion}"
+    // Kotlin bindings for GSON
+    implementation "com.github.salomonbrys.kotson:kotson:${rootProject.ext.kotsonVersion}"
+    implementation "io.reactivex.rxjava2:rxkotlin:${rootProject.ext.rxKotlinVersion}"
+    implementation "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
+
+    // Android Architecture Components
+    implementation "androidx.core:core-ktx:$aacAndroidKtxVersion"
+
+    // Logging
+    api "com.github.ajalt:timberkt:${rootProject.ext.timberKtVersion}"
+
     // ObjectBox
     implementation "io.objectbox:objectbox-android:$objectboxVersion"
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
 
     // Preferences
-    api('com.github.markusressel:KutePreferences:v1.0.1') {
+    api('com.github.markusressel:KutePreferences:v1.0.2') {
         exclude module: 'app'
         transitive = true
     }
@@ -50,3 +72,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+
+// Needed for LastAdapter
+kapt { generateStubs = true }

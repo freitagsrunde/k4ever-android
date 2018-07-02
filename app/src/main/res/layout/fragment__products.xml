@@ -8,15 +8,6 @@
 
     <include layout="@layout/bottom_sheet__shopping_bag" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Produkte" />
-
-    </LinearLayout>
+    <include layout="@layout/fragment__recyclerview" />
 
 </android.support.design.widget.CoordinatorLayout>

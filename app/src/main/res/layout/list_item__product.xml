@@ -5,11 +5,11 @@
     <data>
         <variable
             name="item"
-            type="de.markusressel.k4ever.ProductEntity" />
+            type="de.markusressel.k4ever.data.persistence.base.entity.ProductEntity" />
 
-        <!--<variable-->
-            <!--name="presenter"-->
-            <!--type="de.markusressel.datamunch.view.fragment.system.alert.AlertsFragment" />-->
+        <variable
+            name="presenter"
+            type="de.markusressel.k4ever.view.fragment.products.ProductsListFragment" />
     </data>
 
     <!--<LinearLayout-->
@@ -34,9 +34,10 @@
                     <!--style="@style/sub_header"-->
                     <!--android:text="@string/level" />-->
 
-                <!--<TextView-->
-                    <!--style="@style/sub_header_content_textview"-->
-                    <!--android:text="@{item.level}" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{item.name}" />
 
                 <!--<TextView-->
                     <!--style="@style/sub_header"-->
