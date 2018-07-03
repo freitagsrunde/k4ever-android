@@ -17,8 +17,8 @@ import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
-import kotlinx.android.synthetic.main.bottom_sheet__shopping_bag.*
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
+import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_bag.*
 import javax.inject.Inject
 
 
@@ -94,7 +94,7 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         shoppingBagBottomSheetBehaviour = BottomSheetBehavior
                 .from<View>(shoppingBagLayout)
 
-        updateShoppingBagVisibility()
+        updateShoppingBag()
 
         shoppingBagBottomSheetBehaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -120,6 +120,11 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         })
     }
 
+    private fun updateShoppingBag() {
+        updateShoppingBagVisibility()
+        updateShoppingBagContent()
+    }
+
     private fun updateShoppingBagVisibility() {
         if (shoppingBag.items.isEmpty()) {
             setShoppingBagVisible(false)
@@ -136,6 +141,14 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         }
     }
 
+    private fun updateShoppingBagContent() {
+        totalItemCountAndCost.text = getString(R.string.shopping_bag__total_items_and_cost,
+                shoppingBag.getTotalItemCount(),
+                shoppingBag.getTotalPrice())
+
+        // TODO: inflate layout for items in shopping bag
+    }
+
     /**
      * Shows a detail view of the specified product
      */
@@ -146,9 +159,14 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     /**
      * Adds the specified item to the shopping bag
      */
-    fun addItemToShoppingBag(productEntity: ProductEntity) {
-        shoppingBag.add(productEntity, 1)
-        updateShoppingBagVisibility()
+    fun addItemToShoppingBag(productEntity: ProductEntity, withDeposit: Boolean) {
+        shoppingBag.add(productEntity, 1, withDeposit)
+        updateShoppingBag()
+    }
+
+    fun removeItemFromShoppingBag(productEntity: ProductEntity, withDeposit: Boolean) {
+        shoppingBag.remove(productEntity, 1, withDeposit)
+        updateShoppingBag()
     }
 
 }
