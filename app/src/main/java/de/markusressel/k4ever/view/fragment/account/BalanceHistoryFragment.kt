@@ -14,8 +14,10 @@ import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.account.BalanceHistoryItemEntity
 import de.markusressel.k4ever.data.persistence.account.BalanceHistoryItemPersistenceManager
+import de.markusressel.k4ever.data.persistence.account.PurchaseHistoryItemEntity
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.databinding.ListItemBalanceHistoryItemBinding
+import de.markusressel.k4ever.databinding.ListItemPurchaseHistoryItemBinding
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.FabConfig
@@ -39,13 +41,13 @@ class BalanceHistoryFragment : ListFragmentBase<BalanceHistoryItemModel, Balance
     override fun getLeftFabs(): List<FabConfig.Fab> {
         return listOf(FabConfig.Fab(description = R.string.withdraw_money, icon = MaterialDesignIconic.Icon.gmi_minus, onClick = {
             // TODO: open "withdraw money" dialog
+        }), FabConfig.Fab(description = R.string.deposit_money, icon = MaterialDesignIconic.Icon.gmi_plus, onClick = {
+            // TODO: open "deposit money" dialog
         }))
     }
 
     override fun getRightFabs(): List<FabConfig.Fab> {
-        return listOf(FabConfig.Fab(description = R.string.deposit_money, icon = MaterialDesignIconic.Icon.gmi_plus, onClick = {
-            // TODO: open "deposit money" dialog
-        }))
+        return listOf()
     }
 
     @Inject
@@ -56,6 +58,17 @@ class BalanceHistoryFragment : ListFragmentBase<BalanceHistoryItemModel, Balance
     override fun createAdapter(): LastAdapter {
         return LastAdapter(listValues, BR.item)
                 .map<BalanceHistoryItemEntity, ListItemBalanceHistoryItemBinding>(R.layout.list_item__balance_history_item) {
+                    onCreate {
+                        it
+                                .binding
+                                .presenter = this@BalanceHistoryFragment
+                    }
+                    onClick {
+                        // TODO: should there be any detail view of balance history items?
+//                        openDetailView(listValues[it.adapterPosition])
+                    }
+                }
+                .map<PurchaseHistoryItemEntity, ListItemPurchaseHistoryItemBinding>(R.layout.list_item__purchase_history_item) {
                     onCreate {
                         it
                                 .binding

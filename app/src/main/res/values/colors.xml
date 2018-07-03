@@ -15,4 +15,7 @@
     <color name="textColorPrimaryInverse">#DE000000</color>
     <color name="textColorSecondaryInverse">#8A000000</color>
 
+    <color name="cardview_background">@color/colorPrimaryDark</color>
+    <color name="cardview_backgroundInverse">@color/colorPrimaryLight</color>
+
 </resources>

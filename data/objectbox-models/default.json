@@ -82,11 +82,36 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "4:1878856114505241070",
+      "lastPropertyId": "3:807778818758677553",
+      "name": "PurchaseHistoryItemEntity",
+      "properties": [
+        {
+          "id": "1:2189326041584115473",
+          "name": "entityId"
+        },
+        {
+          "id": "2:6691826746488965139",
+          "name": "id"
+        },
+        {
+          "id": "3:807778818758677553",
+          "name": "date"
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:9212408739143017420",
+          "name": "products"
+        }
+      ]
     }
   ],
-  "lastEntityId": "3:4828375309153624381",
+  "lastEntityId": "4:1878856114505241070",
   "lastIndexId": "0:0",
-  "lastRelationId": "0:0",
+  "lastRelationId": "1:9212408739143017420",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,

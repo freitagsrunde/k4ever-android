@@ -15,7 +15,7 @@ import de.markusressel.k4ever.view.fragment.account.BalanceHistoryFragment
 import de.markusressel.k4ever.view.fragment.base.TabNavigationFragment
 import de.markusressel.k4ever.view.fragment.moneytransfer.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
-import de.markusressel.k4ever.view.fragment.products.ProductsListFragment
+import de.markusressel.k4ever.view.fragment.products.ProductsFragment
 import de.markusressel.kutepreferences.library.persistence.DefaultKutePreferenceDataProvider
 import de.markusressel.kutepreferences.library.persistence.KutePreferenceDataProvider
 import javax.inject.Singleton
@@ -36,7 +36,7 @@ abstract class AppModule {
     internal abstract fun MainActivity(): MainActivity
 
     @ContributesAndroidInjector
-    internal abstract fun ProductsListFragment(): ProductsListFragment
+    internal abstract fun ProductsListFragment(): ProductsFragment
 
     @ContributesAndroidInjector
     internal abstract fun TabNavigationFragment(): TabNavigationFragment

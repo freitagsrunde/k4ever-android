@@ -23,11 +23,9 @@ import javax.inject.Inject
 
 
 /**
- * Server Status fragment
- *
  * Created by Markus on 07.01.2018.
  */
-class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
+class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__products
@@ -43,7 +41,7 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
                     onCreate {
                         it
                                 .binding
-                                .presenter = this@ProductsListFragment
+                                .presenter = this@ProductsFragment
                     }
                     onClick {
                         openDetailView(listValues[it.adapterPosition])
@@ -76,6 +74,8 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     @Inject
     lateinit var shoppingBag: ShoppingBag
 
+    private lateinit var shoppingBagBottomSheetBehaviour: BottomSheetBehavior<View>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super
                 .onCreate(savedInstanceState)
@@ -91,42 +91,64 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         super
                 .onViewCreated(view, savedInstanceState)
 
-        val persistentbottomSheet = shoppingBagLayout
-        val behavior = BottomSheetBehavior
-                .from<View>(persistentbottomSheet)
+        shoppingBagBottomSheetBehaviour = BottomSheetBehavior
+                .from<View>(shoppingBagLayout)
 
-        if (shoppingBag.shoppingBag.isEmpty()) {
-            behavior.state = BottomSheetBehavior.STATE_HIDDEN
-        }
+        updateShoppingBagVisibility()
 
-        behavior
-                ?.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        // React to state change
-                        //showing the different states
-                        when (newState) {
-                            BottomSheetBehavior.STATE_HIDDEN -> {
-                            }
-                            BottomSheetBehavior.STATE_EXPANDED -> {
-                            }
-                            BottomSheetBehavior.STATE_COLLAPSED -> {
-                            }
-                            BottomSheetBehavior.STATE_DRAGGING -> {
-                            }
-                            BottomSheetBehavior.STATE_SETTLING -> {
-                            }
-                        }
+        shoppingBagBottomSheetBehaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                // React to state change
+                //showing the different states
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
                     }
-
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                        // React to dragging events
+                    BottomSheetBehavior.STATE_EXPANDED -> {
                     }
-                })
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                    }
+                    BottomSheetBehavior.STATE_DRAGGING -> {
+                    }
+                    BottomSheetBehavior.STATE_SETTLING -> {
+                    }
+                }
+            }
 
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                // React to dragging events
+            }
+        })
     }
 
+    private fun updateShoppingBagVisibility() {
+        if (shoppingBag.items.isEmpty()) {
+            setShoppingBagVisible(false)
+        } else {
+            setShoppingBagVisible(true)
+        }
+    }
+
+    private fun setShoppingBagVisible(visible: Boolean) {
+        shoppingBagBottomSheetBehaviour.isHideable = !visible
+        shoppingBagBottomSheetBehaviour.state = when (visible) {
+            true -> BottomSheetBehavior.STATE_COLLAPSED
+            false -> BottomSheetBehavior.STATE_HIDDEN
+        }
+    }
+
+    /**
+     * Shows a detail view of the specified product
+     */
     fun openDetailView(productEntity: ProductEntity) {
         // TODO:
+    }
+
+    /**
+     * Adds the specified item to the shopping bag
+     */
+    fun addItemToShoppingBag(productEntity: ProductEntity) {
+        shoppingBag.add(productEntity, 1)
+        updateShoppingBagVisibility()
     }
 
 }
