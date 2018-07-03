@@ -1,11 +1,15 @@
 package de.markusressel.k4ever.rest
 
+import de.markusressel.k4ever.rest.products.ProductApi
+import de.markusressel.k4ever.rest.products.ProductManager
+
 /**
  * Convenience delegation class for easy access to all api methods
  *
  * Created by Markus on 03.06.2018.
  */
-class K4EverRestClient(private val requestManager: RequestManager = RequestManager()) {
+class K4EverRestClient(private val requestManager: RequestManager = RequestManager(),
+                       productManager: ProductApi = ProductManager(requestManager)) : ProductApi by productManager {
 
     /**
      * Set the hostname for this client

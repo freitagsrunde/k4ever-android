@@ -5,7 +5,7 @@
     <data>
         <variable
             name="item"
-            type="de.markusressel.k4ever.rest.model.ProductModel" />
+            type="de.markusressel.k4ever.rest.products.model.ProductModel" />
 
         <!--<variable-->
             <!--name="presenter"-->

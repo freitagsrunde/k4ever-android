@@ -1,6 +1,6 @@
 package de.markusressel.k4ever.business
 
-import de.markusressel.k4ever.rest.model.ProductModel
+import de.markusressel.k4ever.rest.products.model.ProductModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
