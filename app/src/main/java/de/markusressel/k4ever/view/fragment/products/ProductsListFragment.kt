@@ -51,12 +51,17 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     }
 
     override fun loadListDataFromSource(): Single<List<ProductModel>> {
+        val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2)
+        val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2)
+        val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2)
+
         // TODO:
-        return Single.fromCallable { emptyList<ProductModel>() }
+        return Single
+                .fromCallable { listOf(p1, p2, p3) }
     }
 
     override fun mapToEntity(it: ProductModel): ProductEntity {
-        return ProductEntity(0, 0, "", "", 0.0, 0.0)
+        return ProductEntity(0, it.id, it.name, it.description, it.price, it.deposit)
     }
 
     override fun getAllSortCriteria(): List<SortOption<ProductEntity>> {
@@ -89,30 +94,32 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
                 .onViewCreated(view, savedInstanceState)
 
         val persistentbottomSheet = shoppingBagLayout
-        val behavior = BottomSheetBehavior.from<View>(persistentbottomSheet)
+        val behavior = BottomSheetBehavior
+                .from<View>(persistentbottomSheet)
 
-        behavior?.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                // React to state change
-                //showing the different states
-                when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
+        behavior
+                ?.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        // React to state change
+                        //showing the different states
+                        when (newState) {
+                            BottomSheetBehavior.STATE_HIDDEN -> {
+                            }
+                            BottomSheetBehavior.STATE_EXPANDED -> {
+                            }
+                            BottomSheetBehavior.STATE_COLLAPSED -> {
+                            }
+                            BottomSheetBehavior.STATE_DRAGGING -> {
+                            }
+                            BottomSheetBehavior.STATE_SETTLING -> {
+                            }
+                        }
                     }
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                    }
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                    }
-                    BottomSheetBehavior.STATE_DRAGGING -> {
-                    }
-                    BottomSheetBehavior.STATE_SETTLING -> {
-                    }
-                }
-            }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // React to dragging events
-            }
-        })
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                        // React to dragging events
+                    }
+                })
 
     }
 

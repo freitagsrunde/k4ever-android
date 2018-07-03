@@ -25,7 +25,7 @@ class KutePreferencesHolder @Inject constructor(private val context: Context, pr
     }
 
     val connectionUriPreference by lazy {
-        KuteTextPreference(key = R.string.connection_host_key, icon = iconHelper.getPreferenceIcon(MaterialDesignIconic.Icon.gmi_battery), title = context.getString(R.string.connection_host_title), defaultValue = "127.0.0.1", dataProvider = dataProvider, onPreferenceChangedListener = { old, new ->
+        KuteTextPreference(key = R.string.connection_host_key, icon = iconHelper.getPreferenceIcon(MaterialDesignIconic.Icon.gmi_battery), title = context.getString(R.string.connection_host_title), defaultValue = "https://k4ever.freitagsrunde.org/api/v1", dataProvider = dataProvider, onPreferenceChangedListener = { old, new ->
             //            Bus
             //                    .send(HostChangedEvent(new))
         })
