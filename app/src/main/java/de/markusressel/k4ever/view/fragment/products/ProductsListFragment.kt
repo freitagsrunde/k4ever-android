@@ -16,7 +16,6 @@ import de.markusressel.k4ever.databinding.ListItemProductBinding
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
-import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
 import io.reactivex.Single
 import kotlinx.android.synthetic.main.bottom_sheet__shopping_bag.*
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
@@ -29,6 +28,9 @@ import javax.inject.Inject
  * Created by Markus on 07.01.2018.
  */
 class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
+
+    override val layoutRes: Int
+        get() = R.layout.fragment__products
 
     @Inject
     lateinit var persistenceManager: ProductPersistenceManager
@@ -67,15 +69,9 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     }
 
     override fun getAllSortCriteria(): List<SortOption<ProductEntity>> {
-        // TODO
-        return listOf()
+        // TODO sort options need to be persistable
+        return listOf(SortOption(0, R.string.name, { t -> t.name }, false))
     }
-
-    override val layoutRes: Int
-        get() = R.layout.fragment__products
-
-    @Inject
-    lateinit var preferencesHolder: KutePreferencesHolder
 
     @Inject
     lateinit var shoppingBag: ShoppingBag

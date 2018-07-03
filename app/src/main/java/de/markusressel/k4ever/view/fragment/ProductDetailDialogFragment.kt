@@ -10,8 +10,6 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.view.component.LoadingComponent
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
-import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
-import javax.inject.Inject
 
 
 /**
@@ -23,9 +21,6 @@ class ProductDetailDialogFragment : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__product_detail
-
-    @Inject
-    lateinit var preferencesHolder: KutePreferencesHolder
 
     private val loadingComponent by lazy { LoadingComponent(this) }
 

@@ -11,8 +11,9 @@ object DrawerItemHolder {
 
     val ProductList = DrawerMenuItem(title = R.string.menu_item_products, icon = MaterialDesignIconic.Icon.gmi_shopping_basket, selectable = true, navigationPage = NavigationPageHolder.ProductsList)
     val Account = DrawerMenuItem(title = R.string.menu_item_account, icon = MaterialDesignIconic.Icon.gmi_account, selectable = true, navigationPage = NavigationPageHolder.Account)
+    val MoneyTransfer = DrawerMenuItem(title = R.string.menu_item__money_transfer, icon = MaterialDesignIconic.Icon.gmi_money_off, selectable = true, navigationPage = NavigationPageHolder.MoneyTransfer)
 
-    val Settings = DrawerMenuItem(title = R.string.menu_item_settings, icon = MaterialDesignIconic.Icon.gmi_settings, selectable = false, navigationPage = NavigationPageHolder.Settings)
+    val Settings = DrawerMenuItem(title = R.string.menu_item_settings, icon = MaterialDesignIconic.Icon.gmi_settings, selectable = true, navigationPage = NavigationPageHolder.Settings)
 
     val About = DrawerMenuItem(title = R.string.menu_item_about, icon = MaterialDesignIconic.Icon.gmi_info, selectable = false, navigationPage = NavigationPageHolder.About)
 
@@ -20,6 +21,7 @@ object DrawerItemHolder {
         return when (drawerItemIdentifier) {
             ProductList.identifier -> ProductList
             Account.identifier -> Account
+            MoneyTransfer.identifier -> MoneyTransfer
             Settings.identifier -> Settings
             About.identifier -> About
             else -> {
