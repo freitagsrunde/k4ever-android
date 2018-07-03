@@ -197,10 +197,16 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSuppo
         updateFabVisibility(View.VISIBLE)
     }
 
+    /**
+     * Override this in subclasses if necessary
+     */
     protected open fun getLeftFabs(): List<FabConfig.Fab> {
         return emptyList()
     }
 
+    /**
+     * Override this in subclasses if necessary
+     */
     protected open fun getRightFabs(): List<FabConfig.Fab> {
         return emptyList()
     }
@@ -241,34 +247,32 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSuppo
                 .clicks(fabView)
                 .bindToLifecycle(fabView)
                 .subscribe {
-                    Toast
-                            .makeText(context as Context, "Fab '${fab.description}' clicked",
-                                    Toast.LENGTH_LONG)
-                            .show()
-
                     // execute defined action if it exists
-                    fab
-                            .onClick
-                            ?.let {
-                                it()
-                            }
+                    val clickAction = fab.onClick
+                    if (clickAction != null) {
+                        clickAction()
+                    } else {
+                        Toast
+                                .makeText(context as Context, getString(fab.description),
+                                        Toast.LENGTH_LONG)
+                                .show()
+                    }
                 }
 
         RxView
                 .longClicks(fabView)
                 .bindToLifecycle(fabView)
                 .subscribe {
-                    Toast
-                            .makeText(context as Context, "Fab '${fab.description}' long clicked",
-                                    Toast.LENGTH_LONG)
-                            .show()
-
                     // execute defined action if it exists
-                    fab
-                            .onLongClick
-                            ?.let {
-                                it()
-                            }
+                    val longClickAction = fab.onLongClick
+                    if (longClickAction != null) {
+                        longClickAction()
+                    } else {
+                        Toast
+                                .makeText(context as Context, getString(fab.description),
+                                        Toast.LENGTH_LONG)
+                                .show()
+                    }
                 }
 
 

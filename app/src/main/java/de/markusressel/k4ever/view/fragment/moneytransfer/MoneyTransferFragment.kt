@@ -1,4 +1,4 @@
-package de.markusressel.k4ever.view.fragment
+package de.markusressel.k4ever.view.fragment.moneytransfer
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -1,8 +1,8 @@
 package de.markusressel.k4ever.navigation
 
 import de.markusressel.k4ever.view.activity.MainActivity
-import de.markusressel.k4ever.view.fragment.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.account.AccountTabFragment
+import de.markusressel.k4ever.view.fragment.moneytransfer.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
 import de.markusressel.k4ever.view.fragment.products.ProductsListFragment
 

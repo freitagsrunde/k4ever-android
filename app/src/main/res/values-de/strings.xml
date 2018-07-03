@@ -7,6 +7,8 @@
 
     <string name="overview">Übersicht</string>
     <string name="balance_history">Kontostand</string>
+    <string name="withdraw_money">Abheben</string>
+    <string name="deposit_money">Einzahlen</string>
 
     <string name="refresh">Aktualisieren</string>
     <string name="sort_order">Sortierung</string>

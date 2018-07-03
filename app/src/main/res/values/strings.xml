@@ -10,6 +10,8 @@
     <string name="name">Name</string>
     <string name="overview">Overview</string>
     <string name="balance_history">Balance</string>
+    <string name="withdraw_money">Withdraw</string>
+    <string name="deposit_money">Deposit</string>
 
     <string name="refresh">Refresh</string>
     <string name="sort_order">Sort order</string>

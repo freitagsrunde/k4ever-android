@@ -9,11 +9,11 @@ import dagger.android.ContributesAndroidInjector
 import de.markusressel.k4ever.application.App
 import de.markusressel.k4ever.view.activity.MainActivity
 import de.markusressel.k4ever.view.activity.base.DaggerSupportActivityBase
-import de.markusressel.k4ever.view.fragment.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.account.AccountOverviewFragment
 import de.markusressel.k4ever.view.fragment.account.AccountTabFragment
 import de.markusressel.k4ever.view.fragment.account.BalanceHistoryFragment
 import de.markusressel.k4ever.view.fragment.base.TabNavigationFragment
+import de.markusressel.k4ever.view.fragment.moneytransfer.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
 import de.markusressel.k4ever.view.fragment.products.ProductsListFragment
 import de.markusressel.kutepreferences.library.persistence.DefaultKutePreferenceDataProvider

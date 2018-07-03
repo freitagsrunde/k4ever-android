@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import com.github.nitrico.lastadapter.LastAdapter
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.account.BalanceHistoryItemEntity
@@ -17,6 +18,7 @@ import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.databinding.ListItemBalanceHistoryItemBinding
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
+import de.markusressel.k4ever.view.fragment.base.FabConfig
 import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
 import io.reactivex.Single
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
@@ -33,6 +35,18 @@ class BalanceHistoryFragment : ListFragmentBase<BalanceHistoryItemModel, Balance
 
     override val layoutRes: Int
         get() = R.layout.fragment__account__balance_history
+
+    override fun getLeftFabs(): List<FabConfig.Fab> {
+        return listOf(FabConfig.Fab(description = R.string.withdraw_money, icon = MaterialDesignIconic.Icon.gmi_minus, onClick = {
+            // TODO: open "withdraw money" dialog
+        }))
+    }
+
+    override fun getRightFabs(): List<FabConfig.Fab> {
+        return listOf(FabConfig.Fab(description = R.string.deposit_money, icon = MaterialDesignIconic.Icon.gmi_plus, onClick = {
+            // TODO: open "deposit money" dialog
+        }))
+    }
 
     @Inject
     lateinit var persistenceManager: BalanceHistoryItemPersistenceManager

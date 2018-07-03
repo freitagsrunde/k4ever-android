@@ -5,13 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".view.activity.MainActivity">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <include layout="@layout/fragment__recyclerview" />
-
-    </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
