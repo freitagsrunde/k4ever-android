@@ -57,16 +57,6 @@ abstract class AppModule {
             return DefaultKutePreferenceDataProvider(context)
         }
 
-        //        @Provides
-        //        @Singleton
-        //        @JvmStatic
-        //        internal fun provideBoxStore(context: Context): BoxStore {
-        //            return MyObjectBox
-        //                    .builder()
-        //                    .androidContext(context)
-        //                    .build()
-        //        }
-
     }
 
 }

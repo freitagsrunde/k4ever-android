@@ -1,7 +1,7 @@
 package de.markusressel.k4ever.rest
 
 import com.github.kittinunf.fuel.core.ResponseDeserializable
-import com.github.salomonbrys.kotson.typeToken
+import com.github.salomonbrys.kotson.gsonTypeToken
 import com.google.gson.Gson
 import java.lang.reflect.Type
 
@@ -9,14 +9,14 @@ import java.lang.reflect.Type
  * Extension function to create a single element deserializer for the given type
  */
 inline fun <reified T : Any> singleDeserializer(): ResponseDeserializable<T> {
-    return SingleDeserializer(typeToken<T>())
+    return SingleDeserializer(gsonTypeToken<T>())
 }
 
 /**
  * Extension function to create a list deserializer for the given type
  */
 inline fun <reified T : Any> listDeserializer(): ResponseDeserializable<List<T>> {
-    return ListDeserializer(typeToken<List<T>>())
+    return ListDeserializer(gsonTypeToken<List<T>>())
 }
 
 /**

@@ -18,6 +18,7 @@ import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
+import de.markusressel.k4ever.rest.K4EverRestClient
 import de.markusressel.k4ever.view.component.LoadingComponent
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import io.reactivex.Single
@@ -31,6 +32,7 @@ import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import javax.inject.Inject
 
 
 /**
@@ -40,6 +42,9 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSuppo
 
     override val layoutRes: Int
         get() = R.layout.fragment__recyclerview
+
+    @Inject
+    lateinit var restClient: K4EverRestClient
 
     protected open val fabConfig: FabConfig = FabConfig(left = mutableListOf(),
             right = mutableListOf())

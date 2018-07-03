@@ -51,6 +51,8 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     }
 
     override fun loadListDataFromSource(): Single<List<ProductModel>> {
+//        return restClient.getAllProducts()
+
         val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2)
         val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2)
         val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2)
