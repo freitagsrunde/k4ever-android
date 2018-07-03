@@ -3,22 +3,61 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="8dp"
     tools:context=".view.activity.MainActivity">
 
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:paddingBottom="16dp"
+        android:src="@drawable/ic_launcher_foreground" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:text="Current Balance:" />
 
     <TextView
         android:id="@+id/account_balance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:text="-28,00€"
         android:textSize="48sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:text="Username: markus" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:text="Display name: Markus Ressel" />
+
+            <Button
+                android:id="@+id/edit_displayname_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EDIT" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>
