@@ -5,7 +5,7 @@
     <data>
         <variable
             name="item"
-            type="de.markusressel.k4ever.data.persistence.base.entity.ProductEntity" />
+            type="de.markusressel.k4ever.data.persistence.base.product.ProductEntity" />
 
         <variable
             name="presenter"

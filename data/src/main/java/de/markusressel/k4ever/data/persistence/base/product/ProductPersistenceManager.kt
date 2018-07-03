@@ -1,7 +1,6 @@
-package de.markusressel.k4ever.data.persistence.base.manager
+package de.markusressel.k4ever.data.persistence.base.product
 
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
-import de.markusressel.k4ever.data.persistence.base.entity.ProductEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
