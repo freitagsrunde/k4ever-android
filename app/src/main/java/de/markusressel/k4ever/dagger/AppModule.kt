@@ -9,8 +9,11 @@ import dagger.android.ContributesAndroidInjector
 import de.markusressel.k4ever.application.App
 import de.markusressel.k4ever.view.activity.MainActivity
 import de.markusressel.k4ever.view.activity.base.DaggerSupportActivityBase
-import de.markusressel.k4ever.view.fragment.AccountFragment
 import de.markusressel.k4ever.view.fragment.MoneyTransferFragment
+import de.markusressel.k4ever.view.fragment.account.AccountOverviewFragment
+import de.markusressel.k4ever.view.fragment.account.AccountTabFragment
+import de.markusressel.k4ever.view.fragment.account.BalanceHistoryFragment
+import de.markusressel.k4ever.view.fragment.base.TabNavigationFragment
 import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
 import de.markusressel.k4ever.view.fragment.products.ProductsListFragment
 import de.markusressel.kutepreferences.library.persistence.DefaultKutePreferenceDataProvider
@@ -36,7 +39,16 @@ abstract class AppModule {
     internal abstract fun ProductsListFragment(): ProductsListFragment
 
     @ContributesAndroidInjector
-    internal abstract fun AccountFragment(): AccountFragment
+    internal abstract fun TabNavigationFragment(): TabNavigationFragment
+
+    @ContributesAndroidInjector
+    internal abstract fun AccountTabFragment(): AccountTabFragment
+
+    @ContributesAndroidInjector
+    internal abstract fun AccountFragment(): AccountOverviewFragment
+
+    @ContributesAndroidInjector
+    internal abstract fun BalanceHistoryFragment(): BalanceHistoryFragment
 
     @ContributesAndroidInjector
     internal abstract fun TransactionFragment(): MoneyTransferFragment

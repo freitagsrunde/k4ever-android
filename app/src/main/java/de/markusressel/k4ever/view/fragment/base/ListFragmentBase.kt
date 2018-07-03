@@ -210,8 +210,8 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSuppo
                 .from(context)
 
         val layout = when (isLeft) {
-            true -> R.layout.view_fab_left
-            false -> R.layout.view_fab_right
+            true -> R.layout.view__fab_left
+            false -> R.layout.view__fab_right
         }
 
         val fabView: FloatingActionButton = inflater.inflate(layout,

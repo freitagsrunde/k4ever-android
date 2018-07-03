@@ -58,9 +58,33 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "3:4828375309153624381",
+      "lastPropertyId": "4:8350048747705697292",
+      "name": "BalanceHistoryItemEntity",
+      "properties": [
+        {
+          "id": "1:282372892294406556",
+          "name": "entityId"
+        },
+        {
+          "id": "2:335849001829818648",
+          "name": "id"
+        },
+        {
+          "id": "3:5895965430284559959",
+          "name": "amount"
+        },
+        {
+          "id": "4:8350048747705697292",
+          "name": "date"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "2:7680704537536834906",
+  "lastEntityId": "3:4828375309153624381",
   "lastIndexId": "0:0",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",

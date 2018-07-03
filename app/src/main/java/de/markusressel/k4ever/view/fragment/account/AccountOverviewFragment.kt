@@ -1,4 +1,4 @@
-package de.markusressel.k4ever.view.fragment
+package de.markusressel.k4ever.view.fragment.account
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
@@ -19,29 +18,15 @@ import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
  *
  * Created by Markus on 07.01.2018.
  */
-class AccountFragment : DaggerSupportFragmentBase() {
+class AccountOverviewFragment : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int
-        get() = R.layout.fragment__account
+        get() = R.layout.fragment__account__overview
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_list, onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
-            // set refresh icon
-            val refreshIcon = iconHandler
-                    .getOptionsMenuIcon(MaterialDesignIconic.Icon.gmi_refresh)
-            menu
-                    ?.findItem(R.id.refresh)
-                    ?.icon = refreshIcon
+        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none, onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
         }, onOptionsMenuItemClicked = {
-            when {
-                it.itemId == R.id.refresh -> {
-
-                    // TODO: disconnect and reconnect
-
-                    true
-                }
-                else -> false
-            }
+            false
         })
     }
 
@@ -64,15 +49,6 @@ class AccountFragment : DaggerSupportFragmentBase() {
         }
         return optionsMenuComponent
                 .onOptionsItemSelected(item)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super
-                .onCreate(savedInstanceState)
-
-        val host = preferencesHolder
-                .connectionUriPreference
-                .persistedValue
     }
 
     @SuppressLint("ClickableViewAccessibility")

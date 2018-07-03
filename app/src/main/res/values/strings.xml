@@ -8,6 +8,8 @@
     <string name="menu_item_about">About</string>
 
     <string name="name">Name</string>
+    <string name="overview">Overview</string>
+    <string name="balance_history">Balance</string>
 
     <string name="refresh">Refresh</string>
     <string name="sort_order">Sort order</string>

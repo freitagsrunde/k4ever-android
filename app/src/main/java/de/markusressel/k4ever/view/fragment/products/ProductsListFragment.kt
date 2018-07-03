@@ -61,7 +61,7 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
 
         // TODO:
         return Single
-                .fromCallable { listOf(p1, p2, p3) }
+                .just(listOf(p1, p2, p3))
     }
 
     override fun mapToEntity(it: ProductModel): ProductEntity {
