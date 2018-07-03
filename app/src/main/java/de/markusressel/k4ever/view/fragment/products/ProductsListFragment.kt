@@ -10,14 +10,16 @@ import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.business.ShoppingBag
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
-import de.markusressel.k4ever.data.persistence.base.product.ProductEntity
-import de.markusressel.k4ever.data.persistence.base.product.ProductPersistenceManager
+import de.markusressel.k4ever.data.persistence.product.ProductEntity
+import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemProductBinding
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
 import io.reactivex.Single
+import kotlinx.android.synthetic.main.bottom_sheet__shopping_bag.*
+import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import javax.inject.Inject
 
 
@@ -96,6 +98,10 @@ class ProductsListFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         val persistentbottomSheet = shoppingBagLayout
         val behavior = BottomSheetBehavior
                 .from<View>(persistentbottomSheet)
+
+        if (shoppingBag.shoppingBag.isEmpty()) {
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
 
         behavior
                 ?.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {

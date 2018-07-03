@@ -3,7 +3,7 @@ package de.markusressel.k4ever.dagger.module
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import de.markusressel.k4ever.data.persistence.base.entity.MyObjectBox
+import de.markusressel.k4ever.data.persistence.MyObjectBox
 import io.objectbox.BoxStore
 import javax.inject.Singleton
 

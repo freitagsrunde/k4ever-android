@@ -1,4 +1,4 @@
-package de.markusressel.k4ever.data.persistence.base.product
+package de.markusressel.k4ever.data.persistence.product
 
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
