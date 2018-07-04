@@ -22,7 +22,7 @@ class ShoppingBag @Inject constructor() {
      */
     fun add(product: ProductEntity, amount: Int, withDeposit: Boolean) {
         val matchingItem = items.firstOrNull {
-            it.product == product && it.withDeposit == withDeposit
+            it.product.id == product.id && it.withDeposit == withDeposit
         }
 
         if (matchingItem != null) {
@@ -44,7 +44,7 @@ class ShoppingBag @Inject constructor() {
         var amountToRemove = amount
 
         val matchingItem = items.firstOrNull {
-            it.product == product && it.withDeposit == withDeposit
+            it.product.id == product.id && it.withDeposit == withDeposit
         }
 
         if (matchingItem != null) {

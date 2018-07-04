@@ -140,9 +140,17 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
 
     private fun setShoppingBagVisible(visible: Boolean) {
         shoppingBagBottomSheetBehaviour.isHideable = !visible
-        shoppingBagBottomSheetBehaviour.state = when (visible) {
-            true -> BottomSheetBehavior.STATE_COLLAPSED
-            false -> BottomSheetBehavior.STATE_HIDDEN
+
+        if (visible) {
+            // only open bottom sheet if is currently invisible
+            // otherwise keep the current state
+            if (shoppingBagBottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN
+                    || shoppingBagBottomSheetBehaviour.state == BottomSheetBehavior.STATE_EXPANDED
+                    || shoppingBagBottomSheetBehaviour.state == BottomSheetBehavior.STATE_SETTLING) {
+                shoppingBagBottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+        } else {
+            shoppingBagBottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
 
@@ -150,10 +158,7 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         totalItemCountAndCost.text = getString(R.string.shopping_bag__total_items_and_cost,
                 shoppingBag.getTotalItemCount(),
                 shoppingBag.getTotalPrice())
-
         inflateShoppingBagItems()
-
-        // TODO: inflate layout for items in shopping bag
     }
 
     private fun inflateShoppingBagItems() {
