@@ -6,15 +6,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ShoppingBag @Inject constructor() {
+class ShoppingCart @Inject constructor() {
 
     /**
-     * Map of items and their amount
+     * List of items currently in the shopping cart
      */
-    val items: MutableList<ShoppingBagItem> = mutableListOf()
+    val items: MutableList<CartItem> = mutableListOf()
 
     /**
-     * Add a product to the shopping bag
+     * Add a product to the shopping cart
      *
      * @param product the product to add
      * @param amount the amount of items to add
@@ -28,13 +28,13 @@ class ShoppingBag @Inject constructor() {
         if (matchingItem != null) {
             matchingItem.amount += amount
         } else {
-            val item = ShoppingBagItem(product, amount, withDeposit)
+            val item = CartItem(product, amount, withDeposit)
             items.add(item)
         }
     }
 
     /**
-     * Remove a product from the shopping bag
+     * Remove a product from the shopping cart
      *
      * @param product the product to remove
      * @param amount the amount to remove
@@ -53,14 +53,13 @@ class ShoppingBag @Inject constructor() {
             } else {
                 matchingItem.amount -= amountToRemove
             }
-            matchingItem.amount -= amount
         } else {
-            Timber.e { "Unable to find matching item in shopping bag!" }
+            Timber.e { "Unable to find matching item in shopping cart!" }
         }
     }
 
     /**
-     * @return the total amount of individual items currently in shopping bag
+     * @return the total amount of individual items currently in shopping cart
      */
     fun getTotalItemCount(): Int {
         return items.map {
@@ -69,7 +68,7 @@ class ShoppingBag @Inject constructor() {
     }
 
     /**
-     * @return the total cost of all items currently in shopping bag
+     * @return the total cost of all items currently in shopping cart
      */
     fun getTotalPrice(): Double {
         return items.map {

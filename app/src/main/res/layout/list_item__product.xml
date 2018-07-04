@@ -68,7 +68,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="@{() -> presenter.addItemToShoppingBag(item, true) }"
+                    android:onClick="@{() -> presenter.addItemToShoppingCart(item, true, true) }"
                     android:text="Add" />
 
             </LinearLayout>

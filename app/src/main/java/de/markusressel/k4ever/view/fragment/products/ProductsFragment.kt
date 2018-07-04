@@ -7,12 +7,14 @@ import android.support.design.widget.BottomSheetBehavior
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.github.nitrico.lastadapter.LastAdapter
+import com.jakewharton.rxbinding2.view.RxView
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.business.ShoppingBag
+import de.markusressel.k4ever.business.ShoppingCart
 import de.markusressel.k4ever.business.getPrice
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
@@ -22,8 +24,9 @@ import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
-import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_bag.*
+import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_cart.*
 import javax.inject.Inject
 
 
@@ -77,9 +80,9 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     }
 
     @Inject
-    lateinit var shoppingBag: ShoppingBag
+    lateinit var shoppingCart: ShoppingCart
 
-    private lateinit var shoppingBagBottomSheetBehaviour: BottomSheetBehavior<View>
+    private lateinit var shoppingCartBottomSheetBehaviour: BottomSheetBehavior<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super
@@ -96,12 +99,13 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         super
                 .onViewCreated(view, savedInstanceState)
 
-        shoppingBagBottomSheetBehaviour = BottomSheetBehavior
-                .from<View>(shoppingBagLayout)
+        shoppingCartBottomSheetBehaviour = BottomSheetBehavior
+                .from<View>(shoppingCartLayout)
+        setCardViewPeekHeight()
 
-        updateShoppingBag()
+        updateShoppingCart()
 
-        shoppingBagBottomSheetBehaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        shoppingCartBottomSheetBehaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 // React to state change
                 //showing the different states
@@ -125,64 +129,91 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         })
     }
 
-    private fun updateShoppingBag() {
-        updateShoppingBagVisibility()
-        updateShoppingBagContent()
+    private fun setCardViewPeekHeight() {
+        val elevation = shoppingCartCardView.maxCardElevation
+        val radius = shoppingCartCardView.radius
+        val cos45 = Math.cos(Math.toRadians(45.0))
+
+        val horizontalPadding = (elevation + (1 - cos45) * radius).toInt()
+//        val verticalPadding = (elevation * 1.5 + (1 - cos45) * radius).toInt()
+
+        shoppingCartBottomSheetBehaviour.peekHeight =
+                (resources.getDimension(R.dimen.shopping_bag__peek_height) +
+                        horizontalPadding).toInt()
     }
 
-    private fun updateShoppingBagVisibility() {
-        if (shoppingBag.items.isEmpty()) {
-            setShoppingBagVisible(false)
+    private fun updateShoppingCart(updateVisibility: Boolean = true) {
+        if (updateVisibility) {
+            updateShoppingCartVisibility()
+        }
+        updateShoppingCartContent()
+    }
+
+    private fun updateShoppingCartVisibility() {
+        if (shoppingCart.items.isEmpty()) {
+            setShoppingCartVisible(false)
         } else {
-            setShoppingBagVisible(true)
+            setShoppingCartVisible(true)
         }
     }
 
-    private fun setShoppingBagVisible(visible: Boolean) {
-        shoppingBagBottomSheetBehaviour.isHideable = !visible
+    private fun setShoppingCartVisible(visible: Boolean) {
+        shoppingCartBottomSheetBehaviour.isHideable = !visible
 
         if (visible) {
             // only open bottom sheet if is currently invisible
             // otherwise keep the current state
-            if (shoppingBagBottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN
-                    || shoppingBagBottomSheetBehaviour.state == BottomSheetBehavior.STATE_EXPANDED
-                    || shoppingBagBottomSheetBehaviour.state == BottomSheetBehavior.STATE_SETTLING) {
-                shoppingBagBottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
+            if (shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN
+                    || shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_EXPANDED
+                    || shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_SETTLING) {
+                shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
             }
         } else {
-            shoppingBagBottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
 
-    private fun updateShoppingBagContent() {
-        totalItemCountAndCost.text = getString(R.string.shopping_bag__total_items_and_cost,
-                shoppingBag.getTotalItemCount(),
-                shoppingBag.getTotalPrice())
-        inflateShoppingBagItems()
+    private fun updateShoppingCartContent() {
+        totalItemCountAndCost.text = getString(R.string.shopping_cart__total_items_and_cost,
+                shoppingCart.getTotalItemCount(),
+                shoppingCart.getTotalPrice())
+        inflateShoppingCartItems()
     }
 
-    private fun inflateShoppingBagItems() {
+    private fun inflateShoppingCartItems() {
         // remove old views
-        shoppingBagItemsLayout.removeAllViews()
+        shoppingCartItemsLayout.removeAllViews()
 
-        shoppingBag.items.forEach {
+        shoppingCart.items.forEach { shoppingBagItem ->
             val layoutInflater = LayoutInflater.from(context)
-            val itemLayout = layoutInflater.inflate(R.layout.layout__shopping_bag_item, shoppingBagItemsLayout, false) as ViewGroup
+            val itemLayout = layoutInflater.inflate(R.layout.layout__cart_item, shoppingCartItemsLayout, false) as ViewGroup
 
             // TODO: Set item image
             val itemImage = itemLayout.findViewById(R.id.itemImage) as ImageView
 //            itemImage.setImageDrawable()
 
             val itemCount = itemLayout.findViewById(R.id.itemCount) as TextView
-            itemCount.text = "${it.amount} Stück"
+            itemCount.text = "${shoppingBagItem.amount} Stück"
 
             val itemName = itemLayout.findViewById(R.id.itemName) as TextView
-            itemName.text = it.product.name
+            itemName.text = shoppingBagItem.product.name
 
             val itemPrice = itemLayout.findViewById(R.id.itemPrice) as TextView
-            itemPrice.text = getString(R.string.shopping_bag__item_cost, it.getPrice())
+            itemPrice.text = getString(R.string.shopping_cart__item_cost, shoppingBagItem.getPrice())
 
-            shoppingBagItemsLayout.addView(itemLayout)
+            val buttonPlus = itemLayout.findViewById(R.id.buttonPlus) as Button
+            RxView.clicks(buttonPlus)
+                    .subscribeBy(onNext = {
+                        addItemToShoppingCart(shoppingBagItem.product, shoppingBagItem.withDeposit, false)
+                    })
+
+            val buttonMinus = itemLayout.findViewById(R.id.buttonMinus) as Button
+            RxView.clicks(buttonMinus)
+                    .subscribeBy(onNext = {
+                        removeItemFromShoppingCart(shoppingBagItem.product, shoppingBagItem.withDeposit, false)
+                    })
+
+            shoppingCartItemsLayout.addView(itemLayout)
         }
     }
 
@@ -194,16 +225,27 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     }
 
     /**
-     * Adds the specified item to the shopping bag
+     * Adds the specified item to the shopping cart
+     *
+     * @param productEntity the product to add
+     * @param withDeposit true, if deposit should be added to price
+     * @param updateCartVisibility if set to true, the shopping cart bottom sheet visibility will be updated
      */
-    fun addItemToShoppingBag(productEntity: ProductEntity, withDeposit: Boolean) {
-        shoppingBag.add(productEntity, 1, withDeposit)
-        updateShoppingBag()
+    fun addItemToShoppingCart(productEntity: ProductEntity, withDeposit: Boolean, updateCartVisibility: Boolean = true) {
+        shoppingCart.add(productEntity, 1, withDeposit)
+        updateShoppingCart(updateCartVisibility)
     }
 
-    fun removeItemFromShoppingBag(productEntity: ProductEntity, withDeposit: Boolean) {
-        shoppingBag.remove(productEntity, 1, withDeposit)
-        updateShoppingBag()
+    /**
+     * Removes the specified item from the shopping cart
+     *
+     * @param productEntity the product to remove
+     * @param withDeposit true, if deposit was added to price
+     * @param updateCartVisibility if set to true, the shopping cart bottom sheet visibility will be updated
+     */
+    fun removeItemFromShoppingCart(productEntity: ProductEntity, withDeposit: Boolean, updateCartVisibility: Boolean = true) {
+        shoppingCart.remove(productEntity, 1, withDeposit)
+        updateShoppingCart(updateCartVisibility)
     }
 
 }

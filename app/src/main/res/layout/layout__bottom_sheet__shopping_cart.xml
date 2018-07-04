@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/shoppingBagLayout"
+    android:id="@+id/shoppingCartLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -9,7 +9,7 @@
     app:layout_behavior="@string/bottom_sheet_behavior">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/shoppingBagCardView"
+        android:id="@+id/shoppingCartCardView"
         style="@style/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/shoppingBagItemsLayout"
+                android:id="@+id/shoppingCartItemsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

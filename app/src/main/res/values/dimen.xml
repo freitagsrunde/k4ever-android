@@ -3,6 +3,7 @@
 
     <dimen name="shopping_bag__peek_height">56dp</dimen>
     <dimen name="shopping_bag__peek_elevation">4dp</dimen>
+    <dimen name="shopping_bag__elevation">8dp</dimen>
 
     <dimen name="tab_bar_height">42dp</dimen>
 
