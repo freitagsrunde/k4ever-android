@@ -34,6 +34,28 @@ class ShoppingCart @Inject constructor() {
     }
 
     /**
+     * Set the amount of products to the exact value
+     *
+     * @param product the product to set a value for
+     * @param amount the amount to set
+     * @param withDeposit if the item was/will be added with deposit
+     */
+    fun set(product: ProductEntity, amount: Int, withDeposit: Boolean) {
+        val matchingItem = items.firstOrNull {
+            it.product.id == product.id && it.withDeposit == withDeposit
+        }
+        if (amount <= 0) {
+            matchingItem?.let {
+                items.remove(matchingItem)
+            }
+        } else {
+            matchingItem?.let {
+                matchingItem.amount = amount
+            }
+        }
+    }
+
+    /**
      * Remove a product from the shopping cart
      *
      * @param product the product to remove

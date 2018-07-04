@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -12,69 +13,110 @@
             type="de.markusressel.k4ever.view.fragment.products.ProductsFragment" />
     </data>
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
+        style="@style/card_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/cardview_padding">
+        android:layout_height="wrap_content">
 
-        <android.support.v7.widget.CardView
-            style="@style/card_view"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <com.sackcentury.shinebuttonlib.ShineButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:onClick="@{() -> presenter.toggleFavorite(item) }"
+                android:src="@android:color/darker_gray"
+                app:allow_random_color="false"
+                app:big_shine_color="@color/md_red_A400"
+                app:btn_color="@android:color/darker_gray"
+                app:btn_fill_color="@color/md_red_A400"
+                app:siShape="@drawable/baseline_favorite_black_36"
+                app:small_shine_color="@color/md_red_A700" />
+
+            <ImageView
+                android:id="@+id/productImage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/club_mate_0_5l" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
-                android:padding="8dp">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/productImage"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <!--<TextView-->
-                    <!--style="@style/sub_header"-->
-                    <!--android:text="@string/level" />-->
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{item.name}" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{String.valueOf(item.price)}" />
-
-                    <!--<TextView-->
-                    <!--style="@style/sub_header"-->
-                    <!--android:text="@string/message" />-->
-
-                    <!--<TextView-->
-                    <!--style="@style/sub_header_content_textview"-->
-                    <!--android:text="@{item.message}" />-->
-
-                </LinearLayout>
-
-                <Button
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="@{() -> presenter.addItemToShoppingCart(item, true, true) }"
-                    android:text="Add" />
+                    android:text="@{item.name}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{item.description}" />
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:onClick="@{() -> presenter.addItemToShoppingCart(item, true, true)}"
+                android:orientation="vertical"
+                android:visibility="@{presenter.getBuyWithDepositVisibility(item)}">
 
-    </LinearLayout>
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:iiv_color="?android:attr/textColorPrimary"
+                    app:iiv_icon="gmi-shopping-cart-add" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:text="@{presenter.getPriceString(item, true)}"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:onClick="@{() -> presenter.addItemToShoppingCart(item, false, true) }"
+                android:orientation="vertical"
+                android:paddingLeft="8dp">
+
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:iiv_color="?android:attr/textColorPrimary"
+                    app:iiv_icon="gmi-shopping-cart-add" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:text="@{presenter.getPriceString(item, false)}"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 </layout>

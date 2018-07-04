@@ -110,6 +110,12 @@ dependencies {
         transitive = true
     }
 
+    // Increase/Decrease number
+    implementation 'com.github.DanielMartinus:Stepper-Touch:0.6'
+
+    // Shine Button (fancy animated buttons)
+    implementation 'com.github.ChadCSong:ShineButton:d992d78032'
+
     // LastAdapter
     implementation 'com.github.nitrico.lastadapter:lastadapter:2.3.0'
     kapt "com.android.databinding:compiler:$gradle_plugin_version"

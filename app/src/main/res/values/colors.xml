@@ -15,7 +15,11 @@
     <color name="textColorPrimaryInverse">#DE000000</color>
     <color name="textColorSecondaryInverse">#8A000000</color>
 
-    <color name="cardview_background">@color/colorPrimaryDark</color>
-    <color name="cardview_backgroundInverse">@color/colorPrimaryLight</color>
+    <color name="windowBackgroundLight">@color/md_grey_200</color>
+
+    <color name="windowBackgroundDark">@color/md_black_1000</color>
+
+    <color name="cardview_background">@color/md_grey_900</color>
+    <color name="cardview_backgroundInverse">@color/md_white_1000</color>
 
 </resources>

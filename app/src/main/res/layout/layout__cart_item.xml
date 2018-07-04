@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp">
 
     <ImageView
         android:id="@+id/itemImage"
@@ -18,42 +21,23 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/itemCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5x" />
-
-        <TextView
             android:id="@+id/itemName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mio Mate" />
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/itemPrice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5€" />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/buttonPlus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="+1" />
-
-        <Button
-            android:id="@+id/buttonMinus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-1" />
-
-    </LinearLayout>
+    <nl.dionsegijn.steppertouch.StepperTouch
+        android:id="@+id/itemAmountStepper"
+        android:layout_width="96dp"
+        android:layout_height="32dp"
+        app:stepperBackgroundColor="@color/colorPrimary" />
 
 </LinearLayout>
