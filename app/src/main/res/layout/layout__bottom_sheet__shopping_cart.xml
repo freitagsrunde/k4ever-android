@@ -36,7 +36,8 @@
                 android:id="@+id/buyNowButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Buy now!" />
+                style="?android:attr/borderlessButtonStyle"
+                android:text="@string/checkout" />
 
         </LinearLayout>
 
