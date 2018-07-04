@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:6605378765947734788",
-      "lastPropertyId": "6:3267946271201136174",
+      "lastPropertyId": "7:8129499693474918635",
       "name": "ProductEntity",
       "properties": [
         {
@@ -31,6 +31,10 @@
         {
           "id": "6:3267946271201136174",
           "name": "deposit"
+        },
+        {
+          "id": "7:8129499693474918635",
+          "name": "isFavorite"
         }
       ],
       "relations": []

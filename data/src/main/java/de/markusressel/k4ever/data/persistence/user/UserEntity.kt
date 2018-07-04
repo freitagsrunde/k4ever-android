@@ -1,7 +1,10 @@
 package de.markusressel.k4ever.data.persistence.user
 
+import de.markusressel.k4ever.data.persistence.PersistenceEntity
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 
 @Entity
-data class UserEntity(@Id var entityId: Long = 0, val id: Long, val user_name: String, val display_name: String)
+data class UserEntity(@Id var entityId: Long = 0, val id: Long, val user_name: String, val display_name: String) : PersistenceEntity {
+    override fun getItemId(): Long = id
+}

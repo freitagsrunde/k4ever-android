@@ -76,7 +76,7 @@ class BalanceHistoryFragment : ListFragmentBase<BalanceHistoryItemModel, Balance
                                 .presenter = this@BalanceHistoryFragment
                     }
                     onClick {
-                        // TODO: should there be any detail view of balance history items?
+                        // TODO: should there be any detail view of purchase history items?
 //                        openDetailView(listValues[it.adapterPosition])
                     }
                 }

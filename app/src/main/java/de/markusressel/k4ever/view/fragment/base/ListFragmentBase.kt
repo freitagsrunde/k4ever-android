@@ -7,6 +7,7 @@ import android.support.annotation.CallSuper
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.*
 import android.widget.Toast
@@ -17,6 +18,7 @@ import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
+import de.markusressel.k4ever.data.persistence.PersistenceEntity
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.rest.K4EverRestClient
 import de.markusressel.k4ever.view.component.LoadingComponent
@@ -38,7 +40,7 @@ import javax.inject.Inject
 /**
  * Created by Markus on 29.01.2018.
  */
-abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSupportFragmentBase() {
+abstract class ListFragmentBase<ModelType : Any, EntityType : PersistenceEntity> : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__recyclerview
@@ -168,10 +170,10 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSuppo
         } else {
             Timber
                     .d { "Persisted list data is probably still valid, just loading from persistence" }
-            fillListFromPersistence()
+            updateListFromPersistence()
         }
 
-        fillListFromPersistence()
+        updateListFromPersistence()
     }
 
     private fun setupFabs() {
@@ -291,38 +293,34 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSuppo
     /**
      * Loads the data using {@link loadListDataFromPersistence()}
      */
-    private fun fillListFromPersistence() {
+    protected fun updateListFromPersistence() {
         loadingComponent
                 .showLoading()
 
         Single
                 .fromCallable {
-                    var listData = loadListDataFromPersistence()
-
-                    // sort list data according to current selection
-                    listData = sortByCurrentOptions(listData)
-
-                    listData
+                    loadListDataFromPersistence()
                 }
+                .map { sortByCurrentOptions(it) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
                 .subscribeBy(onSuccess = {
-                    listValues
-                            .clear()
+                    val diffCallback = DiffCallback(listValues, it)
+                    val diffResult = DiffUtil.calculateDiff(diffCallback)
 
-                    if (it.isEmpty()) {
+                    listValues.clear()
+                    listValues.addAll(it)
+
+                    if (listValues.isEmpty()) {
                         showEmpty()
                     } else {
                         hideEmpty()
-                        listValues
-                                .addAll(it)
                     }
                     loadingComponent
                             .showContent()
 
-                    recyclerViewAdapter
-                            .notifyDataSetChanged()
+                    diffResult.dispatchUpdatesTo(recyclerViewAdapter)
                 }, onError = {
                     if (it is CancellationException) {
                         Timber
@@ -381,7 +379,7 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSuppo
      */
     open fun getCurrentSortOptions(): List<SortOption<EntityType>> {
         // TODO:
-        return emptyList()
+        return getAllSortCriteria()
     }
 
     private fun openSortSelection() {
@@ -412,7 +410,7 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : Any> : DaggerSuppo
                             .subscribeBy(onSuccess = {
                                 persistListData(it)
                                 updateLastUpdatedFromSource()
-                                fillListFromPersistence()
+                                updateListFromPersistence()
                             }, onError = {
                                 if (it is CancellationException) {
                                     Timber

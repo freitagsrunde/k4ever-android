@@ -1,9 +1,11 @@
 package de.markusressel.k4ever.view.fragment.products
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,24 +61,24 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     override fun loadListDataFromSource(): Single<List<ProductModel>> {
 //        return restClient.getAllProducts()
 
-        val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2)
-        val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2)
-        val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2)
-        val p4 = ProductModel(3, "Spezi", "Zucker ^2", 1.0, 0.2)
-        val p5 = ProductModel(4, "Snickers", "Zucker ^5", 1.0, 0.0)
+        val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, true)
+        val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2, true)
+        val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2, false)
+        val p4 = ProductModel(3, "Spezi", "Zucker ^2", 1.0, 0.2, false)
+        val p5 = ProductModel(4, "Snickers", "Zucker ^5", 1.0, 0.0, false)
 
         // TODO:
         return Single
-                .just(listOf(p1, p2, p3, p4, p5))
+                .just(listOf(p1, p2, p3, p4, p5).shuffled())
     }
 
     override fun mapToEntity(it: ProductModel): ProductEntity {
-        return ProductEntity(0, it.id, it.name, it.description, it.price, it.deposit)
+        return ProductEntity(0, it.id, it.name, it.description, it.price, it.deposit, it.isFavorite)
     }
 
     override fun getAllSortCriteria(): List<SortOption<ProductEntity>> {
         // TODO sort options need to be persistable
-        return listOf(SortOption(0, R.string.name, { t -> t.name }, false))
+        return listOf(SortOption(0, R.string.favorite, { t -> !t.isFavorite }, false), SortOption(0, R.string.name, { t -> t.name }, false))
     }
 
     @Inject
@@ -210,9 +212,9 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
             val layoutInflater = LayoutInflater.from(context)
             val itemLayout = layoutInflater.inflate(R.layout.layout__cart_item, shoppingCartItemsLayout, false) as ViewGroup
 
-            // TODO: Set item image
+            // TODO: Set real item image
             val itemImage = itemLayout.findViewById(R.id.itemImage) as ImageView
-//            itemImage.setImageDrawable()
+            itemImage.setImageDrawable(ContextCompat.getDrawable(context as Context, R.drawable.club_mate_0_5l))
 
             val itemName = itemLayout.findViewById(R.id.itemName) as TextView
             itemName.text = shoppingBagItem.product.name
@@ -223,7 +225,6 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
             val itemAmountStepper = itemLayout.findViewById(R.id.itemAmountStepper) as StepperTouch
             itemAmountStepper.stepper.setMin(0)
             itemAmountStepper.stepper.setValue(shoppingBagItem.amount)
-            itemAmountStepper.stepper.setMax(10)
             itemAmountStepper.enableSideTap(true)
             itemAmountStepper.stepper.addStepCallback(object : OnStepCallback {
                 override fun onStep(value: Int, positive: Boolean) {
@@ -267,22 +268,15 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     }
 
     /**
-     * Removes the specified item from the shopping cart
-     *
-     * @param productEntity the product to remove
-     * @param withDeposit true, if deposit was added to price
-     * @param updateCartVisibility if set to true, the shopping cart bottom sheet visibility will be updated
-     */
-    fun removeItemFromShoppingCart(productEntity: ProductEntity, withDeposit: Boolean, updateCartVisibility: Boolean = true) {
-        shoppingCart.remove(productEntity, 1, withDeposit)
-        updateShoppingCart(updateCartVisibility)
-    }
-
-    /**
      * Toggles the "favorite" state of a product
      */
-    fun toggleFavorite(productEntity: ProductEntity) {
-        // TODO: save favorites
+    fun toggleFavorite(product: ProductEntity) {
+        product.isFavorite = !product.isFavorite
+        persistenceManager.standardOperation().put(product)
+
+        updateListFromPersistence()
+
+        // TODO: eventually send this to the server
     }
 
 }

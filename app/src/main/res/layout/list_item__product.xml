@@ -31,6 +31,7 @@
                 android:layout_height="36dp"
                 android:onClick="@{() -> presenter.toggleFavorite(item) }"
                 android:src="@android:color/darker_gray"
+                android:checked="@{item.isFavorite}"
                 app:allow_random_color="false"
                 app:big_shine_color="@color/md_red_A400"
                 app:btn_color="@android:color/darker_gray"
