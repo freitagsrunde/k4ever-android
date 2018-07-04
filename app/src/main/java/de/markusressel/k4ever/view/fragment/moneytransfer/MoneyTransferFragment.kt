@@ -81,10 +81,12 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
                 val sourceAsDouble = s.toString().replace(",", ".").toDouble()
                 val result = df.format(sourceAsDouble).replace(".", ",")
 
-                money_amount_edittext.addTextChangedListener(this)
+                money_amount_edittext
+                        .removeTextChangedListener(this)
                 money_amount_edittext.setText(result)
                 money_amount_edittext.setSelection(cursorIndexBeforeChange.coerceIn(0, result.length))
-                money_amount_edittext.removeTextChangedListener(this)
+                money_amount_edittext
+                        .addTextChangedListener(this)
             }
 
             override fun afterTextChanged(s: Editable?) {
