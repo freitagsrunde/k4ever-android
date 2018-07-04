@@ -4,11 +4,16 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.design.widget.BottomSheetBehavior
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import com.github.nitrico.lastadapter.LastAdapter
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.business.ShoppingBag
+import de.markusressel.k4ever.business.getPrice
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
@@ -146,7 +151,34 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
                 shoppingBag.getTotalItemCount(),
                 shoppingBag.getTotalPrice())
 
+        inflateShoppingBagItems()
+
         // TODO: inflate layout for items in shopping bag
+    }
+
+    private fun inflateShoppingBagItems() {
+        // remove old views
+        shoppingBagItemsLayout.removeAllViews()
+
+        shoppingBag.items.forEach {
+            val layoutInflater = LayoutInflater.from(context)
+            val itemLayout = layoutInflater.inflate(R.layout.layout__shopping_bag_item, shoppingBagItemsLayout, false) as ViewGroup
+
+            // TODO: Set item image
+            val itemImage = itemLayout.findViewById(R.id.itemImage) as ImageView
+//            itemImage.setImageDrawable()
+
+            val itemCount = itemLayout.findViewById(R.id.itemCount) as TextView
+            itemCount.text = "${it.amount} Stück"
+
+            val itemName = itemLayout.findViewById(R.id.itemName) as TextView
+            itemName.text = it.product.name
+
+            val itemPrice = itemLayout.findViewById(R.id.itemPrice) as TextView
+            itemPrice.text = getString(R.string.shopping_bag__item_cost, it.getPrice())
+
+            shoppingBagItemsLayout.addView(itemLayout)
+        }
     }
 
     /**

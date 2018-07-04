@@ -73,12 +73,7 @@ class ShoppingBag @Inject constructor() {
      */
     fun getTotalPrice(): Double {
         return items.map {
-            var itemPrice = it.product.price
-            if (it.withDeposit) {
-                itemPrice += it.product.deposit
-            }
-
-            itemPrice * it.amount
+            it.getPrice()
         }.sum()
     }
 
