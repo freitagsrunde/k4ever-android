@@ -13,6 +13,7 @@ import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.HasSupportFragmentInjector
 import de.markusressel.k4ever.navigation.Navigator
 import de.markusressel.k4ever.view.IconHandler
+import de.markusressel.k4ever.view.ThemeHelper
 import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
 import javax.inject.Inject
 
@@ -46,6 +47,9 @@ abstract class DaggerSupportFragmentBase : LifecycleFragmentBase(), HasSupportFr
 
     @Inject
     protected lateinit var iconHandler: IconHandler
+
+    @Inject
+    protected lateinit var themeHelper: ThemeHelper
 
     /**
      * The layout resource for this Activity

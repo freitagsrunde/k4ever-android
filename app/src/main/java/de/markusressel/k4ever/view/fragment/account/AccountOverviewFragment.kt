@@ -11,6 +11,7 @@ import android.view.View
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
+import kotlinx.android.synthetic.main.fragment__account__overview.*
 
 
 /**
@@ -56,6 +57,17 @@ class AccountOverviewFragment : DaggerSupportFragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super
                 .onViewCreated(view, savedInstanceState)
+
+        updateAccountInfo()
+    }
+
+    private fun updateAccountInfo() {
+        val currentBalance = 13.37
+
+        account_balance.let {
+            it.text = getString(R.string.account_balance, currentBalance)
+            it.setTextColor(themeHelper.getBalanceColor(currentBalance))
+        }
     }
 
 }

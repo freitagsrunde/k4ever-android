@@ -23,6 +23,7 @@ import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.FabConfig
 import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
 import io.reactivex.Single
+import kotlinx.android.synthetic.main.fragment__account__balance_history.*
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import java.util.*
 import javax.inject.Inject
@@ -127,6 +128,18 @@ class BalanceHistoryFragment : ListFragmentBase<BalanceHistoryItemModel, Balance
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super
                 .onViewCreated(view, savedInstanceState)
+
+        updateBalance()
+    }
+
+    private fun updateBalance() {
+        val currentBalance = -13.37
+
+        account_balance.let {
+            it.text = getString(R.string.account_balance, currentBalance)
+            it.setTextColor(themeHelper.getBalanceColor(currentBalance))
+        }
+
     }
 
 }

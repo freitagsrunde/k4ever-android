@@ -116,4 +116,13 @@ class ThemeHelper @Inject constructor(private var context: Context) {
         }
     }
 
+    @ColorInt
+    fun getBalanceColor(currentBalance: Double): Int {
+        return when {
+            currentBalance < 0 -> ContextCompat.getColor(context, R.color.md_red_A400)
+            currentBalance > 0 -> ContextCompat.getColor(context, R.color.md_green_A400)
+            else -> getThemeAttrColor(context, android.R.attr.textColorPrimary)
+        }
+    }
+
 }
