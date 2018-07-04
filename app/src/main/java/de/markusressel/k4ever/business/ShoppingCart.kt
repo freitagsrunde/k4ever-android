@@ -41,17 +41,15 @@ class ShoppingCart @Inject constructor() {
      * @param withDeposit true, if the item was added with deposit, false otherwise
      */
     fun remove(product: ProductEntity, amount: Int, withDeposit: Boolean) {
-        var amountToRemove = amount
-
         val matchingItem = items.firstOrNull {
             it.product.id == product.id && it.withDeposit == withDeposit
         }
 
         if (matchingItem != null) {
-            if (amountToRemove >= matchingItem.amount) {
+            if (amount >= matchingItem.amount) {
                 items.remove(matchingItem)
             } else {
-                matchingItem.amount -= amountToRemove
+                matchingItem.amount -= amount
             }
         } else {
             Timber.e { "Unable to find matching item in shopping cart!" }
