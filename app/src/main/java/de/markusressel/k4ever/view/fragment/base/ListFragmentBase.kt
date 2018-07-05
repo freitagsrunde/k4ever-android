@@ -45,8 +45,7 @@ import javax.inject.Inject
  * Created by Markus on 29.01.2018.
  */
 abstract class ListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFragmentBase()
-        where EntityType : IdentifiableListItem,
-              EntityType : SearchableListItem {
+        where EntityType : IdentifiableListItem {
 
     override val layoutRes: Int
         get() = R.layout.fragment__recyclerview
@@ -325,7 +324,11 @@ abstract class ListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFrag
 
         Observable.fromIterable(loadListDataFromPersistence())
                 .filter {
-                    it.getSearchableContent().any {
+                    if (it is SearchableListItem) {
+                        return@filter it.getSearchableContent().any {
+                            it.toString().contains(currentSearchFilter, true)
+                        }
+                    } else {
                         it.toString().contains(currentSearchFilter, true)
                     }
                 }
