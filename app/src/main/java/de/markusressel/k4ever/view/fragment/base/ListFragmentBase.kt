@@ -8,6 +8,7 @@ import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v7.util.DiffUtil
+import android.support.v7.widget.SearchView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.*
 import android.widget.Toast
@@ -79,29 +80,47 @@ abstract class ListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFrag
                 optionsMenuRes = R.menu.options_menu_list,
                 onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
                     // set refresh icon
-                    val refreshIcon = iconHandler
-                            .getOptionsMenuIcon(
-                                    MaterialDesignIconic.Icon.gmi_refresh)
                     menu
                             ?.findItem(R.id.refresh)
-                            ?.icon = refreshIcon
-
-                    val sortIcon = iconHandler
+                            ?.icon = iconHandler
                             .getOptionsMenuIcon(
-                                    MaterialDesignIconic.Icon.gmi_sort)
+                                    MaterialDesignIconic.Icon.gmi_refresh)
 
                     val sortOptionMenuItem = menu
                             ?.findItem(R.id.sortOrder)
-
                     sortOptionMenuItem
                             ?.let {
                                 it
-                                        .icon = sortIcon
+                                        .icon = iconHandler
+                                        .getOptionsMenuIcon(
+                                                MaterialDesignIconic.Icon.gmi_sort)
+
                                 if (getAllSortCriteria().isEmpty()) {
                                     sortOptionMenuItem
                                             .isVisible = false
                                 }
                             }
+
+                    val searchMenuItem = menu?.findItem(R.id.search)
+                    searchMenuItem?.icon = iconHandler
+                            .getOptionsMenuIcon(
+                                    MaterialDesignIconic.Icon.gmi_search)
+
+                    val searchView = searchMenuItem?.actionView as SearchView?
+                    searchView?.let {
+                        RxSearchView
+                                .queryTextChanges(it)
+                                .skipInitialValue()
+                                .bindToLifecycle(this)
+                                .debounce(300, TimeUnit.MILLISECONDS)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeBy(onNext = {
+                                    currentSearchFilter = it.toString()
+                                    updateListFromPersistence()
+                                }, onError = {
+                                    Timber.e(it) { "Error filtering list" }
+                                })
+                    }
 
                 }, onOptionsMenuItemClicked = {
             when {
@@ -163,19 +182,6 @@ abstract class ListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFrag
                 .layoutManager = layoutManager
 
         setupFabs()
-
-        RxSearchView
-                .queryTextChanges(searchView)
-                .skipInitialValue()
-                .bindToLifecycle(searchView)
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(onNext = {
-                    currentSearchFilter = it.toString()
-                    updateListFromPersistence()
-                }, onError = {
-                    Timber.e(it) { "Error filtering list" }
-                })
     }
 
     override fun onResume() {
