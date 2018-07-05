@@ -13,16 +13,19 @@ import android.view.*
 import android.widget.Toast
 import com.github.ajalt.timberkt.Timber
 import com.github.nitrico.lastadapter.LastAdapter
+import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.jakewharton.rxbinding2.view.RxView
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.data.persistence.PersistenceEntity
+import de.markusressel.k4ever.data.persistence.IdentifiableListItem
+import de.markusressel.k4ever.data.persistence.SearchableListItem
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.rest.K4EverRestClient
 import de.markusressel.k4ever.view.component.LoadingComponent
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -40,7 +43,9 @@ import javax.inject.Inject
 /**
  * Created by Markus on 29.01.2018.
  */
-abstract class ListFragmentBase<ModelType : Any, EntityType : PersistenceEntity> : DaggerSupportFragmentBase() {
+abstract class ListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFragmentBase()
+        where EntityType : IdentifiableListItem,
+              EntityType : SearchableListItem {
 
     override val layoutRes: Int
         get() = R.layout.fragment__recyclerview
@@ -54,6 +59,8 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : PersistenceEntity>
 
     protected val listValues: MutableList<EntityType> = ArrayList()
     private lateinit var recyclerViewAdapter: LastAdapter
+
+    private var currentSearchFilter: String by savedInstanceState("")
 
     protected val loadingComponent by lazy {
         LoadingComponent(this, onShowContent = {
@@ -156,6 +163,19 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : PersistenceEntity>
                 .layoutManager = layoutManager
 
         setupFabs()
+
+        RxSearchView
+                .queryTextChanges(searchView)
+                .skipInitialValue()
+                .bindToLifecycle(searchView)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(onNext = {
+                    currentSearchFilter = it.toString()
+                    updateListFromPersistence()
+                }, onError = {
+                    Timber.e(it) { "Error filtering list" }
+                })
     }
 
     override fun onResume() {
@@ -297,10 +317,13 @@ abstract class ListFragmentBase<ModelType : Any, EntityType : PersistenceEntity>
         loadingComponent
                 .showLoading()
 
-        Single
-                .fromCallable {
-                    loadListDataFromPersistence()
+        Observable.fromIterable(loadListDataFromPersistence())
+                .filter {
+                    it.getSearchableContent().any {
+                        it.toString().contains(currentSearchFilter, true)
+                    }
                 }
+                .toList()
                 .map { sortByCurrentOptions(it) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

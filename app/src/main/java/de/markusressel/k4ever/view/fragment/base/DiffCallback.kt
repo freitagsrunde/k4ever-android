@@ -1,12 +1,12 @@
 package de.markusressel.k4ever.view.fragment.base
 
 import android.support.v7.util.DiffUtil
-import de.markusressel.k4ever.data.persistence.PersistenceEntity
+import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 
 /**
  * Generic callback used to compare list items
  */
-class DiffCallback<T : PersistenceEntity>(private val oldListItems: List<T>, private val newListItems: List<T>) : DiffUtil.Callback() {
+class DiffCallback<T : IdentifiableListItem>(private val oldListItems: List<T>, private val newListItems: List<T>) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int {
         return oldListItems.size

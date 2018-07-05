@@ -1,6 +1,6 @@
 package de.markusressel.k4ever.data.persistence
 
-interface PersistenceEntity {
+interface IdentifiableListItem {
 
     /**
      * This id (and the class of an item) is used to check if two
