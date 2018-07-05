@@ -145,7 +145,7 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     }
 
     private fun updateShoppingCart(updateVisibility: Boolean = true) {
-        if (updateVisibility) {
+        if (shoppingCart.isEmpty() || updateVisibility) {
             updateShoppingCartVisibility()
         }
         updateShoppingCartContent()
@@ -153,13 +153,13 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
 
     private fun updateShoppingCartVisibility() {
         if (shoppingCart.items.isEmpty()) {
-            setShoppingCartVisible(false)
+            setShoppingCartVisibility(false)
         } else {
-            setShoppingCartVisible(true)
+            setShoppingCartVisibility(true)
         }
     }
 
-    private fun setShoppingCartVisible(visible: Boolean) {
+    private fun setShoppingCartVisibility(visible: Boolean) {
         shoppingCartBottomSheetBehaviour.isHideable = !visible
 
         if (visible) {

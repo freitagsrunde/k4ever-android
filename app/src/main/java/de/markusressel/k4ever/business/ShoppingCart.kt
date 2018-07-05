@@ -96,4 +96,11 @@ class ShoppingCart @Inject constructor() {
         }.sum()
     }
 
+    /**
+     * @return true if no items are currently in the shopping cart
+     */
+    fun isEmpty(): Boolean {
+        return items.isEmpty()
+    }
+
 }
