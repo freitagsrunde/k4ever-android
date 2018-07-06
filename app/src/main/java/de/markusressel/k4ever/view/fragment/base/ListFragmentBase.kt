@@ -110,7 +110,7 @@ abstract class ListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFrag
                         RxSearchView
                                 .queryTextChanges(it)
                                 .skipInitialValue()
-                                .bindToLifecycle(this)
+                                .bindUntilEvent(this, Lifecycle.Event.ON_DESTROY)
                                 .debounce(300, TimeUnit.MILLISECONDS)
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeBy(onNext = {

@@ -1,11 +1,15 @@
 package de.markusressel.k4ever.view.fragment.products
 
+import android.animation.FloatEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.animation.FastOutSlowInInterpolator
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +23,8 @@ import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemProductBinding
+import de.markusressel.k4ever.extensions.context
+import de.markusressel.k4ever.extensions.pxToSp
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
@@ -86,6 +92,8 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
 
     private lateinit var shoppingCartBottomSheetBehaviour: BottomSheetBehavior<View>
 
+    val normalPriceSize by lazy { totalItemCountAndCost.textSize.pxToSp(context()) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super
                 .onCreate(savedInstanceState)
@@ -105,7 +113,7 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
                 .from<View>(shoppingCartCardView)
         setCardViewPeekHeight()
 
-        updateShoppingCart()
+        updateShoppingCart(0.0)
 
         shoppingCartBottomSheetBehaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -144,11 +152,11 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
                         horizontalPadding).toInt()
     }
 
-    private fun updateShoppingCart(updateVisibility: Boolean = true) {
+    private fun updateShoppingCart(oldTotalPrice: Double, updateVisibility: Boolean = true) {
         if (shoppingCart.isEmpty() || updateVisibility) {
             updateShoppingCartVisibility()
         }
-        updateShoppingCartContent()
+        updateShoppingCartContent(oldTotalPrice)
     }
 
     private fun updateShoppingCartVisibility() {
@@ -197,11 +205,31 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         }
     }
 
-    private fun updateShoppingCartContent() {
-        totalItemCountAndCost.text = getString(R.string.shopping_cart__total_items_and_cost,
-                shoppingCart.getTotalItemCount(),
-                shoppingCart.getTotalPrice())
+    private fun updateShoppingCartContent(oldTotalPrice: Double) {
+        animateTotalItemCountAndCost(oldTotalPrice)
         inflateShoppingCartItems()
+    }
+
+    private fun animateTotalItemCountAndCost(oldTotalPrice: Double) {
+        val totalPriceAnimator = ValueAnimator.ofObject(
+                FloatEvaluator(), oldTotalPrice.toFloat(), shoppingCart.getTotalPrice())
+        totalPriceAnimator.duration = TOTAL_PRICE_ANIMATION_DURATION
+        totalPriceAnimator.addUpdateListener { animation ->
+            totalItemCountAndCost.text = getString(R.string.shopping_cart__total_items_and_cost,
+                    shoppingCart.getTotalItemCount(),
+                    animation.animatedValue as Float)
+        }
+
+        val totalPriceSizeAnimator = ValueAnimator.ofFloat(
+                totalItemCountAndCost.textSize.pxToSp(context()), (normalPriceSize + 4), normalPriceSize)
+        totalPriceSizeAnimator.duration = TOTAL_PRICE_ANIMATION_DURATION
+        totalPriceSizeAnimator.interpolator = FastOutSlowInInterpolator()
+        totalPriceSizeAnimator.addUpdateListener { animation ->
+            totalItemCountAndCost.setTextSize(TypedValue.COMPLEX_UNIT_SP, animation.animatedValue as Float)
+        }
+
+        totalPriceAnimator.start()
+        totalPriceSizeAnimator.start()
     }
 
     private fun inflateShoppingCartItems() {
@@ -251,8 +279,9 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
      * @param updateCartVisibility if set to true, the shopping cart bottom sheet visibility will be updated
      */
     fun addItemToShoppingCart(productEntity: ProductEntity, withDeposit: Boolean, updateCartVisibility: Boolean = true) {
+        val oldTotalPrice = shoppingCart.getTotalPrice()
         shoppingCart.add(productEntity, 1, withDeposit)
-        updateShoppingCart(updateCartVisibility)
+        updateShoppingCart(oldTotalPrice, updateCartVisibility)
     }
 
     /**
@@ -263,8 +292,9 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
      * @param updateCartVisibility if set to true, the shopping cart bottom sheet visibility will be updated
      */
     fun setShoppingCardItemAmount(productEntity: ProductEntity, withDeposit: Boolean, amount: Int, updateCartVisibility: Boolean = true) {
+        val oldTotalPrice = shoppingCart.getTotalPrice()
         shoppingCart.set(productEntity, amount, withDeposit)
-        updateShoppingCart(updateCartVisibility)
+        updateShoppingCart(oldTotalPrice, updateCartVisibility)
     }
 
     /**
@@ -277,6 +307,10 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         updateListFromPersistence()
 
         // TODO: eventually send this to the server
+    }
+
+    companion object {
+        const val TOTAL_PRICE_ANIMATION_DURATION: Long = 600
     }
 
 }

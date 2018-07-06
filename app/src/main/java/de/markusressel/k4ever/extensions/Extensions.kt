@@ -2,6 +2,7 @@ package de.markusressel.k4ever.extensions
 
 import android.content.Context
 import android.os.AsyncTask
+import android.support.v4.app.Fragment
 import de.markusressel.k4ever.R
 import java.util.*
 
@@ -32,4 +33,12 @@ fun Throwable.prettyPrint(): String {
     val message = "${this.message}:\n" + "${this.stackTrace.joinToString(separator = "\n")}}"
 
     return message
+}
+
+fun Fragment.context(): Context {
+    return this.context as Context
+}
+
+fun Float.pxToSp(context: Context): Float {
+    return this / context.resources.displayMetrics.scaledDensity
 }

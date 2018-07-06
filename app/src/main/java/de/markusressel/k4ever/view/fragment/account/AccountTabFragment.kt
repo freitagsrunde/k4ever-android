@@ -7,7 +7,7 @@ import de.markusressel.k4ever.view.fragment.base.TabNavigationFragment
 class AccountTabFragment : TabNavigationFragment() {
     override val tabItems: List<Pair<Int, () -> DaggerSupportFragmentBase>>
         get() = listOf(
-                R.string.overview to ::AccountOverviewFragment,
-                R.string.balance_history to ::BalanceHistoryFragment
+                R.string.balance_history to ::BalanceHistoryFragment,
+                R.string.overview to ::AccountOverviewFragment
         )
 }
