@@ -11,7 +11,7 @@ class ShoppingCart @Inject constructor() {
     /**
      * List of items currently in the shopping cart
      */
-    val items: MutableList<CartItem> = mutableListOf()
+    val items: MutableList<ShoppingCartItem> = mutableListOf()
 
     /**
      * Add a product to the shopping cart
@@ -28,7 +28,7 @@ class ShoppingCart @Inject constructor() {
         if (matchingItem != null) {
             matchingItem.amount += amount
         } else {
-            val item = CartItem(product, amount, withDeposit)
+            val item = ShoppingCartItem(product, amount, withDeposit)
             items.add(item)
         }
     }

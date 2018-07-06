@@ -21,7 +21,7 @@ import de.markusressel.k4ever.databinding.ListItemPurchaseHistoryItemBinding
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.FabConfig
-import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
+import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import io.reactivex.Single
 import kotlinx.android.synthetic.main.fragment__account__balance_history.*
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
@@ -34,7 +34,7 @@ import javax.inject.Inject
  *
  * Created by Markus on 07.01.2018.
  */
-class BalanceHistoryFragment : ListFragmentBase<BalanceHistoryItemModel, BalanceHistoryItemEntity>() {
+class BalanceHistoryFragment : PersistableListFragmentBase<BalanceHistoryItemModel, BalanceHistoryItemEntity>() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__account__balance_history

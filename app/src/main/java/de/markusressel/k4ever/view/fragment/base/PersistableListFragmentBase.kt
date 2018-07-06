@@ -44,7 +44,7 @@ import javax.inject.Inject
 /**
  * Created by Markus on 29.01.2018.
  */
-abstract class ListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFragmentBase()
+abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFragmentBase()
         where EntityType : IdentifiableListItem {
 
     override val layoutRes: Int

@@ -3,43 +3,38 @@ package de.markusressel.k4ever.view.fragment.products
 import android.animation.FloatEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.design.widget.BottomSheetBehavior
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.github.nitrico.lastadapter.LastAdapter
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.business.ShoppingCart
+import de.markusressel.k4ever.business.ShoppingCartItem
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
+import de.markusressel.k4ever.databinding.ListItemCartItemBinding
 import de.markusressel.k4ever.databinding.ListItemProductBinding
 import de.markusressel.k4ever.extensions.context
 import de.markusressel.k4ever.extensions.pxToSp
 import de.markusressel.k4ever.rest.products.model.ProductModel
-import de.markusressel.k4ever.view.fragment.base.ListFragmentBase
+import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_cart.*
-import nl.dionsegijn.steppertouch.OnStepCallback
-import nl.dionsegijn.steppertouch.StepperTouch
 import javax.inject.Inject
 
 
 /**
  * Created by Markus on 07.01.2018.
  */
-class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
+class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity>() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__products
@@ -50,22 +45,19 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
     override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
 
     override fun createAdapter(): LastAdapter {
-        return LastAdapter(listValues, BR.item)
-                .map<ProductEntity, ListItemProductBinding>(R.layout.list_item__product) {
-                    onCreate {
-                        it
-                                .binding
-                                .presenter = this@ProductsFragment
-                    }
-                    onClick {
-                        openDetailView(listValues[it.adapterPosition])
-                    }
-                }
-                .into(recyclerView)
+        return LastAdapter(listValues, BR.item).map<ProductEntity, ListItemProductBinding>(
+                R.layout.list_item__product) {
+            onCreate {
+                it.binding.presenter = this@ProductsFragment
+            }
+            onClick {
+                openDetailView(listValues[it.adapterPosition])
+            }
+        }.into(recyclerView)
     }
 
     override fun loadListDataFromSource(): Single<List<ProductModel>> {
-//        return restClient.getAllProducts()
+        //        return restClient.getAllProducts()
 
         val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, true)
         val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2, true)
@@ -74,8 +66,7 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         val p5 = ProductModel(4, "Snickers", "Zucker ^5", 1.0, 0.0, false)
 
         // TODO:
-        return Single
-                .just(listOf(p1, p2, p3, p4, p5).shuffled())
+        return Single.just(listOf(p1, p2, p3, p4, p5).shuffled())
     }
 
     override fun mapToEntity(it: ProductModel): ProductEntity {
@@ -84,7 +75,8 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
 
     override fun getAllSortCriteria(): List<SortOption<ProductEntity>> {
         // TODO sort options need to be persistable
-        return listOf(SortOption(0, R.string.favorite, { t -> !t.isFavorite }, false), SortOption(0, R.string.name, { t -> t.name }, false))
+        return listOf(SortOption(0, R.string.favorite, { t -> !t.isFavorite }, false),
+                SortOption(0, R.string.name, { t -> t.name }, false))
     }
 
     @Inject
@@ -92,27 +84,25 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
 
     private lateinit var shoppingCartBottomSheetBehaviour: BottomSheetBehavior<View>
 
+    private lateinit var shoppingCartItemsAdapter: LastAdapter
+
     val normalPriceSize by lazy { totalItemCountAndCost.textSize.pxToSp(context()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super
-                .onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
 
-        val host = preferencesHolder
-                .connectionUriPreference
-                .persistedValue
+        val host = preferencesHolder.connectionUriPreference.persistedValue
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super
-                .onViewCreated(view, savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
 
-        shoppingCartBottomSheetBehaviour = BottomSheetBehavior
-                .from<View>(shoppingCartCardView)
+        shoppingCartBottomSheetBehaviour = BottomSheetBehavior.from<View>(shoppingCartCardView)
         setCardViewPeekHeight()
 
+        initShoppingCartList()
         updateShoppingCart(0.0)
 
         shoppingCartBottomSheetBehaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -139,17 +129,32 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         })
     }
 
+    private fun initShoppingCartList() {
+        shoppingCartItemsAdapter = LastAdapter(shoppingCart.items,
+                BR.item).map<ShoppingCartItem, ListItemCartItemBinding>(
+                R.layout.list_item__cart_item) {
+            onCreate {
+                it.binding.presenter = this@ProductsFragment
+            }
+            onClick {
+                openDetailView(listValues[it.adapterPosition])
+            }
+        }.into(shoppingCartItemsLayout)
+
+        val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
+        shoppingCartItemsLayout.layoutManager = layoutManager
+    }
+
     private fun setCardViewPeekHeight() {
         val elevation = shoppingCartCardView.maxCardElevation
         val radius = shoppingCartCardView.radius
         val cos45 = Math.cos(Math.toRadians(45.0))
 
         val horizontalPadding = (elevation + (1 - cos45) * radius).toInt()
-//        val verticalPadding = (elevation * 1.5 + (1 - cos45) * radius).toInt()
+        //        val verticalPadding = (elevation * 1.5 + (1 - cos45) * radius).toInt()
 
-        shoppingCartBottomSheetBehaviour.peekHeight =
-                (resources.getDimension(R.dimen.shopping_bag__peek_height) +
-                        horizontalPadding).toInt()
+        shoppingCartBottomSheetBehaviour.peekHeight = (resources.getDimension(
+                R.dimen.shopping_bag__peek_height) + horizontalPadding).toInt()
     }
 
     private fun updateShoppingCart(oldTotalPrice: Double, updateVisibility: Boolean = true) {
@@ -173,9 +178,7 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
         if (visible) {
             // only open bottom sheet if is currently invisible
             // otherwise keep the current state
-            if (shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN
-                    || shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_EXPANDED
-                    || shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_SETTLING) {
+            if (shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN || shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_EXPANDED || shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_SETTLING) {
                 shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
             }
         } else {
@@ -190,7 +193,8 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
      */
     fun getPriceString(product: ProductEntity, withDeposit: Boolean): String {
         return when {
-            withDeposit -> getString(R.string.shopping_cart__item_cost_with_deposit, product.price, product.deposit)
+            withDeposit -> getString(R.string.shopping_cart__item_cost_with_deposit, product.price,
+                    product.deposit)
             else -> getString(R.string.shopping_cart__item_cost, product.price)
         }
     }
@@ -207,62 +211,66 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
 
     private fun updateShoppingCartContent(oldTotalPrice: Double) {
         animateTotalItemCountAndCost(oldTotalPrice)
-        inflateShoppingCartItems()
+
+        // TODO: update items using diff/direct animations
+        shoppingCartItemsAdapter.notifyDataSetChanged()
+        //        inflateShoppingCartItems()
     }
 
     private fun animateTotalItemCountAndCost(oldTotalPrice: Double) {
-        val totalPriceAnimator = ValueAnimator.ofObject(
-                FloatEvaluator(), oldTotalPrice.toFloat(), shoppingCart.getTotalPrice())
+        val totalPriceAnimator = ValueAnimator.ofObject(FloatEvaluator(), oldTotalPrice.toFloat(),
+                shoppingCart.getTotalPrice())
         totalPriceAnimator.duration = TOTAL_PRICE_ANIMATION_DURATION
         totalPriceAnimator.addUpdateListener { animation ->
             totalItemCountAndCost.text = getString(R.string.shopping_cart__total_items_and_cost,
-                    shoppingCart.getTotalItemCount(),
-                    animation.animatedValue as Float)
+                    shoppingCart.getTotalItemCount(), animation.animatedValue as Float)
         }
 
         val totalPriceSizeAnimator = ValueAnimator.ofFloat(
-                totalItemCountAndCost.textSize.pxToSp(context()), (normalPriceSize + 4), normalPriceSize)
+                totalItemCountAndCost.textSize.pxToSp(context()), (normalPriceSize + 4),
+                normalPriceSize)
         totalPriceSizeAnimator.duration = TOTAL_PRICE_ANIMATION_DURATION
         totalPriceSizeAnimator.interpolator = FastOutSlowInInterpolator()
         totalPriceSizeAnimator.addUpdateListener { animation ->
-            totalItemCountAndCost.setTextSize(TypedValue.COMPLEX_UNIT_SP, animation.animatedValue as Float)
+            totalItemCountAndCost.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                    animation.animatedValue as Float)
         }
 
         totalPriceAnimator.start()
         totalPriceSizeAnimator.start()
     }
 
-    private fun inflateShoppingCartItems() {
-        // remove old views
-        shoppingCartItemsLayout.removeAllViews()
-
-        shoppingCart.items.forEach { shoppingBagItem ->
-            val layoutInflater = LayoutInflater.from(context)
-            val itemLayout = layoutInflater.inflate(R.layout.layout__cart_item, shoppingCartItemsLayout, false) as ViewGroup
-
-            // TODO: Set real item image
-            val itemImage = itemLayout.findViewById(R.id.itemImage) as ImageView
-            itemImage.setImageDrawable(ContextCompat.getDrawable(context as Context, R.drawable.club_mate_0_5l))
-
-            val itemName = itemLayout.findViewById(R.id.itemName) as TextView
-            itemName.text = shoppingBagItem.product.name
-
-            val itemPrice = itemLayout.findViewById(R.id.itemPrice) as TextView
-            itemPrice.text = getPriceString(shoppingBagItem.product, shoppingBagItem.withDeposit)
-
-            val itemAmountStepper = itemLayout.findViewById(R.id.itemAmountStepper) as StepperTouch
-            itemAmountStepper.stepper.setMin(0)
-            itemAmountStepper.stepper.setValue(shoppingBagItem.amount)
-            itemAmountStepper.enableSideTap(true)
-            itemAmountStepper.stepper.addStepCallback(object : OnStepCallback {
-                override fun onStep(value: Int, positive: Boolean) {
-                    setShoppingCardItemAmount(shoppingBagItem.product, shoppingBagItem.withDeposit, value, false)
-                }
-            })
-
-            shoppingCartItemsLayout.addView(itemLayout)
-        }
-    }
+    //    private fun inflateShoppingCartItems() {
+    //        // remove old views
+    //        shoppingCartItemsLayout.removeAllViews()
+    //
+    //        shoppingCart.items.forEach { shoppingBagItem ->
+    //            val layoutInflater = LayoutInflater.from(context)
+    //            val itemLayout = layoutInflater.inflate(R.layout.layout__cart_item, shoppingCartItemsLayout, false) as ViewGroup
+    //
+    //            // TODO: Set real item image
+    //            val itemImage = itemLayout.findViewById(R.id.itemImage) as ImageView
+    //            itemImage.setImageDrawable(ContextCompat.getDrawable(context as Context, R.drawable.club_mate_0_5l))
+    //
+    //            val itemName = itemLayout.findViewById(R.id.itemName) as TextView
+    //            itemName.text = shoppingBagItem.product.name
+    //
+    //            val itemPrice = itemLayout.findViewById(R.id.itemPrice) as TextView
+    //            itemPrice.text = getPriceString(shoppingBagItem.product, shoppingBagItem.withDeposit)
+    //
+    //            val itemAmountStepper = itemLayout.findViewById(R.id.itemAmountStepper) as StepperTouch
+    //            itemAmountStepper.stepper.setMin(0)
+    //            itemAmountStepper.stepper.setValue(shoppingBagItem.amount)
+    //            itemAmountStepper.enableSideTap(true)
+    //            itemAmountStepper.stepper.addStepCallback(object : OnStepCallback {
+    //                override fun onStep(value: Int, positive: Boolean) {
+    //                    setShoppingCardItemAmount(shoppingBagItem.product, shoppingBagItem.withDeposit, value, false)
+    //                }
+    //            })
+    //
+    //            shoppingCartItemsLayout.addView(itemLayout)
+    //        }
+    //    }
 
     /**
      * Shows a detail view of the specified product
@@ -278,7 +286,8 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
      * @param withDeposit true, if deposit should be added to price
      * @param updateCartVisibility if set to true, the shopping cart bottom sheet visibility will be updated
      */
-    fun addItemToShoppingCart(productEntity: ProductEntity, withDeposit: Boolean, updateCartVisibility: Boolean = true) {
+    fun addItemToShoppingCart(productEntity: ProductEntity, withDeposit: Boolean,
+                              updateCartVisibility: Boolean = true) {
         val oldTotalPrice = shoppingCart.getTotalPrice()
         shoppingCart.add(productEntity, 1, withDeposit)
         updateShoppingCart(oldTotalPrice, updateCartVisibility)
@@ -291,7 +300,8 @@ class ProductsFragment : ListFragmentBase<ProductModel, ProductEntity>() {
      * @param withDeposit true, if deposit should be added to price
      * @param updateCartVisibility if set to true, the shopping cart bottom sheet visibility will be updated
      */
-    fun setShoppingCardItemAmount(productEntity: ProductEntity, withDeposit: Boolean, amount: Int, updateCartVisibility: Boolean = true) {
+    fun setShoppingCardItemAmount(productEntity: ProductEntity, withDeposit: Boolean, amount: Int,
+                                  updateCartVisibility: Boolean = true) {
         val oldTotalPrice = shoppingCart.getTotalPrice()
         shoppingCart.set(productEntity, amount, withDeposit)
         updateShoppingCart(oldTotalPrice, updateCartVisibility)

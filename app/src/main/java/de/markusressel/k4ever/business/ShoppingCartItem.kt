@@ -2,12 +2,12 @@ package de.markusressel.k4ever.business
 
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 
-data class CartItem(val product: ProductEntity, var amount: Int, val withDeposit: Boolean)
+data class ShoppingCartItem(val product: ProductEntity, var amount: Int, val withDeposit: Boolean)
 
 /**
- * Get the price for a shopping bag item, taking amount and deposit into account
+ * Get the price for a shopping cart item, taking amount and deposit into account
  */
-fun CartItem.getPrice(): Double {
+fun ShoppingCartItem.getPrice(): Double {
     var price = product.price
     if (this.withDeposit) {
         price += product.deposit

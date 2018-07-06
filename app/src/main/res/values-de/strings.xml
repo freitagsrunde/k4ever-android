@@ -8,6 +8,7 @@
     <string name="favorite">Favorit</string>
     <string name="checkout">Kasse</string>
 
+    <string name="name">Name</string>
     <string name="overview">Übersicht</string>
     <string name="balance_history">Kontostand</string>
     <string name="withdraw_money">Abheben</string>
