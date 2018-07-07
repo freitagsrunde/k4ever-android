@@ -22,4 +22,8 @@
     <color name="cardview_backgroundDark">@color/md_grey_800</color>
     <color name="cardview_backgroundLight">@color/md_white_1000</color>
 
+    <!-- Preferences -->
+    <color name="preference_item__default_icon_colorDark">@color/md_grey_200</color>
+    <color name="preference_item__default_icon_colorLight">@color/md_grey_900</color>
+
 </resources>

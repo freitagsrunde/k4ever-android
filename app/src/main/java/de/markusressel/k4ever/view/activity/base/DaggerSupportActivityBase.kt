@@ -13,10 +13,11 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasFragmentInjector
 import dagger.android.support.HasSupportFragmentInjector
+import de.markusressel.k4ever.R
 import de.markusressel.k4ever.navigation.Navigator
 import de.markusressel.k4ever.view.IconHandler
 import de.markusressel.k4ever.view.ThemeHelper
-import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
+import de.markusressel.kutepreferences.library.persistence.KutePreferenceDataProvider
 import kotlinx.android.synthetic.main.view__toolbar.*
 import javax.inject.Inject
 
@@ -34,7 +35,7 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
     internal lateinit var navigator: Navigator
 
     @Inject
-    lateinit var kutePreferencesHolder: KutePreferencesHolder
+    lateinit var preferencesDataProvider: KutePreferenceDataProvider
 
     @Inject
     lateinit var iconHandler: IconHandler
@@ -111,9 +112,8 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
     }
 
     private fun initTheme() {
-        val theme = kutePreferencesHolder
-                .themePreference
-                .persistedValue
+        val theme = preferencesDataProvider.getValueUnsafe(R.string.theme_key,
+                getString(R.string.theme_dark_value))
 
         if (style == DIALOG) {
             // TODO: Dialog theming

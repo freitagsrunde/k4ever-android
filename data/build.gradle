@@ -63,7 +63,7 @@ dependencies {
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
 
     // Preferences
-    api('com.github.markusressel:KutePreferences:v1.0.2') {
+    api('com.github.markusressel:KutePreferences:v1.2.0') {
         exclude module: 'app'
         transitive = true
     }
