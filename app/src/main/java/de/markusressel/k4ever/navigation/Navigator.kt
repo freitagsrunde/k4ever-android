@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.navigation
 
 import android.content.Context
@@ -31,8 +48,7 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
             return if (stateStack.isEmpty()) {
                 NavigationState(INITIAL_PAGE, NavigationPageHolder.ProductsList)
             } else {
-                stateStack
-                        .peek()
+                stateStack.peek()
             }
         }
 
@@ -59,9 +75,7 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
         drawerMenuItem.navigationPage.tag!!
 
         // initiate transaction
-        var transaction: FragmentTransaction = activity
-                .supportFragmentManager
-                .beginTransaction()
+        var transaction: FragmentTransaction = activity.supportFragmentManager.beginTransaction()
 
         // try to find previous fragment
         //        if (lastPageTag != null && lastPageTag == page.tag) {
@@ -72,34 +86,23 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
         newFragment = drawerMenuItem.navigationPage.fragment!!()
         //        }
 
-        newFragment
-                .arguments = bundle
+        newFragment.arguments = bundle
 
         if (stateStack.isNotEmpty()) {
-            transaction = transaction
-                    .addToBackStack(null)
+            transaction = transaction.addToBackStack(null)
         }
 
-        transaction
-                .replace(R.id.contentLayout, newFragment, drawerMenuItem.navigationPage.tag)
-                .commit()
-        activity
-                .supportFragmentManager
-                .executePendingTransactions()
+        transaction.replace(R.id.contentLayout, newFragment, drawerMenuItem.navigationPage.tag).commit()
+        activity.supportFragmentManager.executePendingTransactions()
 
-        activity
-                .setTitle(drawerMenuItem.title)
-        drawer
-                .setSelection(drawerMenuItem.identifier, false)
+        activity.setTitle(drawerMenuItem.title)
+        drawer.setSelection(drawerMenuItem.identifier, false)
 
         // remember page stack
         val newState = NavigationState(drawerMenuItem, drawerMenuItem.navigationPage)
-        stateStack
-                .push(newState)
+        stateStack.push(newState)
 
-        return drawerMenuItem
-                .navigationPage
-                .tag
+        return drawerMenuItem.navigationPage.tag
     }
 
     /**
@@ -115,39 +118,26 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
             return
         }
 
-        val intent = page
-                .createIntent(activityContext)
-        flags
-                ?.let {
-                    intent
-                            .addFlags(it)
-                }
+        val intent = page.createIntent(activityContext)
+        flags?.let {
+            intent.addFlags(it)
+        }
 
-        activityContext
-                .startActivity(intent)
+        activityContext.startActivity(intent)
     }
 
     private fun navigateToAbout(activityContext: Context) {
-        val themeVal = kutePreferencesHolder
-                .themePreference
-                .persistedValue
+        val themeVal = kutePreferencesHolder.themePreference.persistedValue
 
         val aboutLibTheme: Libs.ActivityStyle
         aboutLibTheme = if (themeVal == activityContext.getString(R.string.theme_light_value)) {
-            Libs
-                    .ActivityStyle
-                    .LIGHT_DARK_TOOLBAR
+            Libs.ActivityStyle.LIGHT_DARK_TOOLBAR
         } else {
-            Libs
-                    .ActivityStyle
-                    .DARK
+            Libs.ActivityStyle.DARK
         }
 
-        LibsBuilder()
-                .withActivityStyle(aboutLibTheme)
-                .withActivityColor(Colors(ContextCompat.getColor(activityContext, R.color.colorPrimary), ContextCompat.getColor(activityContext, R.color.colorPrimaryDark)))
-                .withActivityTitle(activityContext.getString(R.string.menu_item_about))
-                .start(activityContext)
+        LibsBuilder().withActivityStyle(aboutLibTheme).withActivityColor(Colors(ContextCompat.getColor(activityContext, R.color.colorPrimary), ContextCompat.getColor(activityContext, R.color.colorPrimaryDark)))
+                .withActivityTitle(activityContext.getString(R.string.menu_item_about)).start(activityContext)
     }
 
     /**
@@ -161,22 +151,16 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
         }
 
         // remove current state
-        stateStack
-                .pop()
+        stateStack.pop()
 
         // navigate to previous one if there is one
         if (stateStack.isNotEmpty()) {
-            val previousState = stateStack
-                    .peek()
+            val previousState = stateStack.peek()
 
-            activity
-                    .supportFragmentManager
-                    .popBackStack()
+            activity.supportFragmentManager.popBackStack()
 
-            activity
-                    .setTitle(previousState.drawerMenuItem.title)
-            drawer
-                    .setSelection(previousState.drawerMenuItem.identifier, false)
+            activity.setTitle(previousState.drawerMenuItem.title)
+            drawer.setSelection(previousState.drawerMenuItem.identifier, false)
 
             return previousState
         }
@@ -192,8 +176,7 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
         val DrawerItems = DrawerItemHolder
         val NavigationPages = NavigationPageHolder
 
-        val INITIAL_PAGE = DrawerItemHolder
-                .ProductList
+        val INITIAL_PAGE = DrawerItemHolder.ProductList
     }
 
 }

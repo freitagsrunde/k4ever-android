@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.view.component
 
 import android.content.Context
@@ -45,12 +62,9 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
         contentView = container
 
         val rootView = createWrapperLayout()
-        loadingLayout = rootView
-                .findViewById(R.id.layoutLoading)
-        errorLayout = rootView
-                .findViewById(R.id.layoutError)
-        errorDescription = errorLayout
-                .findViewById(R.id.errorDescription)
+        loadingLayout = rootView.findViewById(R.id.layoutLoading)
+        errorLayout = rootView.findViewById(R.id.layoutError)
+        errorDescription = errorLayout.findViewById(R.id.errorDescription)
 
         return rootView
     }
@@ -59,15 +73,12 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
         val baseLayout = FrameLayout(context)
 
         // attach the original content view
-        contentView
-                ?.let {
-                    baseLayout
-                            .addView(contentView)
-                }
+        contentView?.let {
+            baseLayout.addView(contentView)
+        }
 
         // inflate "layout_loading" and "layout_error" layouts and attach it to a newly created layout
-        val layoutInflater = LayoutInflater
-                .from(context)
+        val layoutInflater = LayoutInflater.from(context)
         layoutInflater.inflate(R.layout.layout_error, baseLayout, true) as ViewGroup
         layoutInflater.inflate(R.layout.layout_loading, baseLayout, true) as ViewGroup
 
@@ -89,14 +100,13 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
     fun showContent(animated: Boolean = true) {
         setViewVisibility(errorLayout, View.GONE)
 
-        contentView
-                ?.let {
-                    if (animated) {
-                        fadeView(it, 1f)
-                    } else {
-                        setViewVisibility(it, View.VISIBLE)
-                    }
-                }
+        contentView?.let {
+            if (animated) {
+                fadeView(it, 1f)
+            } else {
+                setViewVisibility(it, View.VISIBLE)
+            }
+        }
 
         if (animated) {
             fadeView(loadingLayout, 0f)
@@ -104,10 +114,9 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
             setViewVisibility(loadingLayout, View.GONE)
         }
 
-        onShowContent
-                ?.let {
-                    it(animated)
-                }
+        onShowContent?.let {
+            it(animated)
+        }
     }
 
     /**
@@ -142,11 +151,9 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
     }
 
     private fun showError(message: String, throwable: Throwable? = null) {
-        throwable
-                ?.let {
-                    Timber
-                            .e(throwable) { message }
-                }
+        throwable?.let {
+            Timber.e(throwable) { message }
+        }
         val errorDescriptionText: CharSequence = throwable?.let {
             var text = ""
 
@@ -156,56 +163,42 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
 
             text += "${throwable.javaClass.simpleName}\n"
 
-            throwable
-                    .message
-                    ?.let {
-                        if (it.isNotEmpty()) text += it
-                    }
+            throwable.message?.let {
+                if (it.isNotEmpty()) text += it
+            }
 
             text
         } ?: message
 
-        errorDescription
-                .text = errorDescriptionText
+        errorDescription.text = errorDescriptionText
 
-        RxView
-                .clicks(errorLayout)
-                .bindToLifecycle(errorLayout)
-                .subscribe {
-                    onErrorClicked
-                            ?.let {
-                                it(message, throwable)
-                                return@subscribe
-                            }
+        RxView.clicks(errorLayout).bindToLifecycle(errorLayout).subscribe {
+                    onErrorClicked?.let {
+                        it(message, throwable)
+                        return@subscribe
+                    }
 
                     val contentText = throwable?.let {
                         message + "\n\n\n" + throwable.prettyPrint()
                     } ?: message
 
-                    MaterialDialog
-                            .Builder(context as Context)
-                            .title(R.string.error)
-                            .content(contentText)
-                            .positiveText(android.R.string.ok)
-                            .show()
+                    MaterialDialog.Builder(context as Context).title(R.string.error).content(contentText)
+                            .positiveText(android.R.string.ok).show()
                 }
 
         setViewVisibility(errorLayout, View.VISIBLE)
-        contentView
-                ?.let {
-                    fadeView(it, 0f)
-                }
+        contentView?.let {
+            fadeView(it, 0f)
+        }
         fadeView(loadingLayout, 0f)
 
-        onShowError
-                ?.let {
-                    it(message, throwable)
-                }
+        onShowError?.let {
+            it(message, throwable)
+        }
     }
 
     private fun setViewVisibility(view: View, visibility: Int) {
-        view
-                .visibility = visibility
+        view.visibility = visibility
     }
 
     private fun fadeView(view: View, alpha: Float) {
@@ -220,25 +213,14 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
             else -> FADE_DURATION_MS
         }
 
-        view
-                .animate()
-                .alpha(alpha)
-                .setDuration(duration)
-                .setInterpolator(interpolator)
-                .withStartAction {
+        view.animate().alpha(alpha).setDuration(duration).setInterpolator(interpolator).withStartAction {
                     if (alpha > 0) {
-                        view
-                                .alpha = 0f
-                        view
-                                .visibility = View
-                                .VISIBLE
+                        view.alpha = 0f
+                        view.visibility = View.VISIBLE
                     }
-                }
-                .withEndAction {
+                }.withEndAction {
                     if (alpha <= 0) {
-                        view
-                                .visibility = View
-                                .GONE
+                        view.visibility = View.GONE
                     }
                 }
     }

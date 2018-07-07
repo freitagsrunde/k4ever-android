@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.view.fragment.preferences.base
 
 import android.content.Context
@@ -19,100 +36,76 @@ import io.reactivex.subjects.BehaviorSubject
  */
 abstract class LifecyclePreferenceFragmentBase : DaggerKutePreferenceFragmentBase(), LifecycleProvider<FragmentEvent> {
 
-    private val lifecycleSubject: BehaviorSubject<FragmentEvent> = BehaviorSubject
-            .create()
+    private val lifecycleSubject: BehaviorSubject<FragmentEvent> = BehaviorSubject.create()
 
     @CheckResult
     override fun lifecycle(): Observable<FragmentEvent> {
-        return lifecycleSubject
-                .hide()
+        return lifecycleSubject.hide()
     }
 
     @CheckResult
     override fun <T> bindUntilEvent(event: FragmentEvent): LifecycleTransformer<T> {
-        return RxLifecycle
-                .bindUntilEvent(lifecycleSubject, event)
+        return RxLifecycle.bindUntilEvent(lifecycleSubject, event)
     }
 
     @CheckResult
     override fun <T> bindToLifecycle(): LifecycleTransformer<T> {
-        return RxLifecycleAndroid
-                .bindFragment(lifecycleSubject)
+        return RxLifecycleAndroid.bindFragment(lifecycleSubject)
     }
 
     override fun onAttach(context: Context) {
-        super
-                .onAttach(context)
-        lifecycleSubject
-                .onNext(FragmentEvent.ATTACH)
+        super.onAttach(context)
+        lifecycleSubject.onNext(FragmentEvent.ATTACH)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super
-                .onCreate(savedInstanceState)
-        lifecycleSubject
-                .onNext(FragmentEvent.CREATE)
+        super.onCreate(savedInstanceState)
+        lifecycleSubject.onNext(FragmentEvent.CREATE)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super
-                .onViewCreated(view, savedInstanceState)
-        lifecycleSubject
-                .onNext(FragmentEvent.CREATE_VIEW)
+        super.onViewCreated(view, savedInstanceState)
+        lifecycleSubject.onNext(FragmentEvent.CREATE_VIEW)
     }
 
     @CallSuper
     override fun onStart() {
-        super
-                .onStart()
-        lifecycleSubject
-                .onNext(FragmentEvent.START)
+        super.onStart()
+        lifecycleSubject.onNext(FragmentEvent.START)
     }
 
     @CallSuper
     override fun onResume() {
-        super
-                .onResume()
-        lifecycleSubject
-                .onNext(FragmentEvent.RESUME)
+        super.onResume()
+        lifecycleSubject.onNext(FragmentEvent.RESUME)
     }
 
     @CallSuper
     override fun onPause() {
-        lifecycleSubject
-                .onNext(FragmentEvent.PAUSE)
-        super
-                .onPause()
+        lifecycleSubject.onNext(FragmentEvent.PAUSE)
+        super.onPause()
     }
 
     @CallSuper
     override fun onStop() {
-        lifecycleSubject
-                .onNext(FragmentEvent.STOP)
-        super
-                .onStop()
+        lifecycleSubject.onNext(FragmentEvent.STOP)
+        super.onStop()
     }
 
     override fun onDestroyView() {
-        lifecycleSubject
-                .onNext(FragmentEvent.DESTROY_VIEW)
-        super
-                .onDestroyView()
+        lifecycleSubject.onNext(FragmentEvent.DESTROY_VIEW)
+        super.onDestroyView()
     }
 
     @CallSuper
     override fun onDestroy() {
-        lifecycleSubject
-                .onNext(FragmentEvent.DESTROY)
-        super
-                .onDestroy()
+        lifecycleSubject.onNext(FragmentEvent.DESTROY)
+        super.onDestroy()
     }
 
     override fun onDetach() {
-        lifecycleSubject
-                .onNext(FragmentEvent.DETACH)
-        super
-                .onDetach()
+        lifecycleSubject.onNext(FragmentEvent.DETACH)
+        super.onDetach()
     }
 
 }

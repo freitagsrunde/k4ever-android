@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.view
 
 import android.content.Context
@@ -35,8 +52,7 @@ class IconHandler @Inject constructor() {
      * @return the icon
      */
     fun getNavigationIcon(icon: IIcon): IconicsDrawable {
-        val color = themeHelper
-                .getThemeAttrColor(context, android.R.attr.textColorPrimary)
+        val color = themeHelper.getThemeAttrColor(context, android.R.attr.textColorPrimary)
         return getIcon(icon, color, 24)
     }
 
@@ -48,35 +64,8 @@ class IconHandler @Inject constructor() {
      * @return the icon
      */
     fun getBottomNavigationIcon(icon: IIcon): IconicsDrawable {
-        val color = themeHelper
-                .getThemeAttrColor(context, android.R.attr.textColorPrimary)
+        val color = themeHelper.getThemeAttrColor(context, android.R.attr.textColorPrimary)
         return getIcon(icon, color, 48)
-    }
-
-    /**
-     * Get an icon suitable for a simple page of the wizard
-     *
-     * @param icon the icon resource
-     *
-     * @return the icon
-     */
-    fun getWizardIcon(icon: IIcon): IconicsDrawable {
-        val color = themeHelper
-                .getThemeAttrColor(context, android.R.attr.textColorPrimary)
-        return getIcon(icon, color, 64)
-    }
-
-    /**
-     * Get an icon suitable for the ConfigurationDialog control bar
-     *
-     * @param icon the icon resource
-     *
-     * @return the icon
-     */
-    fun getConfigurationDialogControlBarIcon(icon: IIcon): IconicsDrawable {
-        val color = themeHelper
-                .getThemeAttrColor(context, android.R.attr.textColorPrimary)
-        return getIcon(icon, color, 36)
     }
 
     /**
@@ -87,8 +76,7 @@ class IconHandler @Inject constructor() {
      * @return the icon
      */
     fun getFabIcon(icon: IIcon): IconicsDrawable {
-        val color = Color
-                .WHITE
+        val color = Color.WHITE
         return getIcon(icon, color, 24, 5)
     }
 
@@ -102,8 +90,7 @@ class IconHandler @Inject constructor() {
     fun getOptionsMenuIcon(icon: IIcon): IconicsDrawable {
         //        val color = themeHelper
         //                .getThemeAttrColor(context, android.R.attr.textColorPrimary)
-        val color = ContextCompat
-                .getColor(context, android.R.color.white)
+        val color = ContextCompat.getColor(context, android.R.color.white)
 
         var padding = 0
         if (icon === MaterialDesignIconic.Icon.gmi_plus) {
@@ -119,16 +106,12 @@ class IconHandler @Inject constructor() {
      * @return an icon for a preference
      */
     fun getPreferenceIcon(icon: IIcon): Drawable {
-        val color = themeHelper.getThemeAttrColor(context,
-                R.attr.kute_preferences__setting__default_icon_color)
+        val color = themeHelper.getThemeAttrColor(context, R.attr.kute_preferences__setting__default_icon_color)
         return getIcon(icon, color = color, sizeDp = 36)
     }
 
     fun getIcon(icon: IIcon, @ColorInt color: Int, sizeDp: Int, paddingDp: Int = 0): IconicsDrawable {
-        return IconicsDrawable(context, icon)
-                .sizeDp(sizeDp)
-                .paddingDp(paddingDp)
-                .color(color)
+        return IconicsDrawable(context, icon).sizeDp(sizeDp).paddingDp(paddingDp).color(color)
     }
 
 }

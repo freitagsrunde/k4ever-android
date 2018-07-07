@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.view.fragment.products
 
 import android.animation.FloatEvaluator
@@ -45,8 +62,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
 
     override fun createAdapter(): LastAdapter {
-        return LastAdapter(listValues, BR.item).map<ProductEntity, ListItemProductBinding>(
-                R.layout.list_item__product) {
+        return LastAdapter(listValues, BR.item).map<ProductEntity, ListItemProductBinding>(R.layout.list_item__product) {
             onCreate {
                 it.binding.presenter = this@ProductsFragment
             }
@@ -75,8 +91,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
 
     override fun getAllSortCriteria(): List<SortOption<ProductEntity>> {
         // TODO sort options need to be persistable
-        return listOf(SortOption(0, R.string.favorite, { t -> !t.isFavorite }, false),
-                SortOption(0, R.string.name, { t -> t.name }, false))
+        return listOf(SortOption(0, R.string.favorite, { t -> !t.isFavorite }, false), SortOption(0, R.string.name, { t -> t.name }, false))
     }
 
     @Inject
@@ -130,8 +145,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     }
 
     private fun initShoppingCartList() {
-        shoppingCartItemsAdapter = LastAdapter(shoppingCart.items,
-                BR.item).map<ShoppingCartItem, ListItemCartItemBinding>(
+        shoppingCartItemsAdapter = LastAdapter(shoppingCart.items, BR.item).map<ShoppingCartItem, ListItemCartItemBinding>(
                 R.layout.list_item__cart_item) {
             onCreate {
                 it.binding.presenter = this@ProductsFragment
@@ -153,8 +167,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         val horizontalPadding = (elevation + (1 - cos45) * radius).toInt()
         //        val verticalPadding = (elevation * 1.5 + (1 - cos45) * radius).toInt()
 
-        shoppingCartBottomSheetBehaviour.peekHeight = (resources.getDimension(
-                R.dimen.shopping_bag__peek_height) + horizontalPadding).toInt()
+        shoppingCartBottomSheetBehaviour.peekHeight = (resources.getDimension(R.dimen.shopping_bag__peek_height) + horizontalPadding).toInt()
     }
 
     private fun updateShoppingCart(oldTotalPrice: Double, updateVisibility: Boolean = true) {
@@ -226,14 +239,12 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                     shoppingCart.getTotalItemCount(), animation.animatedValue as Float)
         }
 
-        val totalPriceSizeAnimator = ValueAnimator.ofFloat(
-                totalItemCountAndCost.textSize.pxToSp(context()), (normalPriceSize + 4),
+        val totalPriceSizeAnimator = ValueAnimator.ofFloat(totalItemCountAndCost.textSize.pxToSp(context()), (normalPriceSize + 4),
                 normalPriceSize)
         totalPriceSizeAnimator.duration = TOTAL_PRICE_ANIMATION_DURATION
         totalPriceSizeAnimator.interpolator = FastOutSlowInInterpolator()
         totalPriceSizeAnimator.addUpdateListener { animation ->
-            totalItemCountAndCost.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                    animation.animatedValue as Float)
+            totalItemCountAndCost.setTextSize(TypedValue.COMPLEX_UNIT_SP, animation.animatedValue as Float)
         }
 
         totalPriceAnimator.start()

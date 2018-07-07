@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.view.fragment.moneytransfer
 
 import android.annotation.SuppressLint
@@ -32,40 +49,32 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
     }
 
     override fun initComponents(context: Context) {
-        super
-                .initComponents(context)
+        super.initComponents(context)
         optionsMenuComponent
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super
-                .onCreateOptionsMenu(menu, inflater)
-        optionsMenuComponent
-                .onCreateOptionsMenu(menu, inflater)
+        super.onCreateOptionsMenu(menu, inflater)
+        optionsMenuComponent.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (super.onOptionsItemSelected(item)) {
             return true
         }
-        return optionsMenuComponent
-                .onOptionsItemSelected(item)
+        return optionsMenuComponent.onOptionsItemSelected(item)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super
-                .onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
 
-        val host = preferencesHolder
-                .connectionUriPreference
-                .persistedValue
+        val host = preferencesHolder.connectionUriPreference.persistedValue
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super
-                .onViewCreated(view, savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
 
         money_amount_edittext.setText("0,00")
         money_amount_edittext.addTextChangedListener(object : TextWatcher {
@@ -81,12 +90,10 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
                 val sourceAsDouble = s.toString().replace(",", ".").toDouble()
                 val result = df.format(sourceAsDouble).replace(".", ",")
 
-                money_amount_edittext
-                        .removeTextChangedListener(this)
+                money_amount_edittext.removeTextChangedListener(this)
                 money_amount_edittext.setText(result)
                 money_amount_edittext.setSelection(cursorIndexBeforeChange.coerceIn(0, result.length))
-                money_amount_edittext
-                        .addTextChangedListener(this)
+                money_amount_edittext.addTextChangedListener(this)
             }
 
             override fun afterTextChanged(s: Editable?) {

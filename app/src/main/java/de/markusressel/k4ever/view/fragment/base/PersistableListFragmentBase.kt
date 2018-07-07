@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.view.fragment.base
 
 import android.arch.lifecycle.Lifecycle
@@ -44,8 +61,7 @@ import javax.inject.Inject
 /**
  * Created by Markus on 29.01.2018.
  */
-abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFragmentBase()
-        where EntityType : IdentifiableListItem {
+abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFragmentBase() where EntityType : IdentifiableListItem {
 
     override val layoutRes: Int
         get() = R.layout.fragment__recyclerview
@@ -53,8 +69,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
     @Inject
     lateinit var restClient: K4EverRestClient
 
-    protected open val fabConfig: FabConfig = FabConfig(left = mutableListOf(),
-            right = mutableListOf())
+    protected open val fabConfig: FabConfig = FabConfig(left = mutableListOf(), right = mutableListOf())
     private val fabButtonViews = mutableListOf<FloatingActionButton>()
 
     protected val listValues: MutableList<EntityType> = ArrayList()
@@ -66,53 +81,34 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
         LoadingComponent(this, onShowContent = {
             updateFabVisibility(View.VISIBLE)
         }, onShowError = { message: String, throwable: Throwable? ->
-            layoutEmpty
-                    .visibility = View
-                    .GONE
+            layoutEmpty.visibility = View.GONE
             updateFabVisibility(View.INVISIBLE)
         })
     }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(
-                hostFragment = this,
-                optionsMenuRes = R.menu.options_menu_list,
+        OptionsMenuComponent(hostFragment = this, optionsMenuRes = R.menu.options_menu_list,
                 onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
                     // set refresh icon
-                    menu
-                            ?.findItem(R.id.refresh)
-                            ?.icon = iconHandler
-                            .getOptionsMenuIcon(
-                                    MaterialDesignIconic.Icon.gmi_refresh)
+                    menu?.findItem(R.id.refresh)?.icon = iconHandler.getOptionsMenuIcon(
+                            MaterialDesignIconic.Icon.gmi_refresh)
 
-                    val sortOptionMenuItem = menu
-                            ?.findItem(R.id.sortOrder)
-                    sortOptionMenuItem
-                            ?.let {
-                                it
-                                        .icon = iconHandler
-                                        .getOptionsMenuIcon(
-                                                MaterialDesignIconic.Icon.gmi_sort)
+                    val sortOptionMenuItem = menu?.findItem(R.id.sortOrder)
+                    sortOptionMenuItem?.let {
+                        it.icon = iconHandler.getOptionsMenuIcon(MaterialDesignIconic.Icon.gmi_sort)
 
-                                if (getAllSortCriteria().isEmpty()) {
-                                    sortOptionMenuItem
-                                            .isVisible = false
-                                }
-                            }
+                        if (getAllSortCriteria().isEmpty()) {
+                            sortOptionMenuItem.isVisible = false
+                        }
+                    }
 
                     val searchMenuItem = menu?.findItem(R.id.search)
-                    searchMenuItem?.icon = iconHandler
-                            .getOptionsMenuIcon(
-                                    MaterialDesignIconic.Icon.gmi_search)
+                    searchMenuItem?.icon = iconHandler.getOptionsMenuIcon(MaterialDesignIconic.Icon.gmi_search)
 
                     val searchView = searchMenuItem?.actionView as SearchView?
                     searchView?.let {
-                        RxSearchView
-                                .queryTextChanges(it)
-                                .skipInitialValue()
-                                .bindUntilEvent(this, Lifecycle.Event.ON_DESTROY)
-                                .debounce(300, TimeUnit.MILLISECONDS)
-                                .observeOn(AndroidSchedulers.mainThread())
+                        RxSearchView.queryTextChanges(it).skipInitialValue().bindUntilEvent(this, Lifecycle.Event.ON_DESTROY)
+                                .debounce(300, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
                                 .subscribeBy(onNext = {
                                     currentSearchFilter = it.toString()
                                     updateListFromPersistence()
@@ -137,64 +133,50 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
     }
 
     override fun initComponents(context: Context) {
-        super
-                .initComponents(context)
+        super.initComponents(context)
         loadingComponent
         optionsMenuComponent
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super
-                .onCreateOptionsMenu(menu, inflater)
-        optionsMenuComponent
-                .onCreateOptionsMenu(menu, inflater)
+        super.onCreateOptionsMenu(menu, inflater)
+        optionsMenuComponent.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (super.onOptionsItemSelected(item)) {
             return true
         }
-        return optionsMenuComponent
-                .onOptionsItemSelected(item)
+        return optionsMenuComponent.onOptionsItemSelected(item)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val parent = super.onCreateView(inflater, container, savedInstanceState) as ViewGroup
-        return loadingComponent
-                .onCreateView(inflater, parent, savedInstanceState)
+        return loadingComponent.onCreateView(inflater, parent, savedInstanceState)
     }
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super
-                .onViewCreated(view, savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
 
         recyclerViewAdapter = createAdapter()
 
-        recyclerView
-                .adapter = recyclerViewAdapter
-        val layoutManager = StaggeredGridLayoutManager(
-                resources.getInteger(R.integer.list_column_count),
+        recyclerView.adapter = recyclerViewAdapter
+        val layoutManager = StaggeredGridLayoutManager(resources.getInteger(R.integer.list_column_count),
                 StaggeredGridLayoutManager.VERTICAL)
-        recyclerView
-                .layoutManager = layoutManager
+        recyclerView.layoutManager = layoutManager
 
         setupFabs()
     }
 
     override fun onResume() {
-        super
-                .onResume()
+        super.onResume()
 
-        if (System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(
-                        5) > getLastUpdatedFromSource()) {
-            Timber
-                    .d { "Persisted list data is old, refreshing from source" }
+        if (System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5) > getLastUpdatedFromSource()) {
+            Timber.d { "Persisted list data is old, refreshing from source" }
             reloadDataFromSource()
         } else {
-            Timber
-                    .d { "Persisted list data is probably still valid, just loading from persistence" }
+            Timber.d { "Persisted list data is probably still valid, just loading from persistence" }
             updateListFromPersistence()
         }
 
@@ -202,24 +184,16 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
     }
 
     private fun setupFabs() {
-        fabConfig
-                .left
-                .addAll(getLeftFabs())
-        fabConfig
-                .right
-                .addAll(getRightFabs())
+        fabConfig.left.addAll(getLeftFabs())
+        fabConfig.right.addAll(getRightFabs())
 
         // setup fabs
-        fabConfig
-                .left
-                .forEach {
-                    addFab(true, it)
-                }
-        fabConfig
-                .right
-                .forEach {
-                    addFab(false, it)
-                }
+        fabConfig.left.forEach {
+            addFab(true, it)
+        }
+        fabConfig.right.forEach {
+            addFab(false, it)
+        }
 
         updateFabVisibility(View.VISIBLE)
     }
@@ -239,75 +213,55 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
     }
 
     private fun addFab(isLeft: Boolean, fab: FabConfig.Fab) {
-        val inflater = LayoutInflater
-                .from(context)
+        val inflater = LayoutInflater.from(context)
 
         val layout = when (isLeft) {
             true -> R.layout.view__fab_left
             false -> R.layout.view__fab_right
         }
 
-        val fabView: FloatingActionButton = inflater.inflate(layout,
-                recyclerView.parent as ViewGroup,
+        val fabView: FloatingActionButton = inflater.inflate(layout, recyclerView.parent as ViewGroup,
                 false) as FloatingActionButton
 
         // icon
-        fabView
-                .setImageDrawable(iconHandler.getFabIcon(fab.icon))
+        fabView.setImageDrawable(iconHandler.getFabIcon(fab.icon))
         // fab color
-        fab
-                .color
-                ?.let {
-                    fabView
-                            .backgroundTintList = ContextCompat
-                            .getColorStateList(context as Context, it)
-                }
+        fab.color?.let {
+            fabView.backgroundTintList = ContextCompat.getColorStateList(context as Context, it)
+        }
 
         // behaviour
         val fabBehavior = ScrollAwareFABBehavior()
         val params = fabView.layoutParams as CoordinatorLayout.LayoutParams
-        params
-                .behavior = fabBehavior
+        params.behavior = fabBehavior
 
         // listeners
-        RxView
-                .clicks(fabView)
-                .bindToLifecycle(fabView)
-                .subscribe {
+        RxView.clicks(fabView).bindToLifecycle(fabView).subscribe {
                     // execute defined action if it exists
                     val clickAction = fab.onClick
                     if (clickAction != null) {
                         clickAction()
                     } else {
-                        Toast
-                                .makeText(context as Context, getString(fab.description),
-                                        Toast.LENGTH_LONG)
+                        Toast.makeText(context as Context, getString(fab.description), Toast.LENGTH_LONG)
                                 .show()
                     }
                 }
 
-        RxView
-                .longClicks(fabView)
-                .bindToLifecycle(fabView)
-                .subscribe {
+        RxView.longClicks(fabView).bindToLifecycle(fabView).subscribe {
                     // execute defined action if it exists
                     val longClickAction = fab.onLongClick
                     if (longClickAction != null) {
                         longClickAction()
                     } else {
-                        Toast
-                                .makeText(context as Context, getString(fab.description),
-                                        Toast.LENGTH_LONG)
+                        Toast.makeText(context as Context, getString(fab.description), Toast.LENGTH_LONG)
                                 .show()
                     }
                 }
 
 
-        fabButtonViews
-                .add(fabView)
+        fabButtonViews.add(fabView)
         val parent = recyclerView.parent as ViewGroup
-        parent
-                .addView(fabView)
+        parent.addView(fabView)
     }
 
     /**
@@ -319,25 +273,18 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
      * Loads the data using {@link loadListDataFromPersistence()}
      */
     protected fun updateListFromPersistence() {
-        loadingComponent
-                .showLoading()
+        loadingComponent.showLoading()
 
-        Observable.fromIterable(loadListDataFromPersistence())
-                .filter {
-                    if (it is SearchableListItem) {
-                        return@filter it.getSearchableContent().any {
-                            it.toString().contains(currentSearchFilter, true)
-                        }
-                    } else {
-                        it.toString().contains(currentSearchFilter, true)
-                    }
+        Observable.fromIterable(loadListDataFromPersistence()).filter {
+            if (it is SearchableListItem) {
+                return@filter it.getSearchableContent().any {
+                    it.toString().contains(currentSearchFilter, true)
                 }
-                .toList()
-                .map { sortByCurrentOptions(it) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-                .subscribeBy(onSuccess = {
+            } else {
+                it.toString().contains(currentSearchFilter, true)
+            }
+        }.toList().map { sortByCurrentOptions(it) }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
                     val diffCallback = DiffCallback(listValues, it)
                     val diffResult = DiffUtil.calculateDiff(diffCallback)
 
@@ -349,17 +296,14 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
                     } else {
                         hideEmpty()
                     }
-                    loadingComponent
-                            .showContent()
+                    loadingComponent.showContent()
 
                     diffResult.dispatchUpdatesTo(recyclerViewAdapter)
                 }, onError = {
                     if (it is CancellationException) {
-                        Timber
-                                .d { "reload from persistence cancelled" }
+                        Timber.d { "reload from persistence cancelled" }
                     } else {
-                        loadingComponent
-                                .showError(it)
+                        loadingComponent.showError(it)
                     }
                 })
     }
@@ -382,20 +326,15 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
         }
 
         // extend it with other criteria
-        sortOptions
-                .drop(1)
-                .forEach { criteria ->
+        sortOptions.drop(1).forEach { criteria ->
                     comparator = if (criteria.reversed) {
-                        comparator
-                                .thenByDescending(criteria.selector)
+                        comparator.thenByDescending(criteria.selector)
                     } else {
-                        comparator
-                                .thenBy(criteria.selector)
+                        comparator.thenBy(criteria.selector)
                     }
                 }
 
-        return listData
-                .sortedWith(comparator)
+        return listData.sortedWith(comparator)
     }
 
     /**
@@ -422,43 +361,29 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
      * Reload list data asEntity it's original source, persist it and display it to the user afterwards
      */
     protected fun reloadDataFromSource() {
-        loadingComponent
-                .showLoading()
+        loadingComponent.showLoading()
 
-        loadListDataFromSource()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-                .subscribeBy(onSuccess = {
-                    it
-                            .toObservable()
-                            .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-                            .map {
+        loadListDataFromSource().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
+                    it.toObservable().bindUntilEvent(this, Lifecycle.Event.ON_STOP).map {
                                 mapToEntity(it)
-                            }
-                            .toList()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
+                            }.toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy(onSuccess = {
                                 persistListData(it)
                                 updateLastUpdatedFromSource()
                                 updateListFromPersistence()
                             }, onError = {
                                 if (it is CancellationException) {
-                                    Timber
-                                            .d { "persisting reload from source cancelled" }
+                                    Timber.d { "persisting reload from source cancelled" }
                                 } else {
-                                    loadingComponent
-                                            .showError(it)
+                                    loadingComponent.showError(it)
                                 }
                             })
                 }, onError = {
                     if (it is CancellationException) {
-                        Timber
-                                .d { "reload from source cancelled" }
+                        Timber.d { "reload from source cancelled" }
                     } else {
-                        loadingComponent
-                                .showError(it)
+                        loadingComponent.showError(it)
                     }
                 })
     }
@@ -474,18 +399,13 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
     protected abstract fun getPersistenceHandler(): PersistenceManagerBase<EntityType>
 
     private fun persistListData(data: List<EntityType>) {
-        getPersistenceHandler()
-                .standardOperation()
-                .removeAll()
-        getPersistenceHandler()
-                .standardOperation()
-                .put(data)
+        getPersistenceHandler().standardOperation().removeAll()
+        getPersistenceHandler().standardOperation().put(data)
     }
 
     private fun getLastUpdatedFromSource(): Long {
         // TODO:
-        val entityModelId = getPersistenceHandler()
-                .getEntityModelId()
+        val entityModelId = getPersistenceHandler().getEntityModelId()
 //        return lastUpdatedManager
 //                .getLastUpdated(entityModelId.toLong())
         return 0
@@ -493,28 +413,19 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
 
     private fun updateLastUpdatedFromSource() {
         // TODO:
-        val entityModelId = getPersistenceHandler()
-                .getEntityModelId()
+        val entityModelId = getPersistenceHandler().getEntityModelId()
 //        lastUpdatedManager
 //                .setUpdatedNow(entityModelId.toLong())
     }
 
     private fun showEmpty() {
-        recyclerView
-                .visibility = View
-                .INVISIBLE
-        layoutEmpty
-                .visibility = View
-                .VISIBLE
+        recyclerView.visibility = View.INVISIBLE
+        layoutEmpty.visibility = View.VISIBLE
     }
 
     private fun hideEmpty() {
-        recyclerView
-                .visibility = View
-                .VISIBLE
-        layoutEmpty
-                .visibility = View
-                .INVISIBLE
+        recyclerView.visibility = View.VISIBLE
+        layoutEmpty.visibility = View.INVISIBLE
     }
 
     /**
@@ -522,9 +433,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
      */
     open fun loadListDataFromPersistence(): List<EntityType> {
         val persistenceHandler = getPersistenceHandler()
-        return persistenceHandler
-                .standardOperation()
-                .all
+        return persistenceHandler.standardOperation().all
     }
 
     /**
@@ -534,19 +443,13 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
 
     private fun updateFabVisibility(visible: Int) {
         if (visible == View.VISIBLE) {
-            fabButtonViews
-                    .forEach {
-                        it
-                                .visibility = View
-                                .VISIBLE
-                    }
+            fabButtonViews.forEach {
+                it.visibility = View.VISIBLE
+            }
         } else {
-            fabButtonViews
-                    .forEach {
-                        it
-                                .visibility = View
-                                .INVISIBLE
-                    }
+            fabButtonViews.forEach {
+                it.visibility = View.INVISIBLE
+            }
         }
     }
 

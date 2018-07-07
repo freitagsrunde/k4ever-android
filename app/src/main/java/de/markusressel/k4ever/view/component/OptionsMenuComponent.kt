@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.view.component
 
 import android.arch.lifecycle.Lifecycle
@@ -20,31 +37,23 @@ class OptionsMenuComponent(hostFragment: LifecycleFragmentBase,
                            @get:MenuRes val optionsMenuRes: Int, val onOptionsMenuItemClicked: ((item: MenuItem) -> Boolean)? = null, val onCreateOptionsMenu: ((menu: Menu?, inflater: MenuInflater?) -> Unit)? = null) : FragmentComponent(hostFragment) {
 
     init {
-        hostFragment
-                .lifecycle()
-                .filter {
-                    setOf(FragmentEvent.CREATE, FragmentEvent.RESUME, FragmentEvent.DESTROY)
-                            .contains(it)
-                }
-                .bindUntilEvent(hostFragment, Lifecycle.Event.ON_DESTROY)
-                .subscribeBy(onNext = {
+        hostFragment.lifecycle().filter {
+                    setOf(FragmentEvent.CREATE, FragmentEvent.RESUME, FragmentEvent.DESTROY).contains(it)
+                }.bindUntilEvent(hostFragment, Lifecycle.Event.ON_DESTROY).subscribeBy(onNext = {
                     when (it) {
                         FragmentEvent.CREATE -> {
-                            hostFragment
-                                    .setHasOptionsMenu(true)
+                            hostFragment.setHasOptionsMenu(true)
                         }
                     }
                 })
     }
 
     fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater
-                ?.inflate(optionsMenuRes, menu)
+        inflater?.inflate(optionsMenuRes, menu)
 
-        onCreateOptionsMenu
-                ?.let {
-                    it(menu, inflater)
-                }
+        onCreateOptionsMenu?.let {
+            it(menu, inflater)
+        }
     }
 
     fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -52,10 +61,9 @@ class OptionsMenuComponent(hostFragment: LifecycleFragmentBase,
             return false
         }
 
-        onOptionsMenuItemClicked
-                ?.let {
-                    return it(item)
-                }
+        onOptionsMenuItemClicked?.let {
+            return it(item)
+        }
 
         return false
     }

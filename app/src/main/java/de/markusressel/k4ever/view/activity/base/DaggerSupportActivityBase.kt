@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.view.activity.base
 
 import android.os.Bundle
@@ -65,8 +82,7 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection
-                .inject(this)
+        AndroidInjection.inject(this)
 
         // set Theme before anything else in onCreate();
         initTheme()
@@ -80,18 +96,15 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
             supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         }
 
-        super
-                .onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
 
         // inflate view manually so it can be altered in plugins
-        val contentView = layoutInflater
-                .inflate(layoutRes, null)
+        val contentView = layoutInflater.inflate(layoutRes, null)
         setContentView(contentView)
 
         setSupportActionBar(toolbar)
 
-        supportActionBar
-                ?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
     }
 
@@ -99,16 +112,14 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
      * Show the status bar
      */
     protected fun showStatusBar() {
-        window
-                .clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
     /**
      * Hide the status bar
      */
     protected fun hideStatusBar() {
-        window
-                .setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
     private fun initTheme() {
@@ -117,13 +128,11 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
 
         if (style == DIALOG) {
             // TODO: Dialog theming
-            Timber
-                    .w { "Dialog Theming is not yet supported" }
+            Timber.w { "Dialog Theming is not yet supported" }
             //            themeHelper
             //                    .applyDialogTheme(this, theme) //set up notitle
         } else {
-            themeHelper
-                    .applyTheme(this, theme)
+            themeHelper.applyTheme(this, theme)
         }
     }
 

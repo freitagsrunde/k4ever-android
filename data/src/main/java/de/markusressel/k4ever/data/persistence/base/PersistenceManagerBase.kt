@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.data.persistence.base
 
 import io.objectbox.Box
@@ -17,19 +34,16 @@ open class PersistenceManagerBase<EntityType : Any>(val entityType: KClass<Entit
     protected lateinit var boxStore: BoxStore
 
     private val box: Box<EntityType> by lazy {
-        boxStore
-                .boxFor(entityType)
+        boxStore.boxFor(entityType)
     }
 
     /**
      * Get the model id for this entity type (same for all entities of equal class type without dependency on the class name)
      */
     fun getEntityModelId(): Int {
-        val entityClass: Class<EntityType> = entityType
-                .java
+        val entityClass: Class<EntityType> = entityType.java
 
-        return boxStore
-                .getEntityTypeIdOrThrow(entityClass)
+        return boxStore.getEntityTypeIdOrThrow(entityClass)
     }
 
     /**
@@ -43,8 +57,7 @@ open class PersistenceManagerBase<EntityType : Any>(val entityType: KClass<Entit
      * Removes database files entirely
      */
     fun clearData() {
-        boxStore
-                .deleteAllFiles()
+        boxStore.deleteAllFiles()
     }
 
 }

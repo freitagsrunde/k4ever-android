@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2018 Markus Ressel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.markusressel.k4ever.rest
 
 import android.util.Log
@@ -36,27 +53,22 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * Adds loggers to Fuel requests
      */
     private fun addLogger() {
-        fuelManager
-                .addResponseInterceptor { next: (Request, Response) -> Response ->
-                    { req: Request, res: Response ->
-                        Log
-                                .v("Fuel-Request", req.toString())
-                        Log
-                                .v("Fuel-Response", res.toString())
-                        next(req, res)
-                    }
-                }
+        fuelManager.addResponseInterceptor { next: (Request, Response) -> Response ->
+            { req: Request, res: Response ->
+                Log.v("Fuel-Request", req.toString())
+                Log.v("Fuel-Response", res.toString())
+                next(req, res)
+            }
+        }
     }
 
     /**
      * Updates the base URL in Fuel client according to configuration parameters
      */
     private fun updateBaseUrl() {
-        fuelManager
-                .basePath = "http://$hostname"
+        fuelManager.basePath = "http://$hostname"
         if (apiResource.isNotEmpty()) {
-            fuelManager
-                    .basePath = fuelManager.basePath + "/$apiResource/"
+            fuelManager.basePath = fuelManager.basePath + "/$apiResource/"
         }
     }
 
@@ -75,11 +87,9 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * Applies basic authentication parameters to a request
      */
     private fun getAuthenticatedRequest(request: Request): Request {
-        basicAuthConfig
-                ?.let {
-                    return request
-                            .authenticate(username = it.username, password = it.password)
-                }
+        basicAuthConfig?.let {
+            return request.authenticate(username = it.username, password = it.password)
+        }
 
         return request
     }
@@ -91,18 +101,12 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param method the request type (f.ex. GET)
      */
     fun doRequest(url: String, method: Method): Single<Pair<Response, Result<ByteArray, FuelError>>> {
-        return createRequest(url = url, method = method)
-                .rx_response()
-                .map {
-                    it
-                            .second
-                            .component2()
-                            ?.let {
+        return createRequest(url = url, method = method).rx_response().map {
+                    it.second.component2()?.let {
                                 throw it
                             }
                     it
-                }
-                .map {
+                }.map {
                     it
                 }
     }
@@ -115,9 +119,7 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param deserializer a deserializer for the response json body
      */
     fun <T : Any> doRequest(url: String, method: Method, deserializer: ResponseDeserializable<T>): Single<T> {
-        return createRequest(url = url, method = method)
-                .rx_object(deserializer)
-                .map {
+        return createRequest(url = url, method = method).rx_object(deserializer).map {
                     it.component1() ?: throw it.component2() ?: throw Exception()
                 }
     }
@@ -131,8 +133,7 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param deserializer a deserializer for the <b>response</b> json body
      */
     fun <T : Any> doRequest(url: String, urlParameters: List<Pair<String, Any?>>, method: Method, deserializer: ResponseDeserializable<T>): Single<T> {
-        return createRequest(url = url, urlParameters = urlParameters, method = method)
-                .rx_object(deserializer)
+        return createRequest(url = url, urlParameters = urlParameters, method = method).rx_object(deserializer)
                 .map {
                     it.component1() ?: throw it.component2() ?: throw Exception()
                 }
@@ -147,14 +148,10 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param deserializer a deserializer for the <b>response</b> json body
      */
     fun <T : Any> doJsonRequest(url: String, method: Method, jsonData: Any, deserializer: ResponseDeserializable<T>): Single<T> {
-        val json = Gson()
-                .toJson(jsonData)
+        val json = Gson().toJson(jsonData)
 
-        return createRequest(url = url, method = method)
-                .body(json)
-                .header(HEADER_CONTENT_TYPE_JSON)
-                .rx_object(deserializer)
-                .map {
+        return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
+                .rx_object(deserializer).map {
                     it.component1() ?: throw it.component2() ?: throw Exception()
                 }
     }
@@ -167,12 +164,9 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param jsonData an Object that will be serialized to json
      */
     fun doJsonRequest(url: String, method: Method, jsonData: Any): Single<Pair<Response, Result<ByteArray, FuelError>>> {
-        val json = Gson()
-                .toJson(jsonData)
+        val json = Gson().toJson(jsonData)
 
-        return createRequest(url = url, method = method)
-                .body(json)
-                .header(HEADER_CONTENT_TYPE_JSON)
+        return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
                 .rx_response()
     }
 
