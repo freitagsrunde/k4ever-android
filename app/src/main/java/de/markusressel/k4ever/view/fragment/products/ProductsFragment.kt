@@ -45,6 +45,8 @@ import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_cart.*
+import kotlinx.android.synthetic.main.list_item__cart_item.view.*
+import nl.dionsegijn.steppertouch.OnStepCallback
 import javax.inject.Inject
 
 
@@ -62,7 +64,8 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
 
     override fun createAdapter(): LastAdapter {
-        return LastAdapter(listValues, BR.item).map<ProductEntity, ListItemProductBinding>(R.layout.list_item__product) {
+        return LastAdapter(listValues, BR.item).map<ProductEntity, ListItemProductBinding>(
+                R.layout.list_item__product) {
             onCreate {
                 it.binding.presenter = this@ProductsFragment
             }
@@ -91,7 +94,8 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
 
     override fun getAllSortCriteria(): List<SortOption<ProductEntity>> {
         // TODO sort options need to be persistable
-        return listOf(SortOption(0, R.string.favorite, { t -> !t.isFavorite }, false), SortOption(0, R.string.name, { t -> t.name }, false))
+        return listOf(SortOption(0, R.string.favorite, { t -> !t.isFavorite }, false),
+                SortOption(0, R.string.name, { t -> t.name }, false))
     }
 
     @Inject
@@ -118,7 +122,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         setCardViewPeekHeight()
 
         initShoppingCartList()
-        updateShoppingCart(0.0)
+        updateShoppingCart(oldTotalPrice = 0.0, notifyListAdapter = false)
 
         shoppingCartBottomSheetBehaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -145,13 +149,36 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     }
 
     private fun initShoppingCartList() {
-        shoppingCartItemsAdapter = LastAdapter(shoppingCart.items, BR.item).map<ShoppingCartItem, ListItemCartItemBinding>(
+        shoppingCartItemsAdapter = LastAdapter(shoppingCart.items,
+                BR.item).map<ShoppingCartItem, ListItemCartItemBinding>(
                 R.layout.list_item__cart_item) {
             onCreate {
                 it.binding.presenter = this@ProductsFragment
+
+                val stepper = it.binding.root.productAmountStepper
+                stepper.enableSideTap(true)
+                stepper.stepper.setMin(0)
+                stepper.stepper.addStepCallback(object : OnStepCallback {
+                    override fun onStep(value: Int, positive: Boolean) {
+                        val cartItem = it.binding.item
+
+                        setShoppingCardItemAmount(cartItem!!.product, cartItem.withDeposit, value,
+                                false)
+                    }
+                })
             }
-            onClick {
-                openDetailView(listValues[it.adapterPosition])
+            onBind { holder ->
+                val cartItem = holder.binding.item
+
+                cartItem?.let {
+                    val stepper = holder.binding.root.productAmountStepper
+                    stepper.stepper.setValue(it.amount)
+                }
+            }
+            onRecycle {
+                //                val stepper = it.binding.root.productAmountStepper
+                //                ???
+                //                stepper.stepper.removeStepCallback()
             }
         }.into(shoppingCartItemsLayout)
 
@@ -167,14 +194,22 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         val horizontalPadding = (elevation + (1 - cos45) * radius).toInt()
         //        val verticalPadding = (elevation * 1.5 + (1 - cos45) * radius).toInt()
 
-        shoppingCartBottomSheetBehaviour.peekHeight = (resources.getDimension(R.dimen.shopping_bag__peek_height) + horizontalPadding).toInt()
+        shoppingCartBottomSheetBehaviour.peekHeight = (resources.getDimension(
+                R.dimen.shopping_bag__peek_height) + horizontalPadding).toInt()
     }
 
-    private fun updateShoppingCart(oldTotalPrice: Double, updateVisibility: Boolean = true) {
+    private fun updateShoppingCart(oldTotalPrice: Double, updateVisibility: Boolean = true,
+                                   notifyListAdapter: Boolean = true) {
         if (shoppingCart.isEmpty() || updateVisibility) {
             updateShoppingCartVisibility()
         }
-        updateShoppingCartContent(oldTotalPrice)
+
+        animateTotalItemCountAndCost(oldTotalPrice)
+
+        // TODO: update items using diff/direct animations
+        if (notifyListAdapter) {
+            shoppingCartItemsAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun updateShoppingCartVisibility() {
@@ -213,6 +248,14 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     }
 
     /**
+     * Returns a nice text representation of the price of a shopping cart item
+     * @param shoppingCartItem the shopping cart item
+     */
+    fun getShoppingCartItemPriceString(shoppingCartItem: ShoppingCartItem): String {
+        return getPriceString(shoppingCartItem.product, shoppingCartItem.withDeposit)
+    }
+
+    /**
      * Returns the visibility of the "buy with deposit" gui elements, based on a product
      */
     fun getBuyWithDepositVisibility(product: ProductEntity): Int {
@@ -220,14 +263,6 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
             product.deposit > 0 -> View.VISIBLE
             else -> View.GONE
         }
-    }
-
-    private fun updateShoppingCartContent(oldTotalPrice: Double) {
-        animateTotalItemCountAndCost(oldTotalPrice)
-
-        // TODO: update items using diff/direct animations
-        shoppingCartItemsAdapter.notifyDataSetChanged()
-        //        inflateShoppingCartItems()
     }
 
     private fun animateTotalItemCountAndCost(oldTotalPrice: Double) {
@@ -239,12 +274,14 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                     shoppingCart.getTotalItemCount(), animation.animatedValue as Float)
         }
 
-        val totalPriceSizeAnimator = ValueAnimator.ofFloat(totalItemCountAndCost.textSize.pxToSp(context()), (normalPriceSize + 4),
+        val totalPriceSizeAnimator = ValueAnimator.ofFloat(
+                totalItemCountAndCost.textSize.pxToSp(context()), (normalPriceSize + 4),
                 normalPriceSize)
         totalPriceSizeAnimator.duration = TOTAL_PRICE_ANIMATION_DURATION
         totalPriceSizeAnimator.interpolator = FastOutSlowInInterpolator()
         totalPriceSizeAnimator.addUpdateListener { animation ->
-            totalItemCountAndCost.setTextSize(TypedValue.COMPLEX_UNIT_SP, animation.animatedValue as Float)
+            totalItemCountAndCost.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                    animation.animatedValue as Float)
         }
 
         totalPriceAnimator.start()
@@ -301,7 +338,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                               updateCartVisibility: Boolean = true) {
         val oldTotalPrice = shoppingCart.getTotalPrice()
         shoppingCart.add(productEntity, 1, withDeposit)
-        updateShoppingCart(oldTotalPrice, updateCartVisibility)
+        updateShoppingCart(oldTotalPrice = oldTotalPrice, updateVisibility = updateCartVisibility)
     }
 
     /**
@@ -315,7 +352,8 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                                   updateCartVisibility: Boolean = true) {
         val oldTotalPrice = shoppingCart.getTotalPrice()
         shoppingCart.set(productEntity, amount, withDeposit)
-        updateShoppingCart(oldTotalPrice, updateCartVisibility)
+        updateShoppingCart(oldTotalPrice = oldTotalPrice, updateVisibility = updateCartVisibility,
+                notifyListAdapter = amount == 0)
     }
 
     /**
