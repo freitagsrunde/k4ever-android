@@ -27,7 +27,8 @@ class PreferencesFragment : LifecyclePreferenceFragmentBase() {
     lateinit var preferenceHolder: KutePreferencesHolder
 
     override fun initPreferenceTree(): KutePreferencesTree {
-        return KutePreferencesTree(preferenceHolder.connectionCategory, preferenceHolder.themePreference)
+        return KutePreferencesTree(preferenceHolder.connectionCategory,
+                preferenceHolder.productsCategory, preferenceHolder.themePreference)
     }
 
 }

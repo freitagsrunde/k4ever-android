@@ -29,6 +29,13 @@
     <string name="connection_auth_user_title">Benutzer</string>
     <string name="connection_auth_password_title">Passwort</string>
 
+    <string name="category_products_title">Produkte</string>
+    <string name="category_products_summary">Anpassungsmöglichkeiten zur Produktansicht</string>
+
+    <string name="show_prices_with_deposit_title">Preise mit Pfand anzeigen</string>
+    <string name="show_prices_with_deposit_description_on">Pfandpreise werden angezeigt</string>
+    <string name="show_prices_with_deposit_description_off">Pfandpreise werden NICHT angezeigt</string>
+
     <string name="security_title">Sicherheit</string>
     <string name="security_summary">Einstellungen bezüglich der Sicherheit App</string>
 

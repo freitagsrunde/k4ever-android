@@ -259,6 +259,10 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
      * Returns the visibility of the "buy with deposit" gui elements, based on a product
      */
     fun getBuyWithDepositVisibility(product: ProductEntity): Int {
+        if (!preferencesHolder.showPricesWithDepositPreference.persistedValue) {
+            return View.GONE
+        }
+
         return when {
             product.deposit > 0 -> View.VISIBLE
             else -> View.GONE

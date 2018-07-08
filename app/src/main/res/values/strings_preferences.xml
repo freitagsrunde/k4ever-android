@@ -29,6 +29,13 @@
     <string name="connection_auth_user_title">User</string>
     <string name="connection_auth_password_title">Password</string>
 
+    <string name="category_products_title">Products</string>
+    <string name="category_products_summary">Customization options for the products page</string>
+
+    <string name="show_prices_with_deposit_title">Show prices with deposit</string>
+    <string name="show_prices_with_deposit_description_on">Deposit will be shown</string>
+    <string name="show_prices_with_deposit_description_off">Deposit will NOT be shown</string>
+
     <string name="security_title">Security</string>
     <string name="security_summary">App related security settings</string>
 
