@@ -30,10 +30,4 @@
         android:title="@string/sort_order"
         app:showAsAction="ifRoom" />
 
-    <!-- TODO: should be updated by dragging down on the list instead -->
-    <item
-        android:id="@+id/refresh"
-        android:title="@string/refresh"
-        app:showAsAction="ifRoom" />
-
 </menu>

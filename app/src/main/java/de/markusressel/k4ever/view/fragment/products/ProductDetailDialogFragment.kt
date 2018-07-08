@@ -22,7 +22,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.view.*
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.view.component.LoadingComponent
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
@@ -42,20 +41,10 @@ class ProductDetailDialogFragment : DaggerSupportFragmentBase() {
     private val loadingComponent by lazy { LoadingComponent(this) }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_list, onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
-            // set refresh icon
-            val refreshIcon = iconHandler.getOptionsMenuIcon(MaterialDesignIconic.Icon.gmi_refresh)
-            menu?.findItem(R.id.refresh)?.icon = refreshIcon
-        }, onOptionsMenuItemClicked = {
-            when {
-                it.itemId == R.id.refresh -> {
-
-                    // TODO: disconnect and reconnect
-
-                    true
-                }
-                else -> false
-            }
+        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none,
+                onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
+                }, onOptionsMenuItemClicked = {
+            false
         })
     }
 
@@ -79,11 +68,10 @@ class ProductDetailDialogFragment : DaggerSupportFragmentBase() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val host = preferencesHolder.connectionUriPreference.persistedValue
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         val parent = super.onCreateView(inflater, container, savedInstanceState) as ViewGroup
         return loadingComponent.onCreateView(inflater, parent, savedInstanceState)
     }

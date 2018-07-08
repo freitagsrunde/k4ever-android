@@ -107,12 +107,6 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
 
     val normalPriceSize by lazy { totalItemCountAndCost.textSize.pxToSp(context()) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val host = preferencesHolder.connectionUriPreference.persistedValue
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

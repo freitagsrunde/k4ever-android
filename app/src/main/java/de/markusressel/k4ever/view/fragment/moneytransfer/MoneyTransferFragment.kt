@@ -65,12 +65,6 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
         return optionsMenuComponent.onOptionsItemSelected(item)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val host = preferencesHolder.connectionUriPreference.persistedValue
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
