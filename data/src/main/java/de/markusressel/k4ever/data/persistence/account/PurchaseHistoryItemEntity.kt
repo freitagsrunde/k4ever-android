@@ -29,4 +29,8 @@ data class PurchaseHistoryItemEntity(@Id var entityId: Long = 0, val id: Long = 
                                      val products: List<ProductEntity> = emptyList(),
                                      val date: Date = Date()) : IdentifiableListItem, SearchableListItem {
     override fun getItemId(): Long = id
+
+    override fun getSearchableContent(): List<Any> {
+        return listOf(products.map { it.name }, products.map { it.description }).flatten()
+    }
 }
