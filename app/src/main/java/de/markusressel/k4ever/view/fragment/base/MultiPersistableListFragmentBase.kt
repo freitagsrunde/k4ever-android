@@ -21,27 +21,16 @@ import android.arch.lifecycle.Lifecycle
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.content.ContextCompat
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.SearchView
-import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.*
-import android.widget.Toast
 import com.github.ajalt.timberkt.Timber
-import com.github.nitrico.lastadapter.LastAdapter
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
-import com.jakewharton.rxbinding2.view.RxView
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
-import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.dagger.module.Implementation
-import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
-import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.component.LoadingComponent
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import io.reactivex.Observable
@@ -55,29 +44,14 @@ import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
-import javax.inject.Inject
 
 
 /**
  * Created by Markus on 29.01.2018.
  */
-abstract class MultiPersistableListFragmentBase : DaggerSupportFragmentBase() {
-
-    override val layoutRes: Int
-        get() = R.layout.fragment__recyclerview
-
-    @Inject
-    @field:Implementation(ImplementationTypeEnum.DUMMY)
-    lateinit var restClient: K4EverRestApiClient
-
-    protected open val fabConfig: FabConfig = FabConfig(left = mutableListOf(),
-            right = mutableListOf())
-    private val fabButtonViews = mutableListOf<FloatingActionButton>()
+abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
 
     protected val listValues: MutableList<IdentifiableListItem> = ArrayList()
-    private lateinit var recyclerViewAdapter: LastAdapter
-
-    private var currentSearchFilter: String by savedInstanceState("")
 
     protected val loadingComponent by lazy {
         LoadingComponent(this, onShowContent = {
@@ -155,17 +129,6 @@ abstract class MultiPersistableListFragmentBase : DaggerSupportFragmentBase() {
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        recyclerViewAdapter = createAdapter()
-
-        recyclerView.adapter = recyclerViewAdapter
-        val layoutManager = StaggeredGridLayoutManager(
-                resources.getInteger(R.integer.list_column_count),
-                StaggeredGridLayoutManager.VERTICAL)
-        recyclerView.layoutManager = layoutManager
-
-        setupFabs()
-
         swipeRefreshLayout.setOnRefreshListener {
             reloadDataFromSource()
         }
@@ -186,92 +149,6 @@ abstract class MultiPersistableListFragmentBase : DaggerSupportFragmentBase() {
         updateListFromPersistence()
     }
 
-    private fun setupFabs() {
-        fabConfig.left.addAll(getLeftFabs())
-        fabConfig.right.addAll(getRightFabs())
-
-        // setup fabs
-        fabConfig.left.forEach {
-            addFab(true, it)
-        }
-        fabConfig.right.forEach {
-            addFab(false, it)
-        }
-
-        updateFabVisibility(View.VISIBLE)
-    }
-
-    /**
-     * Override this in subclasses if necessary
-     */
-    protected open fun getLeftFabs(): List<FabConfig.Fab> {
-        return emptyList()
-    }
-
-    /**
-     * Override this in subclasses if necessary
-     */
-    protected open fun getRightFabs(): List<FabConfig.Fab> {
-        return emptyList()
-    }
-
-    private fun addFab(isLeft: Boolean, fab: FabConfig.Fab) {
-        val inflater = LayoutInflater.from(context)
-
-        val layout = when (isLeft) {
-            true -> R.layout.view__fab_left
-            false -> R.layout.view__fab_right
-        }
-
-        val fabView: FloatingActionButton = inflater.inflate(layout, coordinatorLayoutRecvclerView,
-                false) as FloatingActionButton
-
-        // icon
-        fabView.setImageDrawable(iconHandler.getFabIcon(fab.icon))
-        // fab color
-        fab.color?.let {
-            fabView.backgroundTintList = ContextCompat.getColorStateList(context as Context, it)
-        }
-
-        // behaviour
-        val fabBehavior = ScrollAwareFABBehavior()
-        val params = fabView.layoutParams as CoordinatorLayout.LayoutParams
-        params.behavior = fabBehavior
-
-        // listeners
-        RxView.clicks(fabView).bindToLifecycle(fabView).subscribe {
-            // execute defined action if it exists
-            val clickAction = fab.onClick
-            if (clickAction != null) {
-                clickAction()
-            } else {
-                Toast.makeText(context as Context, getString(fab.description), Toast.LENGTH_LONG)
-                        .show()
-            }
-        }
-
-        RxView.longClicks(fabView).bindToLifecycle(fabView).subscribe {
-            // execute defined action if it exists
-            val longClickAction = fab.onLongClick
-            if (longClickAction != null) {
-                longClickAction()
-            } else {
-                Toast.makeText(context as Context, getString(fab.description), Toast.LENGTH_LONG)
-                        .show()
-            }
-        }
-
-
-        fabButtonViews.add(fabView)
-        val parent = recyclerView.parent as ViewGroup
-        parent.addView(fabView)
-    }
-
-    /**
-     * Create the adapter used for the recyclerview
-     */
-    abstract fun createAdapter(): LastAdapter
-
     /**
      * Loads the data using {@link loadListDataFromPersistence()}
      */
@@ -279,7 +156,7 @@ abstract class MultiPersistableListFragmentBase : DaggerSupportFragmentBase() {
         loadingComponent.showLoading()
 
         Observable.fromIterable(loadListDataFromPersistence()).filter {
-            itemContainsCurrentSearchString(it)
+            currentSearchFilter.isEmpty() || itemContainsCurrentSearchString(it)
         }.toList().map { sortByCurrentOptions(it) }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
@@ -401,7 +278,7 @@ abstract class MultiPersistableListFragmentBase : DaggerSupportFragmentBase() {
     /**
      * Define a Single that returns the complete list of data from the (server) source
      */
-    abstract internal fun getLoadDataFromSourceFunction(): Single<List<IdentifiableListItem>>
+    abstract internal fun getLoadDataFromSourceFunction(): Single<List<Any>>
 
     /**
      * Map the source object to the persistence object
@@ -419,35 +296,10 @@ abstract class MultiPersistableListFragmentBase : DaggerSupportFragmentBase() {
         // TODO:
     }
 
-    private fun showEmpty() {
-        recyclerView.visibility = View.INVISIBLE
-        layoutEmpty.visibility = View.VISIBLE
-    }
-
-    private fun hideEmpty() {
-        recyclerView.visibility = View.VISIBLE
-        layoutEmpty.visibility = View.INVISIBLE
-    }
-
     /**
      * Load the data to be displayed in the list asEntity the persistence
      */
-    open fun loadListDataFromPersistence(): List<IdentifiableListItem> {
-        // TODO
-        return emptyList()
-    }
-
-    private fun updateFabVisibility(visible: Int) {
-        if (visible == View.VISIBLE) {
-            fabButtonViews.forEach {
-                it.visibility = View.VISIBLE
-            }
-        } else {
-            fabButtonViews.forEach {
-                it.visibility = View.INVISIBLE
-            }
-        }
-    }
+    abstract fun loadListDataFromPersistence(): List<IdentifiableListItem>
 
     companion object {
         private val loaderIdCounter: AtomicInteger = AtomicInteger()

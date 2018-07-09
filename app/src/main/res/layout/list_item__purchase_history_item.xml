@@ -17,7 +17,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -30,44 +31,46 @@
             type="de.markusressel.k4ever.view.fragment.account.BalanceHistoryFragment" />
     </data>
 
-    <!--<LinearLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:orientation="vertical"-->
-    <!--android:padding="@dimen/cardview_padding">-->
-
-    <!--<android.support.v7.widget.CardView-->
-    <!--style="@style/card_view"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content">-->
-
-    <LinearLayout
+    <android.support.v7.widget.CardView
+        style="@style/card_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:layout_height="wrap_content">
 
-        <!--<TextView-->
-        <!--style="@style/sub_header"-->
-        <!--android:text="@string/level" />-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <!--<TextView-->
-        <!--style="@style/sub_header_content_textview"-->
-        <!--android:text="@{item.level}" />-->
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:id="@+id/icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                app:iiv_icon="gmi-shopping-cart" />
 
-        <!--<TextView-->
-        <!--style="@style/sub_header"-->
-        <!--android:text="@string/message" />-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <!--<TextView-->
-        <!--style="@style/sub_header_content_textview"-->
-        <!--android:text="@{item.message}" />-->
+                <TextView
+                    android:id="@+id/products"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(item.products.size())}" />
 
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/total_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(item.id)}" />
 
-    <!--</android.support.v7.widget.CardView>-->
+            </LinearLayout>
 
-    <!--</LinearLayout>-->
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 </layout>

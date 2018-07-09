@@ -46,6 +46,8 @@ import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.fragment__account__balance_history.*
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
+import kotlinx.android.synthetic.main.list_item__balance_history_item.view.*
+import kotlinx.android.synthetic.main.list_item__purchase_history_item.view.*
 import javax.inject.Inject
 
 
@@ -86,6 +88,16 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
             onCreate {
                 it.binding.presenter = this@BalanceHistoryFragment
             }
+            onBind {
+                onBind { holder ->
+                    val balanceItem = holder.binding.item
+
+                    balanceItem?.let {
+                        holder.binding.root.money_amount.text = getString(
+                                R.string.shopping_cart__item_cost, balanceItem.amount)
+                    }
+                }
+            }
             onClick {
                 // TODO: should there be any detail view of balance history items?
                 //                        openDetailView(listValues[it.adapterPosition])
@@ -96,6 +108,19 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                     onCreate {
                         it.binding.presenter = this@BalanceHistoryFragment
                     }
+                    onBind {
+                        onBind { holder ->
+                            val purchaseItem = holder.binding.item
+
+                            purchaseItem?.let {
+                                holder.binding.root.products.text = purchaseItem.products.size.toString()
+
+                                val purchaseTotalCost = purchaseItem.products.map { it.price }.sum()
+                                holder.binding.root.total_price.text = getString(
+                                        R.string.shopping_cart__item_cost, purchaseTotalCost)
+                            }
+                        }
+                    }
                     onClick {
                         // TODO: should there be any detail view of purchase history items?
                         //                        openDetailView(listValues[it.adapterPosition])
@@ -103,22 +128,14 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                 }.into(recyclerView)
     }
 
-    override fun getLoadDataFromSourceFunction(): Single<List<IdentifiableListItem>> {
+    override fun getLoadDataFromSourceFunction(): Single<List<Any>> {
         val currentUserId = 1L
 
-        // downloading all items even though they have different types would be possible
+        // download all data and wrap them in a new Single object
         return Single.zip(restClient.getBalanceHistory(currentUserId),
                 restClient.getPurchaseHistory(currentUserId),
-                BiFunction<List<BalanceHistoryItemModel>, List<PurchaseHistoryItemModel>, List<IdentifiableListItem>> { t1, t2 ->
-                    val bhiEntities = t1.map {
-                        BalanceHistoryItemEntity(id = it.id, amount = it.amount, date = it.date)
-                    }
-                    val phiEntities = t1.map {
-                        PurchaseHistoryItemEntity(id = it.id, products = emptyList(),
-                                date = it.date)
-                    }
-
-                    listOf(bhiEntities, phiEntities).flatten()
+                BiFunction<List<BalanceHistoryItemModel>, List<PurchaseHistoryItemModel>, List<Any>> { t1, t2 ->
+                    listOf(t1, t2).flatten()
                 })
     }
 

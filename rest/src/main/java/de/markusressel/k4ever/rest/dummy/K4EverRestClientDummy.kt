@@ -24,6 +24,7 @@ import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.UserModel
 import io.reactivex.Single
+import java.util.*
 
 class K4EverRestClientDummy : K4EverRestApiClient {
 
@@ -33,8 +34,11 @@ class K4EverRestClientDummy : K4EverRestApiClient {
         val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2, false)
         val p4 = ProductModel(3, "Spezi", "Zucker ^2", 1.0, 0.2, false)
         val p5 = ProductModel(4, "Snickers", "Zucker ^5", 1.0, 0.0, false)
+        val p6 = ProductModel(5, "Coca Cola Zero ®",
+                "Spritziges Erfrischungsgetränk, so schwarz wie deine Seele \uD83D\uDE08", 1.1,
+                0.25, true)
 
-        return Single.just(listOf(p1, p2, p3, p4, p5))
+        return Single.just(listOf(p1, p2, p3, p4, p5, p6))
     }
 
     override fun getProduct(id: Long): Single<ProductModel> {
@@ -56,11 +60,20 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     override fun getBalanceHistory(id: Long): Single<List<BalanceHistoryItemModel>> {
-        return Single.just(emptyList())
+        val b1 = BalanceHistoryItemModel(0, 5.0, Date(Date().time + 100))
+        val b2 = BalanceHistoryItemModel(0, 3.0, Date(Date().time - 100))
+        val b3 = BalanceHistoryItemModel(0, -5.0, Date(Date().time + 200))
+
+        return Single.just(listOf(b1, b2, b3))
     }
 
     override fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>> {
-        return Single.just(emptyList())
+        val p1 = PurchaseHistoryItemModel(0, listOf(getProduct(0).blockingGet()), Date())
+        val p2 = PurchaseHistoryItemModel(1,
+                listOf(getProduct(0).blockingGet(), getProduct(1).blockingGet()), Date())
+        val p3 = PurchaseHistoryItemModel(2, listOf(getProduct(3).blockingGet()), Date())
+
+        return Single.just(listOf(p1, p2, p3))
     }
 
     override fun setHostname(hostname: String) {
