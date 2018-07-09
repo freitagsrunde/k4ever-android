@@ -29,4 +29,6 @@
     <dimen name="cardview_elevation_while_moving">8dp</dimen>
     <dimen name="cardview_default_height">64dp</dimen>
 
+    <dimen name="history_list_item_height">64dp</dimen>
+
 </resources>

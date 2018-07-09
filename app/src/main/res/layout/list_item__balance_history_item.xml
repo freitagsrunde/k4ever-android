@@ -38,8 +38,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="@dimen/history_list_item_height"
             android:baselineAligned="false"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="8dp">
 
@@ -47,6 +48,8 @@
                 android:id="@+id/icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:layout_marginRight="16dp"
+                app:iiv_color="?android:attr/textColorSecondary"
                 app:iiv_icon="gmi-account" />
 
             <TextView
