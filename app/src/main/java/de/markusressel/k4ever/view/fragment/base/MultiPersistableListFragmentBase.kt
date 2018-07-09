@@ -41,7 +41,6 @@ import de.markusressel.k4ever.dagger.module.Implementation
 import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
-import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.component.LoadingComponent
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
@@ -62,7 +61,7 @@ import javax.inject.Inject
 /**
  * Created by Markus on 29.01.2018.
  */
-abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : DaggerSupportFragmentBase() where EntityType : IdentifiableListItem {
+abstract class MultiPersistableListFragmentBase : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__recyclerview
@@ -75,7 +74,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
             right = mutableListOf())
     private val fabButtonViews = mutableListOf<FloatingActionButton>()
 
-    protected val listValues: MutableList<EntityType> = ArrayList()
+    protected val listValues: MutableList<IdentifiableListItem> = ArrayList()
     private lateinit var recyclerViewAdapter: LastAdapter
 
     private var currentSearchFilter: String by savedInstanceState("")
@@ -280,30 +279,11 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
         loadingComponent.showLoading()
 
         Observable.fromIterable(loadListDataFromPersistence()).filter {
-            if (it is SearchableListItem) {
-                return@filter it.getSearchableContent().any {
-                    it.toString().contains(currentSearchFilter, true)
-                }
-            } else {
-                it.toString().contains(currentSearchFilter, true)
-            }
+            itemContainsCurrentSearchString(it)
         }.toList().map { sortByCurrentOptions(it) }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
-                    val diffCallback = DiffCallback(listValues, it)
-                    val diffResult = DiffUtil.calculateDiff(diffCallback)
-
-                    listValues.clear()
-                    listValues.addAll(it)
-
-                    if (listValues.isEmpty()) {
-                        showEmpty()
-                    } else {
-                        hideEmpty()
-                    }
-                    loadingComponent.showContent()
-
-                    diffResult.dispatchUpdatesTo(recyclerViewAdapter)
+                    updateAdapterList(it)
                 }, onError = {
                     if (it is CancellationException) {
                         Timber.d { "reload from persistence cancelled" }
@@ -313,10 +293,37 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
                 })
     }
 
+    private fun itemContainsCurrentSearchString(item: IdentifiableListItem): Boolean {
+        return when (item) {
+            is SearchableListItem -> item.getSearchableContent().any {
+                item.toString().contains(currentSearchFilter, true)
+            }
+            else -> item.toString().contains(currentSearchFilter, true)
+        }
+    }
+
+    protected fun updateAdapterList(newData: List<IdentifiableListItem>) {
+        val diffCallback = DiffCallback(listValues, newData)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        listValues.clear()
+        listValues.addAll(newData)
+
+        if (listValues.isEmpty()) {
+            showEmpty()
+        } else {
+            hideEmpty()
+        }
+        loadingComponent.showContent()
+
+        diffResult.dispatchUpdatesTo(recyclerViewAdapter)
+    }
+
     /**
      * Sorts a list by the currently selected SortOptions
      */
-    private fun sortByCurrentOptions(listData: List<EntityType>): List<EntityType> {
+    private fun sortByCurrentOptions(
+            listData: List<IdentifiableListItem>): List<IdentifiableListItem> {
         val sortOptions = getCurrentSortOptions()
 
         if (sortOptions.isEmpty()) {
@@ -324,7 +331,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
         }
 
         // create initial comparator
-        var comparator: Comparator<EntityType> = if (sortOptions.first().reversed) {
+        var comparator: Comparator<IdentifiableListItem> = if (sortOptions.first().reversed) {
             compareByDescending(sortOptions.first().selector)
         } else {
             compareBy(sortOptions.first().selector)
@@ -346,14 +353,14 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
      * Returns a list of all available sort criteria
      * Override this method in child classes
      */
-    open fun getAllSortCriteria(): List<SortOption<EntityType>> {
+    open fun getAllSortCriteria(): List<SortOption<IdentifiableListItem>> {
         return emptyList()
     }
 
     /**
      * Get a list of the currently selected (active) sort criteria
      */
-    open fun getCurrentSortOptions(): List<SortOption<EntityType>> {
+    open fun getCurrentSortOptions(): List<SortOption<IdentifiableListItem>> {
         // TODO:
         return getAllSortCriteria()
     }
@@ -365,10 +372,10 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
     /**
      * Reload list data asEntity it's original source, persist it and display it to the user afterwards
      */
-    protected fun reloadDataFromSource() {
+    protected open fun reloadDataFromSource() {
         loadingComponent.showLoading()
 
-        loadListDataFromSource().subscribeOn(Schedulers.io())
+        getLoadDataFromSourceFunction().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
                     val entities = it.map {
@@ -392,33 +399,24 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
     }
 
     /**
-     * Map the source object to the persistence object
+     * Define a Single that returns the complete list of data from the (server) source
      */
-    abstract fun mapToEntity(it: ModelType): EntityType
+    abstract internal fun getLoadDataFromSourceFunction(): Single<List<IdentifiableListItem>>
 
     /**
-     * Get the persistence handler for this list
+     * Map the source object to the persistence object
      */
-    protected abstract fun getPersistenceHandler(): PersistenceManagerBase<EntityType>
+    abstract fun mapToEntity(it: Any): IdentifiableListItem
 
-    private fun persistListData(data: List<EntityType>) {
-        getPersistenceHandler().getStore().removeAll()
-        getPersistenceHandler().getStore().put(data)
-    }
+    abstract internal fun persistListData(data: List<IdentifiableListItem>)
 
     private fun getLastUpdatedFromSource(): Long {
         // TODO:
-        val entityModelId = getPersistenceHandler().getEntityModelId()
-        //        return lastUpdatedManager
-        //                .getLastUpdated(entityModelId.toLong())
         return 0
     }
 
     private fun updateLastUpdatedFromSource() {
         // TODO:
-        val entityModelId = getPersistenceHandler().getEntityModelId()
-        //        lastUpdatedManager
-        //                .setUpdatedNow(entityModelId.toLong())
     }
 
     private fun showEmpty() {
@@ -434,15 +432,10 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : Dagger
     /**
      * Load the data to be displayed in the list asEntity the persistence
      */
-    open fun loadListDataFromPersistence(): List<EntityType> {
-        val persistenceHandler = getPersistenceHandler()
-        return persistenceHandler.getStore().all
+    open fun loadListDataFromPersistence(): List<IdentifiableListItem> {
+        // TODO
+        return emptyList()
     }
-
-    /**
-     * Load the data to be displayed in the list asEntity it's original source
-     */
-    abstract fun loadListDataFromSource(): Single<List<ModelType>>
 
     private fun updateFabVisibility(visible: Int) {
         if (visible == View.VISIBLE) {

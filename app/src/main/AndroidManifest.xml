@@ -18,6 +18,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.markusressel.k4ever">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".application.App"
         android:allowBackup="true"

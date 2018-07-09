@@ -29,20 +29,23 @@ import com.github.nitrico.lastadapter.LastAdapter
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
+import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.account.BalanceHistoryItemEntity
 import de.markusressel.k4ever.data.persistence.account.BalanceHistoryItemPersistenceManager
 import de.markusressel.k4ever.data.persistence.account.PurchaseHistoryItemEntity
-import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
+import de.markusressel.k4ever.data.persistence.account.PurchaseHistoryItemPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemBalanceHistoryItemBinding
 import de.markusressel.k4ever.databinding.ListItemPurchaseHistoryItemBinding
+import de.markusressel.k4ever.extensions.filterByExpectedType
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
+import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.FabConfig
-import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
+import de.markusressel.k4ever.view.fragment.base.MultiPersistableListFragmentBase
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.fragment__account__balance_history.*
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
-import java.util.*
 import javax.inject.Inject
 
 
@@ -51,15 +54,17 @@ import javax.inject.Inject
  *
  * Created by Markus on 07.01.2018.
  */
-class BalanceHistoryFragment : PersistableListFragmentBase<BalanceHistoryItemModel, BalanceHistoryItemEntity>() {
+class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__account__balance_history
 
     override fun getLeftFabs(): List<FabConfig.Fab> {
-        return listOf(FabConfig.Fab(description = R.string.withdraw_money, icon = MaterialDesignIconic.Icon.gmi_minus, onClick = {
+        return listOf(FabConfig.Fab(description = R.string.withdraw_money,
+                icon = MaterialDesignIconic.Icon.gmi_minus, onClick = {
             // TODO: open "withdraw money" dialog
-        }), FabConfig.Fab(description = R.string.deposit_money, icon = MaterialDesignIconic.Icon.gmi_plus, onClick = {
+        }), FabConfig.Fab(description = R.string.deposit_money,
+                icon = MaterialDesignIconic.Icon.gmi_plus, onClick = {
             // TODO: open "deposit money" dialog
         }))
     }
@@ -69,45 +74,82 @@ class BalanceHistoryFragment : PersistableListFragmentBase<BalanceHistoryItemMod
     }
 
     @Inject
-    lateinit var persistenceManager: BalanceHistoryItemPersistenceManager
+    lateinit var balancePersistenceManager: BalanceHistoryItemPersistenceManager
 
-    override fun getPersistenceHandler(): PersistenceManagerBase<BalanceHistoryItemEntity> = persistenceManager
+    @Inject
+    lateinit var purchasePersistenceManager: PurchaseHistoryItemPersistenceManager
 
     override fun createAdapter(): LastAdapter {
-        return LastAdapter(listValues, BR.item).map<BalanceHistoryItemEntity, ListItemBalanceHistoryItemBinding>(R.layout.list_item__balance_history_item) {
+        return LastAdapter(listValues,
+                BR.item).map<BalanceHistoryItemEntity, ListItemBalanceHistoryItemBinding>(
+                R.layout.list_item__balance_history_item) {
             onCreate {
                 it.binding.presenter = this@BalanceHistoryFragment
             }
             onClick {
                 // TODO: should there be any detail view of balance history items?
-//                        openDetailView(listValues[it.adapterPosition])
+                //                        openDetailView(listValues[it.adapterPosition])
             }
-        }.map<PurchaseHistoryItemEntity, ListItemPurchaseHistoryItemBinding>(R.layout.list_item__purchase_history_item) {
+        }
+                .map<PurchaseHistoryItemEntity, ListItemPurchaseHistoryItemBinding>(
+                        R.layout.list_item__purchase_history_item) {
                     onCreate {
                         it.binding.presenter = this@BalanceHistoryFragment
                     }
                     onClick {
                         // TODO: should there be any detail view of purchase history items?
-//                        openDetailView(listValues[it.adapterPosition])
+                        //                        openDetailView(listValues[it.adapterPosition])
                     }
                 }.into(recyclerView)
     }
 
-    override fun mapToEntity(it: BalanceHistoryItemModel): BalanceHistoryItemEntity {
-        return BalanceHistoryItemEntity(id = it.id, amount = it.amount, date = it.date)
+    override fun getLoadDataFromSourceFunction(): Single<List<IdentifiableListItem>> {
+        val currentUserId = 1L
+
+        // downloading all items even though they have different types would be possible
+        return Single.zip(restClient.getBalanceHistory(currentUserId),
+                restClient.getPurchaseHistory(currentUserId),
+                BiFunction<List<BalanceHistoryItemModel>, List<PurchaseHistoryItemModel>, List<IdentifiableListItem>> { t1, t2 ->
+                    val bhiEntities = t1.map {
+                        BalanceHistoryItemEntity(id = it.id, amount = it.amount, date = it.date)
+                    }
+                    val phiEntities = t1.map {
+                        PurchaseHistoryItemEntity(id = it.id, products = emptyList(),
+                                date = it.date)
+                    }
+
+                    listOf(bhiEntities, phiEntities).flatten()
+                })
     }
 
-    override fun loadListDataFromSource(): Single<List<BalanceHistoryItemModel>> {
-        val h1 = BalanceHistoryItemModel(0, 5.0, Date())
-        val h2 = BalanceHistoryItemModel(0, 5.0, Date())
-        val h3 = BalanceHistoryItemModel(0, 5.0, Date())
+    override fun mapToEntity(it: Any): IdentifiableListItem {
+        return when (it) {
+            is BalanceHistoryItemModel -> BalanceHistoryItemEntity(0, it.id, it.amount, it.date)
 
-        return Single.just(listOf(h1, h2, h3))
+        // TODO: map products in purchase too
+        // it.products
+            is PurchaseHistoryItemModel -> PurchaseHistoryItemEntity(0, it.id, emptyList(), it.date)
+            else -> throw IllegalArgumentException("No mapping function for '${it.javaClass}'")
+        }
+    }
+
+    override fun persistListData(data: List<IdentifiableListItem>) {
+        balancePersistenceManager.getStore().removeAll()
+        purchasePersistenceManager.getStore().removeAll()
+
+        balancePersistenceManager.getStore().put(data.filterByExpectedType())
+        purchasePersistenceManager.getStore().put(data.filterByExpectedType())
+    }
+
+    override fun loadListDataFromPersistence(): List<IdentifiableListItem> {
+        return listOf(balancePersistenceManager.getStore().all,
+                purchasePersistenceManager.getStore().all).flatten()
     }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none, onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
-        }, onOptionsMenuItemClicked = {
+        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none,
+                onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
+                }, onOptionsMenuItemClicked = {
             false
         })
     }

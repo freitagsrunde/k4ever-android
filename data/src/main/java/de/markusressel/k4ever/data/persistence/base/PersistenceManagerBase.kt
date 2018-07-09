@@ -49,7 +49,7 @@ open class PersistenceManagerBase<EntityType : Any>(val entityType: KClass<Entit
     /**
      * Returns the BoxStore for this PersistenceManager to perform standard (ObjectBox) operations
      */
-    fun standardOperation(): Box<EntityType> {
+    fun getStore(): Box<EntityType> {
         return box
     }
 

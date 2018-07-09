@@ -20,8 +20,10 @@ package de.markusressel.k4ever.view.fragment.preferences
 import android.content.Context
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import de.markusressel.k4ever.R
+import de.markusressel.k4ever.dagger.module.Implementation
+import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.rest.BasicAuthConfig
-import de.markusressel.k4ever.rest.K4EverRestClient
+import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.IconHandler
 import de.markusressel.kutepreferences.library.persistence.KutePreferenceDataProvider
 import de.markusressel.kutepreferences.library.preference.category.KuteCategory
@@ -41,7 +43,9 @@ import javax.inject.Singleton
 class KutePreferencesHolder @Inject constructor(private val context: Context,
                                                 private val iconHelper: IconHandler,
                                                 private val dataProvider: KutePreferenceDataProvider,
-                                                private val restClient: K4EverRestClient) {
+
+                                                @param:Implementation(
+                                                        ImplementationTypeEnum.DUMMY) private val restClient: K4EverRestApiClient) {
 
     val connectionCategory by lazy {
         KuteCategory(key = R.string.category_connection_key,

@@ -21,12 +21,6 @@ import android.content.Context
 import android.os.AsyncTask
 import android.support.v4.app.Fragment
 import de.markusressel.k4ever.R
-import java.util.*
-
-/**
- * Created by Markus on 15.02.2018.
- */
-fun ClosedRange<Int>.random() = Random().nextInt(endInclusive - start) + start
 
 /**
  * Returns true if the current device is considered a tablet

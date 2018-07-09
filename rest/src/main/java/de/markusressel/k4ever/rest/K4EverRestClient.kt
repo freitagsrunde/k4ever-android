@@ -29,33 +29,34 @@ import de.markusressel.k4ever.rest.users.UserManager
  */
 class K4EverRestClient(private val requestManager: RequestManager = RequestManager(),
                        productManager: ProductApi = ProductManager(requestManager),
-                       userManager: UserApi = UserManager(requestManager)) : ProductApi by productManager, UserApi by userManager {
+                       userManager: UserApi = UserManager(
+                               requestManager)) : K4EverRestApiClient, ProductApi by productManager, UserApi by userManager {
 
     /**
      * Set the hostname for this client
      */
-    fun setHostname(hostname: String) {
+    override fun setHostname(hostname: String) {
         requestManager.hostname = hostname
     }
 
     /**
      * Set the api resource for this client (in case it is not the default "/")
      */
-    fun setApiResource(apiResource: String) {
+    override fun setApiResource(apiResource: String) {
         requestManager.apiResource = apiResource
     }
 
     /**
      * Set the BasicAuthConfig for this client
      */
-    fun getBasicAuthConfig(): BasicAuthConfig? {
+    override fun getBasicAuthConfig(): BasicAuthConfig? {
         return requestManager.basicAuthConfig
     }
 
     /**
      * Set the BasicAuthConfig for this client
      */
-    fun setBasicAuthConfig(basicAuthConfig: BasicAuthConfig) {
+    override fun setBasicAuthConfig(basicAuthConfig: BasicAuthConfig) {
         requestManager.basicAuthConfig = basicAuthConfig
     }
 

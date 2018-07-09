@@ -19,7 +19,9 @@ package de.markusressel.k4ever.dagger.module
 
 import dagger.Module
 import dagger.Provides
+import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.rest.K4EverRestClient
+import de.markusressel.k4ever.rest.dummy.K4EverRestClientDummy
 import javax.inject.Singleton
 
 /**
@@ -32,10 +34,19 @@ abstract class RestBindingsModule {
     companion object {
 
         @Provides
+        @Implementation(ImplementationTypeEnum.REAL)
         @Singleton
         @JvmStatic
-        internal fun provideRestClient(): K4EverRestClient {
+        internal fun provideRestClient(): K4EverRestApiClient {
             return K4EverRestClient()
+        }
+
+        @Provides
+        @Implementation(ImplementationTypeEnum.DUMMY)
+        @Singleton
+        @JvmStatic
+        internal fun provideRestClientDummy(): K4EverRestApiClient {
+            return K4EverRestClientDummy()
         }
 
     }

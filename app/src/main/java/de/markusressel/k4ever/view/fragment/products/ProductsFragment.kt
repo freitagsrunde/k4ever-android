@@ -76,16 +76,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     }
 
     override fun loadListDataFromSource(): Single<List<ProductModel>> {
-        //        return restClient.getAllProducts()
-
-        val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, true)
-        val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2, true)
-        val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2, false)
-        val p4 = ProductModel(3, "Spezi", "Zucker ^2", 1.0, 0.2, false)
-        val p5 = ProductModel(4, "Snickers", "Zucker ^5", 1.0, 0.0, false)
-
-        // TODO:
-        return Single.just(listOf(p1, p2, p3, p4, p5).shuffled())
+        return restClient.getAllProducts()
     }
 
     override fun mapToEntity(it: ProductModel): ProductEntity {
@@ -286,38 +277,6 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         totalPriceSizeAnimator.start()
     }
 
-    //    private fun inflateShoppingCartItems() {
-    //        // remove old views
-    //        shoppingCartItemsLayout.removeAllViews()
-    //
-    //        shoppingCart.items.forEach { shoppingBagItem ->
-    //            val layoutInflater = LayoutInflater.from(context)
-    //            val itemLayout = layoutInflater.inflate(R.layout.layout__cart_item, shoppingCartItemsLayout, false) as ViewGroup
-    //
-    //            // TODO: Set real item image
-    //            val itemImage = itemLayout.findViewById(R.id.itemImage) as ImageView
-    //            itemImage.setImageDrawable(ContextCompat.getDrawable(context as Context, R.drawable.club_mate_0_5l))
-    //
-    //            val itemName = itemLayout.findViewById(R.id.itemName) as TextView
-    //            itemName.text = shoppingBagItem.product.name
-    //
-    //            val itemPrice = itemLayout.findViewById(R.id.itemPrice) as TextView
-    //            itemPrice.text = getPriceString(shoppingBagItem.product, shoppingBagItem.withDeposit)
-    //
-    //            val itemAmountStepper = itemLayout.findViewById(R.id.itemAmountStepper) as StepperTouch
-    //            itemAmountStepper.stepper.setMin(0)
-    //            itemAmountStepper.stepper.setValue(shoppingBagItem.amount)
-    //            itemAmountStepper.enableSideTap(true)
-    //            itemAmountStepper.stepper.addStepCallback(object : OnStepCallback {
-    //                override fun onStep(value: Int, positive: Boolean) {
-    //                    setShoppingCardItemAmount(shoppingBagItem.product, shoppingBagItem.withDeposit, value, false)
-    //                }
-    //            })
-    //
-    //            shoppingCartItemsLayout.addView(itemLayout)
-    //        }
-    //    }
-
     /**
      * Shows a detail view of the specified product
      */
@@ -359,7 +318,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
      */
     fun toggleFavorite(product: ProductEntity) {
         product.isFavorite = !product.isFavorite
-        persistenceManager.standardOperation().put(product)
+        persistenceManager.getStore().put(product)
 
         updateListFromPersistence()
 
