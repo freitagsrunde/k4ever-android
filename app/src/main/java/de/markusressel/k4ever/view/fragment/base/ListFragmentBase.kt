@@ -116,8 +116,8 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
             false -> R.layout.view__fab_right
         }
 
-        val fabView: FloatingActionButton = inflater.inflate(layout, coordinatorLayoutRecvclerView,
-                false) as FloatingActionButton
+        val fabView: FloatingActionButton = inflater.inflate(layout,
+                recyclerView.parent as ViewGroup, false) as FloatingActionButton
 
         // icon
         fabView.setImageDrawable(iconHandler.getFabIcon(fab.icon))
@@ -127,9 +127,10 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
         }
 
         // behaviour
-        val fabBehavior = ScrollAwareFABBehavior()
-        val params = fabView.layoutParams as CoordinatorLayout.LayoutParams
-        params.behavior = fabBehavior
+        val params = CoordinatorLayout.LayoutParams(fabView.layoutParams)
+        params.behavior = ScrollAwareFABBehavior()
+        fabView.layoutParams = params
+
 
         // listeners
         RxView.clicks(fabView).bindToLifecycle(fabView).subscribe {

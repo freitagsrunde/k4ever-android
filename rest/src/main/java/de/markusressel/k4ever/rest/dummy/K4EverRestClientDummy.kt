@@ -22,12 +22,12 @@ import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
+import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.UserModel
 import io.reactivex.Single
 import java.util.*
 
 class K4EverRestClientDummy : K4EverRestApiClient {
-
     override fun getAllProducts(): Single<List<ProductModel>> {
         val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, true)
         val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2, true)
@@ -38,7 +38,7 @@ class K4EverRestClientDummy : K4EverRestApiClient {
                 "Spritziges Erfrischungsgetränk, so schwarz wie deine Seele \uD83D\uDE08", 1.1,
                 0.25, true)
 
-        return Single.just(listOf(p1, p2, p3, p4, p5, p6))
+        return Single.just(listOf(p1, p2, p3, p4, p5, p6).shuffled())
     }
 
     override fun getProduct(id: Long): Single<ProductModel> {
@@ -51,7 +51,7 @@ class K4EverRestClientDummy : K4EverRestApiClient {
         val p2 = UserModel(1, "max", "Max Rosin")
         val p3 = UserModel(2, "phillip", "Zucker")
 
-        return Single.just(listOf(p1, p2, p3))
+        return Single.just(listOf(p1, p2, p3).shuffled())
     }
 
     override fun getUser(id: Long): Single<UserModel> {
@@ -64,16 +64,27 @@ class K4EverRestClientDummy : K4EverRestApiClient {
         val b2 = BalanceHistoryItemModel(0, 3.0, Date(Date().time - 100))
         val b3 = BalanceHistoryItemModel(0, -5.0, Date(Date().time + 200))
 
-        return Single.just(listOf(b1, b2, b3))
+        return Single.just(listOf(b1, b2, b3).shuffled())
     }
 
     override fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>> {
-        val p1 = PurchaseHistoryItemModel(0, listOf(getProduct(0).blockingGet()), Date())
+        val p1 = PurchaseHistoryItemModel(0, listOf(getProduct(0).blockingGet()),
+                Date(Date().time + 110))
         val p2 = PurchaseHistoryItemModel(1,
-                listOf(getProduct(0).blockingGet(), getProduct(1).blockingGet()), Date())
-        val p3 = PurchaseHistoryItemModel(2, listOf(getProduct(3).blockingGet()), Date())
+                listOf(getProduct(0).blockingGet(), getProduct(1).blockingGet()),
+                Date(Date().time + 90))
+        val p3 = PurchaseHistoryItemModel(2, listOf(getProduct(3).blockingGet()),
+                Date(Date().time - 200))
 
-        return Single.just(listOf(p1, p2, p3))
+        return Single.just(listOf(p1, p2, p3).shuffled())
+    }
+
+    override fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>> {
+        val t1 = TransferHistoryItemModel(0, 5.0, getUser(1).blockingGet(), Date())
+        val t2 = TransferHistoryItemModel(1, 10.0, getUser(1).blockingGet(), Date())
+        val t3 = TransferHistoryItemModel(2, 15.0, getUser(1).blockingGet(), Date())
+
+        return Single.just(listOf(t1, t2, t3))
     }
 
     override fun setHostname(hostname: String) {

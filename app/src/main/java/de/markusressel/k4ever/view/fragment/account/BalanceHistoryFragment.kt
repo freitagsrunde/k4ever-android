@@ -30,24 +30,27 @@ import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
-import de.markusressel.k4ever.data.persistence.account.BalanceHistoryItemEntity
-import de.markusressel.k4ever.data.persistence.account.BalanceHistoryItemPersistenceManager
-import de.markusressel.k4ever.data.persistence.account.PurchaseHistoryItemEntity
-import de.markusressel.k4ever.data.persistence.account.PurchaseHistoryItemPersistenceManager
+import de.markusressel.k4ever.data.persistence.account.*
+import de.markusressel.k4ever.data.persistence.user.UserEntity_
+import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemBalanceHistoryItemBinding
 import de.markusressel.k4ever.databinding.ListItemPurchaseHistoryItemBinding
-import de.markusressel.k4ever.extensions.filterByExpectedType
+import de.markusressel.k4ever.databinding.ListItemTransferHistoryItemBinding
+import de.markusressel.k4ever.extensions.common.filterByExpectedType
+import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
+import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.FabConfig
 import de.markusressel.k4ever.view.fragment.base.MultiPersistableListFragmentBase
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function4
 import kotlinx.android.synthetic.main.fragment__account__balance_history.*
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import kotlinx.android.synthetic.main.list_item__balance_history_item.view.*
 import kotlinx.android.synthetic.main.list_item__purchase_history_item.view.*
+import kotlinx.android.synthetic.main.list_item__transfer_history_item.view.*
 import javax.inject.Inject
 
 
@@ -81,6 +84,12 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
     @Inject
     lateinit var purchasePersistenceManager: PurchaseHistoryItemPersistenceManager
 
+    @Inject
+    lateinit var tranferPersistenceManager: TransferHistoryItemPersistenceManager
+
+    @Inject
+    lateinit var userPersistenceManager: UserPersistenceManager
+
     override fun createAdapter(): LastAdapter {
         return LastAdapter(listValues,
                 BR.item).map<BalanceHistoryItemEntity, ListItemBalanceHistoryItemBinding>(
@@ -93,7 +102,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                     val balanceItem = holder.binding.item
 
                     balanceItem?.let {
-                        holder.binding.root.money_amount.text = getString(
+                        holder.binding.root.money_amount_balance.text = getString(
                                 R.string.shopping_cart__item_cost, balanceItem.amount)
                     }
                 }
@@ -125,6 +134,33 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         // TODO: should there be any detail view of purchase history items?
                         //                        openDetailView(listValues[it.adapterPosition])
                     }
+                }
+                .map<TransferHistoryItemEntity, ListItemTransferHistoryItemBinding>(
+                        R.layout.list_item__transfer_history_item) {
+                    onCreate {
+                        it.binding.presenter = this@BalanceHistoryFragment
+                    }
+                    onBind {
+                        onBind { holder ->
+                            val transferItem = holder.binding.item
+
+                            transferItem?.let {
+                                holder.binding.root.money_amount_transfer.text = getString(
+                                        R.string.shopping_cart__item_cost, transferItem.amount)
+                                holder.binding.root.icon_transfer.icon = if (transferItem.amount > 0) {
+                                    iconHandler.getHistoryItemIcon(
+                                            MaterialDesignIconic.Icon.gmi_chevron_down)
+                                } else {
+                                    iconHandler.getHistoryItemIcon(
+                                            MaterialDesignIconic.Icon.gmi_chevron_up)
+                                }
+                            }
+                        }
+                    }
+                    onClick {
+                        // TODO: should there be any detail view of purchase history items?
+                        //                        openDetailView(listValues[it.adapterPosition])
+                    }
                 }.into(recyclerView)
     }
 
@@ -132,20 +168,33 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
         val currentUserId = 1L
 
         // download all data and wrap them in a new Single object
-        return Single.zip(restClient.getBalanceHistory(currentUserId),
+        return Single.zip(restClient.getAllUsers(), restClient.getBalanceHistory(currentUserId),
                 restClient.getPurchaseHistory(currentUserId),
-                BiFunction<List<BalanceHistoryItemModel>, List<PurchaseHistoryItemModel>, List<Any>> { t1, t2 ->
-                    listOf(t1, t2).flatten()
-                })
+                restClient.getTransferHistory(currentUserId), Function4 { t1, t2, t3, t4 ->
+
+            userPersistenceManager.getStore().removeAll()
+            userPersistenceManager.getStore().put(t1.map { it.toEntity() })
+
+            listOf(t2, t3, t4).flatten()
+        })
     }
 
     override fun mapToEntity(it: Any): IdentifiableListItem {
         return when (it) {
             is BalanceHistoryItemModel -> BalanceHistoryItemEntity(0, it.id, it.amount, it.date)
+            is TransferHistoryItemModel -> {
 
-        // TODO: map products in purchase too
-        // it.products
-            is PurchaseHistoryItemModel -> PurchaseHistoryItemEntity(0, it.id, emptyList(), it.date)
+                val user = userPersistenceManager.getStore().query().run {
+                    equal(UserEntity_.id, it.recipient.id)
+                }.build().findUnique()
+
+                val item = TransferHistoryItemEntity(id = it.id, amount = it.amount, date = it.date)
+                item.recipient.target = user
+
+                item
+            }
+            is PurchaseHistoryItemModel -> PurchaseHistoryItemEntity(0, it.id,
+                    it.products.map { it.toEntity() }, it.date)
             else -> throw IllegalArgumentException("No mapping function for '${it.javaClass}'")
         }
     }
@@ -153,14 +202,17 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
     override fun persistListData(data: List<IdentifiableListItem>) {
         balancePersistenceManager.getStore().removeAll()
         purchasePersistenceManager.getStore().removeAll()
+        tranferPersistenceManager.getStore().removeAll()
 
         balancePersistenceManager.getStore().put(data.filterByExpectedType())
         purchasePersistenceManager.getStore().put(data.filterByExpectedType())
+        tranferPersistenceManager.getStore().put(data.filterByExpectedType())
     }
 
     override fun loadListDataFromPersistence(): List<IdentifiableListItem> {
         return listOf(balancePersistenceManager.getStore().all,
-                purchasePersistenceManager.getStore().all).flatten()
+                purchasePersistenceManager.getStore().all,
+                tranferPersistenceManager.getStore().all).flatten()
     }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
@@ -169,6 +221,36 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                 }, onOptionsMenuItemClicked = {
             false
         })
+    }
+
+    override fun filterListItem(item: IdentifiableListItem): Boolean {
+        // TODO: filter history items by type (if set by user)
+        return super.filterListItem(item)
+        //        return item is PurchaseHistoryItemEntity
+    }
+
+    override fun sortListData(listData: List<IdentifiableListItem>): List<IdentifiableListItem> {
+        val dateComparator = Comparator<IdentifiableListItem> { a, b ->
+            val dateA = when (a) {
+                is BalanceHistoryItemEntity -> a.date
+                is PurchaseHistoryItemEntity -> a.date
+                is TransferHistoryItemEntity -> a.date
+                else -> throw IllegalArgumentException(
+                        "Cant compare object of type ${a.javaClass}!")
+            }
+
+            val dateB = when (b) {
+                is BalanceHistoryItemEntity -> b.date
+                is PurchaseHistoryItemEntity -> b.date
+                is TransferHistoryItemEntity -> b.date
+                else -> throw IllegalArgumentException(
+                        "Cant compare object of type ${b.javaClass}!")
+            }
+
+            dateA.compareTo(dateB)
+        }
+
+        return listData.sortedWith(dateComparator)
     }
 
     override fun initComponents(context: Context) {

@@ -37,8 +37,8 @@ import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemCartItemBinding
 import de.markusressel.k4ever.databinding.ListItemProductBinding
-import de.markusressel.k4ever.extensions.context
-import de.markusressel.k4ever.extensions.pxToSp
+import de.markusressel.k4ever.extensions.common.context
+import de.markusressel.k4ever.extensions.common.pxToSp
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption

@@ -19,6 +19,7 @@ package de.markusressel.k4ever.rest.users
 
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
+import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.UserModel
 import io.reactivex.Single
 
@@ -46,5 +47,11 @@ interface UserApi {
      * @param id the id of the user
      */
     fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>>
+
+    /**
+     * Get a list of all transfer history items of a specific user
+     * @param id the id of the user
+     */
+    fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>>
 
 }

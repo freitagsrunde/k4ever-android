@@ -63,17 +63,8 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(hostFragment = this, optionsMenuRes = R.menu.options_menu_list,
+        OptionsMenuComponent(hostFragment = this, optionsMenuRes = R.menu.options_menu_multi_list,
                 onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
-                    val sortOptionMenuItem = menu?.findItem(R.id.sortOrder)
-                    sortOptionMenuItem?.let {
-                        it.icon = iconHandler.getOptionsMenuIcon(MaterialDesignIconic.Icon.gmi_sort)
-
-                        if (getAllSortCriteria().isEmpty()) {
-                            sortOptionMenuItem.isVisible = false
-                        }
-                    }
-
                     val searchMenuItem = menu?.findItem(R.id.search)
                     searchMenuItem?.icon = iconHandler.getOptionsMenuIcon(
                             MaterialDesignIconic.Icon.gmi_search)
@@ -92,13 +83,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
                     }
 
                 }, onOptionsMenuItemClicked = {
-            when {
-                it.itemId == R.id.sortOrder -> {
-                    openSortSelection()
-                    true
-                }
-                else -> false
-            }
+            false
         })
     }
 
@@ -157,8 +142,8 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
 
         Observable.fromIterable(loadListDataFromPersistence()).filter {
             currentSearchFilter.isEmpty() || itemContainsCurrentSearchString(it)
-        }.toList().map { sortByCurrentOptions(it) }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        }.filter { filterListItem(it) }.toList().map { sortListData(it) }
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
                     updateAdapterList(it)
                 }, onError = {
@@ -168,6 +153,14 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
                         loadingComponent.showError(it)
                     }
                 })
+    }
+
+    /**
+     * Filter list items that don't match this function from the visible list
+     * @return true, if the item is ok, false if it should be filtered
+     */
+    open internal fun filterListItem(item: IdentifiableListItem): Boolean {
+        return true
     }
 
     private fun itemContainsCurrentSearchString(item: IdentifiableListItem): Boolean {
@@ -199,55 +192,10 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     /**
      * Sorts a list by the currently selected SortOptions
      */
-    private fun sortByCurrentOptions(
-            listData: List<IdentifiableListItem>): List<IdentifiableListItem> {
-        val sortOptions = getCurrentSortOptions()
-
-        if (sortOptions.isEmpty()) {
-            return listData
-        }
-
-        // create initial comparator
-        var comparator: Comparator<IdentifiableListItem> = if (sortOptions.first().reversed) {
-            compareByDescending(sortOptions.first().selector)
-        } else {
-            compareBy(sortOptions.first().selector)
-        }
-
-        // extend it with other criteria
-        sortOptions.drop(1).forEach { criteria ->
-            comparator = if (criteria.reversed) {
-                comparator.thenByDescending(criteria.selector)
-            } else {
-                comparator.thenBy(criteria.selector)
-            }
-        }
-
-        return listData.sortedWith(comparator)
-    }
+    abstract fun sortListData(listData: List<IdentifiableListItem>): List<IdentifiableListItem>
 
     /**
-     * Returns a list of all available sort criteria
-     * Override this method in child classes
-     */
-    open fun getAllSortCriteria(): List<SortOption<IdentifiableListItem>> {
-        return emptyList()
-    }
-
-    /**
-     * Get a list of the currently selected (active) sort criteria
-     */
-    open fun getCurrentSortOptions(): List<SortOption<IdentifiableListItem>> {
-        // TODO:
-        return getAllSortCriteria()
-    }
-
-    private fun openSortSelection() {
-        // TODO:
-    }
-
-    /**
-     * Reload list data asEntity it's original source, persist it and display it to the user afterwards
+     * Reload list data from it's original source, persist it and display it to the user afterwards
      */
     protected open fun reloadDataFromSource() {
         loadingComponent.showLoading()
@@ -285,6 +233,9 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
      */
     abstract fun mapToEntity(it: Any): IdentifiableListItem
 
+    /**
+     * Persist the current list data
+     */
     abstract internal fun persistListData(data: List<IdentifiableListItem>)
 
     private fun getLastUpdatedFromSource(): Long {
@@ -297,7 +248,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     }
 
     /**
-     * Load the data to be displayed in the list asEntity the persistence
+     * Load the data to be displayed in the list from the persistence
      */
     abstract fun loadListDataFromPersistence(): List<IdentifiableListItem>
 

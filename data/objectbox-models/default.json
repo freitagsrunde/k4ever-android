@@ -111,10 +111,39 @@
           "name": "products"
         }
       ]
+    },
+    {
+      "id": "5:5700052018675308609",
+      "lastPropertyId": "5:736275786097065574",
+      "name": "TransferHistoryItemEntity",
+      "properties": [
+        {
+          "id": "1:1531247360073643160",
+          "name": "entityId"
+        },
+        {
+          "id": "2:4849700514303161707",
+          "name": "id"
+        },
+        {
+          "id": "3:2370340651797406787",
+          "name": "amount"
+        },
+        {
+          "id": "4:2731190413495394775",
+          "name": "date"
+        },
+        {
+          "id": "5:736275786097065574",
+          "indexId": "1:6941668961858649997",
+          "name": "recipientId"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "4:1878856114505241070",
-  "lastIndexId": "0:0",
+  "lastEntityId": "5:5700052018675308609",
+  "lastIndexId": "1:6941668961858649997",
   "lastRelationId": "1:9212408739143017420",
   "lastSequenceId": "0:0",
   "modelVersion": 4,

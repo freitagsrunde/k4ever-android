@@ -23,6 +23,7 @@ import de.markusressel.k4ever.rest.listDeserializer
 import de.markusressel.k4ever.rest.singleDeserializer
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
+import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.UserModel
 import io.reactivex.Single
 
@@ -42,6 +43,11 @@ class UserManager(val requestManager: RequestManager) : UserApi {
 
     override fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>> {
         return requestManager.doRequest("/user/$id/purchase_history/", Method.GET, singleDeserializer())
+    }
+
+    override fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>> {
+        return requestManager.doRequest("/user/$id/transfer_history/", Method.GET,
+                singleDeserializer())
     }
 
 }

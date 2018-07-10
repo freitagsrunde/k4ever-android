@@ -24,7 +24,7 @@
 
         <variable
             name="item"
-            type="de.markusressel.k4ever.data.persistence.account.BalanceHistoryItemEntity" />
+            type="de.markusressel.k4ever.data.persistence.account.TransferHistoryItemEntity" />
 
         <variable
             name="presenter"
@@ -45,18 +45,31 @@
             android:padding="8dp">
 
             <com.mikepenz.iconics.view.IconicsImageView
-                android:id="@+id/icon"
+                android:id="@+id/icon_transfer"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginRight="16dp"
-                app:iiv_color="?android:attr/textColorSecondary"
-                app:iiv_icon="gmi-account" />
+                app:iiv_color="?android:attr/textColorSecondary" />
 
-            <TextView
-                android:id="@+id/money_amount_balance"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(item.amount)}" />
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/recipient"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(item.recipient.target.display_name)}" />
+
+                <TextView
+                    android:id="@+id/money_amount_transfer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(item.amount)}" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

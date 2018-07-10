@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.extensions
+package de.markusressel.k4ever.data.persistence.account
 
-import java.util.*
+import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
+import javax.inject.Inject
+import javax.inject.Singleton
 
-/**
- * Returns a random number within the range including first and last value
- */
-fun ClosedRange<Int>.random() = Random().nextInt(endInclusive - start) + start
+@Singleton
+class TransferHistoryItemPersistenceManager @Inject constructor() : PersistenceManagerBase<TransferHistoryItemEntity>(
+        TransferHistoryItemEntity::class)

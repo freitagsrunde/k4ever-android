@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.extensions
+package de.markusressel.k4ever.rest.users.model
 
-/**
- * Filters the list by the given type
- */
-inline fun <reified T : Any> Collection<*>.filterByExpectedType(): Collection<T> {
-    return this.filter { it is T }.map { it as T }
-}
+import java.util.*
+
+data class TransferHistoryItemModel(val id: Long, val amount: Double, val recipient: UserModel,
+                                    val date: Date)
