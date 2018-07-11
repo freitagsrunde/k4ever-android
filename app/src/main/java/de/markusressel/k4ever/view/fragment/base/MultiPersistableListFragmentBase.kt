@@ -20,7 +20,6 @@ package de.markusressel.k4ever.view.fragment.base
 import android.arch.lifecycle.Lifecycle
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.SearchView
 import android.view.*
@@ -43,7 +42,6 @@ import kotlinx.android.synthetic.main.layout_empty_list.*
 import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 
 
 /**
@@ -111,12 +109,9 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
         return loadingComponent.onCreateView(inflater, parent, savedInstanceState)
     }
 
-    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        swipeRefreshLayout.setOnRefreshListener {
-            reloadDataFromSource()
-        }
+        loadingComponent.showContent(false)
     }
 
     override fun onResume() {
@@ -130,27 +125,25 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
             Timber.d { "Persisted list data is probably still valid, just loading from persistence" }
             updateListFromPersistence()
         }
-
-        updateListFromPersistence()
     }
 
     /**
      * Loads the data using {@link loadListDataFromPersistence()}
      */
     protected fun updateListFromPersistence() {
-        loadingComponent.showLoading()
+        swipeRefreshLayout.isRefreshing = true
 
-        Observable.fromIterable(loadListDataFromPersistence()).filter {
-            currentSearchFilter.isEmpty() || itemContainsCurrentSearchString(it)
-        }.filter { filterListItem(it) }.toList().map { sortListData(it) }
+        Observable.fromIterable(loadListDataFromPersistence()).toList()
+                .map { filterAndSortList(it) }.map { createListDiff(listValues, it) to it }
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
-                    updateAdapterList(it)
+                    updateAdapterList(it.first, it.second)
                 }, onError = {
                     if (it is CancellationException) {
                         Timber.d { "reload from persistence cancelled" }
                     } else {
                         loadingComponent.showError(it)
+                        swipeRefreshLayout.isRefreshing = false
                     }
                 })
     }
@@ -172,10 +165,17 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
         }
     }
 
-    protected fun updateAdapterList(newData: List<IdentifiableListItem>) {
-        val diffCallback = DiffCallback(listValues, newData)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
+    protected fun createListDiff(oldData: List<IdentifiableListItem>,
+                                 newData: List<IdentifiableListItem>): DiffUtil.DiffResult {
+        val diffCallback = DiffCallback(oldData, newData)
+        return DiffUtil.calculateDiff(diffCallback)
+    }
 
+    /**
+     * Updates the content of the adapter behind the recyclerview
+     */
+    protected fun updateAdapterList(diffResult: DiffUtil.DiffResult,
+                                    newData: List<IdentifiableListItem>) {
         listValues.clear()
         listValues.addAll(newData)
 
@@ -185,8 +185,20 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
             hideEmpty()
         }
         loadingComponent.showContent()
+        swipeRefreshLayout.isRefreshing = false
 
         diffResult.dispatchUpdatesTo(recyclerViewAdapter)
+    }
+
+    /**
+     * Filters and sorts the given list by the currently active filter and sort options
+     * Remember to call this before using {@link updateAdapterList }
+     */
+    private fun filterAndSortList(newData: List<IdentifiableListItem>): List<IdentifiableListItem> {
+        val filteredNewData = newData.filter {
+            currentSearchFilter.isEmpty() || itemContainsCurrentSearchString(it)
+        }.filter { filterListItem(it) }.toList()
+        return sortListData(filteredNewData)
     }
 
     /**
@@ -197,27 +209,27 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     /**
      * Reload list data from it's original source, persist it and display it to the user afterwards
      */
-    protected open fun reloadDataFromSource() {
-        loadingComponent.showLoading()
+    override fun reloadDataFromSource() {
+        swipeRefreshLayout.isRefreshing = true
 
-        getLoadDataFromSourceFunction().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        getLoadDataFromSourceFunction().map {
+            it.map { mapToEntity(it) }
+        }.map {
+            persistListData(it)
+            it
+        }.map {
+            filterAndSortList(it)
+        }.map {
+            createListDiff(listValues, it) to it
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
-                    val entities = it.map {
-                        mapToEntity(it)
-                    }
-
-                    persistListData(entities)
                     updateLastUpdatedFromSource()
-                    updateListFromPersistence()
-
-                    swipeRefreshLayout.isRefreshing = false
+                    updateAdapterList(it.first, it.second)
                 }, onError = {
-                    swipeRefreshLayout.isRefreshing = false
-
                     if (it is CancellationException) {
                         Timber.d { "reload from source cancelled" }
                     } else {
+                        swipeRefreshLayout.isRefreshing = false
                         loadingComponent.showError(it)
                     }
                 })
@@ -251,9 +263,5 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
      * Load the data to be displayed in the list from the persistence
      */
     abstract fun loadListDataFromPersistence(): List<IdentifiableListItem>
-
-    companion object {
-        private val loaderIdCounter: AtomicInteger = AtomicInteger()
-    }
 
 }

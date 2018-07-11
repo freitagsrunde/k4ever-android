@@ -20,7 +20,6 @@ package de.markusressel.k4ever.view.fragment.base
 import android.arch.lifecycle.Lifecycle
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.SearchView
 import android.view.*
@@ -44,7 +43,6 @@ import kotlinx.android.synthetic.main.layout_empty_list.*
 import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 
 
 /**
@@ -127,12 +125,9 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
         return loadingComponent.onCreateView(inflater, parent, savedInstanceState)
     }
 
-    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        swipeRefreshLayout.setOnRefreshListener {
-            reloadDataFromSource()
-        }
+        loadingComponent.showContent(false)
     }
 
     override fun onResume() {
@@ -146,48 +141,75 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
             Timber.d { "Persisted list data is probably still valid, just loading from persistence" }
             updateListFromPersistence()
         }
-
-        updateListFromPersistence()
     }
 
     /**
      * Loads the data using {@link loadListDataFromPersistence()}
      */
     protected fun updateListFromPersistence() {
-        loadingComponent.showLoading()
+        swipeRefreshLayout.isRefreshing = true
 
-        Observable.fromIterable(loadListDataFromPersistence()).filter {
-            if (it is SearchableListItem) {
-                return@filter it.getSearchableContent().any {
-                    it.toString().contains(currentSearchFilter, true)
-                }
-            } else {
-                it.toString().contains(currentSearchFilter, true)
-            }
-        }.toList().map { sortByCurrentOptions(it) }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        Observable.fromIterable(loadListDataFromPersistence()).toList()
+                .map { filterAndSortList(it) }.map {
+                    createListDiff(listValues, it) to it
+                }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
-                    val diffCallback = DiffCallback(listValues, it)
-                    val diffResult = DiffUtil.calculateDiff(diffCallback)
-
-                    listValues.clear()
-                    listValues.addAll(it)
-
-                    if (listValues.isEmpty()) {
-                        showEmpty()
-                    } else {
-                        hideEmpty()
-                    }
-                    loadingComponent.showContent()
-
-                    diffResult.dispatchUpdatesTo(recyclerViewAdapter)
+                    updateAdapterList(it.first, it.second)
                 }, onError = {
                     if (it is CancellationException) {
                         Timber.d { "reload from persistence cancelled" }
                     } else {
                         loadingComponent.showError(it)
+                        swipeRefreshLayout.isRefreshing = false
                     }
                 })
+    }
+
+    /**
+     * Creates a diff of two lists
+     */
+    protected fun createListDiff(oldData: List<EntityType>,
+                                 newData: List<EntityType>): DiffUtil.DiffResult {
+        val diffCallback = DiffCallback(oldData, newData)
+        return DiffUtil.calculateDiff(diffCallback)
+    }
+
+    /**
+     * Updates the content of the adapter behind the recyclerview
+     */
+    protected fun updateAdapterList(diffResult: DiffUtil.DiffResult, newData: List<EntityType>) {
+        listValues.clear()
+        listValues.addAll(newData)
+
+        if (listValues.isEmpty()) {
+            showEmpty()
+        } else {
+            hideEmpty()
+        }
+        loadingComponent.showContent()
+        swipeRefreshLayout.isRefreshing = false
+
+        diffResult.dispatchUpdatesTo(recyclerViewAdapter)
+    }
+
+    /**
+     * Filters and sorts the given list by the currently active filter and sort options
+     * Remember to call this before using {@link updateAdapterList }
+     */
+    private fun filterAndSortList(newData: List<EntityType>): List<EntityType> {
+        val filteredNewData = newData.filter {
+            currentSearchFilter.isEmpty() || itemContainsCurrentSearchString(it)
+        }.toList()
+        return sortByCurrentOptions(filteredNewData)
+    }
+
+    private fun itemContainsCurrentSearchString(item: EntityType): Boolean {
+        return when (item) {
+            is SearchableListItem -> item.getSearchableContent().any {
+                item.toString().contains(currentSearchFilter, true)
+            }
+            else -> item.toString().contains(currentSearchFilter, true)
+        }
     }
 
     /**
@@ -242,21 +264,19 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
     /**
      * Reload list data asEntity it's original source, persist it and display it to the user afterwards
      */
-    protected fun reloadDataFromSource() {
-        loadingComponent.showLoading()
+    override fun reloadDataFromSource() {
+        swipeRefreshLayout.isRefreshing = true
 
-        loadListDataFromSource().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        loadListDataFromSource().map {
+            it.map { mapToEntity(it) }
+        }.map {
+            persistListData(it)
+            it
+        }.map { filterAndSortList(it) }.map { createListDiff(listValues, it) to it }
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
-                    val entities = it.map {
-                        mapToEntity(it)
-                    }
-
-                    persistListData(entities)
                     updateLastUpdatedFromSource()
-                    updateListFromPersistence()
-
-                    swipeRefreshLayout.isRefreshing = false
+                    updateAdapterList(it.first, it.second)
                 }, onError = {
                     swipeRefreshLayout.isRefreshing = false
 
@@ -307,12 +327,8 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
     }
 
     /**
-     * Load the data to be displayed in the list asEntity it's original source
+     * Load the data to be displayed in the list from it's original source
      */
     abstract fun loadListDataFromSource(): Single<List<ModelType>>
-
-    companion object {
-        private val loaderIdCounter: AtomicInteger = AtomicInteger()
-    }
 
 }

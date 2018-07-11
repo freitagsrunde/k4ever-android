@@ -72,7 +72,16 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
         recyclerView.layoutManager = layoutManager
 
         setupFabs()
+
+        swipeRefreshLayout.setOnRefreshListener {
+            reloadDataFromSource()
+        }
     }
+
+    /**
+     * Reload list data from it's original source, persist it and display it to the user afterwards
+     */
+    abstract fun reloadDataFromSource()
 
     /**
      * Create the adapter used for the recyclerview
