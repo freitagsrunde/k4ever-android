@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:6605378765947734788",
-      "lastPropertyId": "7:8129499693474918635",
+      "lastPropertyId": "8:8686820755717316210",
       "name": "ProductEntity",
       "properties": [
         {
@@ -35,13 +35,22 @@
         {
           "id": "7:8129499693474918635",
           "name": "isFavorite"
+        },
+        {
+          "id": "8:8686820755717316210",
+          "name": "barcode"
         }
       ],
-      "relations": []
+      "relations": [
+        {
+          "id": "3:1388049529368107451",
+          "name": "typeId"
+        }
+      ]
     },
     {
       "id": "2:7680704537536834906",
-      "lastPropertyId": "4:2823101629259237314",
+      "lastPropertyId": "5:4211459639909537676",
       "name": "UserEntity",
       "properties": [
         {
@@ -59,9 +68,18 @@
         {
           "id": "4:2823101629259237314",
           "name": "display_name"
+        },
+        {
+          "id": "5:4211459639909537676",
+          "name": "balance"
         }
       ],
-      "relations": []
+      "relations": [
+        {
+          "id": "2:5914616515041626925",
+          "name": "permissions"
+        }
+      ]
     },
     {
       "id": "3:4828375309153624381",
@@ -140,11 +158,59 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "6:8274529163733038171",
+      "lastPropertyId": "4:6578067925225702260",
+      "name": "PermissionEntity",
+      "properties": [
+        {
+          "id": "1:3296323659961331153",
+          "name": "entityId"
+        },
+        {
+          "id": "2:3154163047001007810",
+          "name": "id"
+        },
+        {
+          "id": "3:6201264056802996446",
+          "name": "name"
+        },
+        {
+          "id": "4:6578067925225702260",
+          "name": "description"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:1322446347144146285",
+      "lastPropertyId": "4:2270705631063290523",
+      "name": "ProductTypeEntity",
+      "properties": [
+        {
+          "id": "1:6677076043932817458",
+          "name": "entityId"
+        },
+        {
+          "id": "2:7821926942056765484",
+          "name": "id"
+        },
+        {
+          "id": "3:678288853116190966",
+          "name": "name"
+        },
+        {
+          "id": "4:2270705631063290523",
+          "name": "description"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "5:5700052018675308609",
+  "lastEntityId": "7:1322446347144146285",
   "lastIndexId": "1:6941668961858649997",
-  "lastRelationId": "1:9212408739143017420",
+  "lastRelationId": "3:1388049529368107451",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,

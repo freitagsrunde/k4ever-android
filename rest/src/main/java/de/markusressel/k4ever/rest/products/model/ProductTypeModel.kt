@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.rest.users.model
+package de.markusressel.k4ever.rest.products.model
 
-data class UserModel(val id: Long, val user_name: String, val display_name: String,
-                     val balance: Double, val permissions: List<PermissionModel>)
+data class ProductTypeModel(val id: Long, val name: String, val description: String)

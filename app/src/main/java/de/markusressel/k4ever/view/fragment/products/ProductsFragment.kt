@@ -39,6 +39,7 @@ import de.markusressel.k4ever.databinding.ListItemCartItemBinding
 import de.markusressel.k4ever.databinding.ListItemProductBinding
 import de.markusressel.k4ever.extensions.common.context
 import de.markusressel.k4ever.extensions.common.pxToSp
+import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
@@ -80,7 +81,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     }
 
     override fun mapToEntity(it: ProductModel): ProductEntity {
-        return ProductEntity(0, it.id, it.name, it.description, it.price, it.deposit, it.isFavorite)
+        return it.toEntity()
     }
 
     override fun getAllSortCriteria(): List<SortOption<ProductEntity>> {

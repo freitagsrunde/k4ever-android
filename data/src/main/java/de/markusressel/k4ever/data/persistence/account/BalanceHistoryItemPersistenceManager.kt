@@ -22,4 +22,5 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BalanceHistoryItemPersistenceManager @Inject constructor() : PersistenceManagerBase<BalanceHistoryItemEntity>(BalanceHistoryItemEntity::class)
+class BalanceHistoryItemPersistenceManager @Inject constructor() : PersistenceManagerBase<BalanceHistoryItemEntity>(
+        BalanceHistoryItemEntity::class)

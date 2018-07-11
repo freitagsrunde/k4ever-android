@@ -23,6 +23,7 @@ import io.objectbox.annotation.Id
 import java.util.*
 
 @Entity
-data class BalanceHistoryItemEntity(@Id var entityId: Long = 0, val id: Long, val amount: Double, val date: Date) : IdentifiableListItem {
+data class BalanceHistoryItemEntity(@Id var entityId: Long = 0, val id: Long, val amount: Double,
+                                    val date: Date) : IdentifiableListItem {
     override fun getItemId(): Long = id
 }

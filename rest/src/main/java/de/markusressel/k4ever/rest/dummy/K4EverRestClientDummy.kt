@@ -28,23 +28,59 @@ import io.reactivex.Single
 import java.util.*
 
 class K4EverRestClientDummy : K4EverRestApiClient {
-    override fun getAllProducts(): Single<List<ProductModel>> {
-        val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, true)
-        val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2, true)
-        val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2, false)
-        val p4 = ProductModel(3, "Spezi", "Zucker ^2", 1.0, 0.2, false)
-        val p5 = ProductModel(4, "Snickers", "Zucker ^5", 1.0, 0.0, false)
-        val p6 = ProductModel(5, "Coca Cola Zero ®",
-                "Spritziges Erfrischungsgetränk, so schwarz wie deine Seele \uD83D\uDE08", 1.1,
-                0.25, true)
 
-        val fakeRealItems = listOf(p1, p2, p3, p4, p5, p6)
-        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
+    companion object {
+        private val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, "000000000",
+                listOf(), true)
+        private val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2,
+                "000000001", listOf(), true)
+        private val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2, "000000002", listOf(), false)
+        private val p4 = ProductModel(3, "Spezi", "Zucker ^2", 1.0, 0.2, "000000003", listOf(),
+                false)
+        private val p5 = ProductModel(4, "Snickers", "Zucker ^5", 1.0, 0.0, "000000004", listOf(),
+                false)
+        private val p6 = ProductModel(5, "Coca Cola Zero ®",
+                "Spritziges Erfrischungsgetränk, so schwarz wie deine Seele \uD83D\uDE08", 1.1,
+                0.25, "000000005", listOf(), true)
+
+        private val fakeRealProducts = listOf(p1, p2, p3, p4, p5, p6)
+        private val randomProducts = 10.rangeTo(1000).map { it.toLong() }.map {
             ProductModel(it, "Product $it", "Product description ($it)", 1.0 + it.toDouble() / 100,
-                    0.2 + it.toDouble() / 100, false)
+                    0.2 + it.toDouble() / 100, "$it", listOf(), false)
         }
 
-        return Single.just(listOf(fakeRealItems, randomItems).flatten().shuffled())
+        private val products = listOf(fakeRealProducts, randomProducts).flatten()
+
+
+        private val u1 = UserModel(0, "g_markus", "Markus Ressel", 20.0, listOf())
+        private val u2 = UserModel(1, "max", "Max Rosin", -50.0, listOf())
+        private val u3 = UserModel(2, "phillip", "Zucker", 0.0, listOf())
+
+        private val fakeRealUsers = listOf(u1, u2, u3)
+
+        private val randomUsers = 10.rangeTo(1000).map { it.toLong() }.map {
+            UserModel(it, "User_$it", "User $it", it.toDouble(), listOf())
+        }
+
+        private val users = listOf(fakeRealUsers, randomUsers).flatten()
+
+
+        private val balanceItems = 10.rangeTo(1000).map { it.toLong() }.map {
+            BalanceHistoryItemModel(it, it.toDouble(), Date(Date().time + it))
+        }
+
+    }
+
+    private val purchaseItems = 10.rangeTo(1000).map { it.toLong() }.map {
+        PurchaseHistoryItemModel(it, listOf(getProduct(it).blockingGet()), Date(Date().time + it))
+    }
+
+    private val transferItems = 10.rangeTo(1000).map { it.toLong() }.map {
+        TransferHistoryItemModel(it, 5.0, getUser(1).blockingGet(), Date(Date().time + it))
+    }
+
+    override fun getAllProducts(): Single<List<ProductModel>> {
+        return Single.just(products.shuffled())
     }
 
     override fun getProduct(id: Long): Single<ProductModel> {
@@ -53,17 +89,7 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     override fun getAllUsers(): Single<List<UserModel>> {
-        val p1 = UserModel(0, "g_markus", "Markus Ressel")
-        val p2 = UserModel(1, "max", "Max Rosin")
-        val p3 = UserModel(2, "phillip", "Zucker")
-
-        val fakeRealItems = listOf(p1, p2, p3)
-
-        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
-            UserModel(it, "User_$it", "User $it")
-        }
-
-        return Single.just(listOf(fakeRealItems, randomItems).flatten().shuffled())
+        return Single.just(users.shuffled())
     }
 
     override fun getUser(id: Long): Single<UserModel> {
@@ -72,28 +98,15 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     override fun getBalanceHistory(id: Long): Single<List<BalanceHistoryItemModel>> {
-        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
-            BalanceHistoryItemModel(it, it.toDouble(), Date(Date().time + it))
-        }
-
-        return Single.just(randomItems.shuffled())
+        return Single.just(balanceItems.shuffled())
     }
 
     override fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>> {
-        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
-            PurchaseHistoryItemModel(it, listOf(getProduct(it).blockingGet()),
-                    Date(Date().time + it))
-        }
-
-        return Single.just(randomItems.shuffled())
+        return Single.just(purchaseItems.shuffled())
     }
 
     override fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>> {
-        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
-            TransferHistoryItemModel(it, 5.0, getUser(1).blockingGet(), Date(Date().time + it))
-        }
-
-        return Single.just(randomItems.shuffled())
+        return Single.just(transferItems.shuffled())
     }
 
     override fun setHostname(hostname: String) {

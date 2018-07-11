@@ -22,6 +22,9 @@ import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 
 @Entity
-data class ProductEntity(@Id var entityId: Long = 0, val id: Long, val name: String, val description: String, val price: Double, val deposit: Double, var isFavorite: Boolean) : IdentifiableListItem {
+data class ProductEntity(@Id var entityId: Long = 0, val id: Long, val name: String,
+                         val description: String, val price: Double, val deposit: Double,
+                         val barcode: String, val typeId: List<ProductTypeEntity>,
+                         var isFavorite: Boolean) : IdentifiableListItem {
     override fun getItemId(): Long = id
 }

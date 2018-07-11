@@ -22,4 +22,5 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserPersistenceManager @Inject constructor() : PersistenceManagerBase<UserEntity>(UserEntity::class)
+class UserPersistenceManager @Inject constructor() : PersistenceManagerBase<UserEntity>(
+        UserEntity::class)

@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.rest.users.model
+package de.markusressel.k4ever.data.persistence.product
 
-data class UserModel(val id: Long, val user_name: String, val display_name: String,
-                     val balance: Double, val permissions: List<PermissionModel>)
+import io.objectbox.annotation.Entity
+import io.objectbox.annotation.Id
+
+@Entity
+data class ProductTypeEntity(@Id var entityId: Long = 0, val id: Long, val name: String,
+                             val description: String)
