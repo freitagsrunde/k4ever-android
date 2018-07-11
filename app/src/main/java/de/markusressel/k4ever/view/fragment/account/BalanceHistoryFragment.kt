@@ -210,9 +210,10 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
     }
 
     override fun loadListDataFromPersistence(): List<IdentifiableListItem> {
-        return listOf(balancePersistenceManager.getStore().all,
-                purchasePersistenceManager.getStore().all,
-                tranferPersistenceManager.getStore().all).flatten()
+        val transfers = tranferPersistenceManager.getStore().all
+        val purchases = purchasePersistenceManager.getStore().all
+        val balances = balancePersistenceManager.getStore().all
+        return listOf<List<IdentifiableListItem>>(balances, purchases, transfers).flatten()
     }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {

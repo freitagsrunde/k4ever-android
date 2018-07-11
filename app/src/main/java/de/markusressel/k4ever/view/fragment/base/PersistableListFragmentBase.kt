@@ -206,7 +206,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
     private fun itemContainsCurrentSearchString(item: EntityType): Boolean {
         return when (item) {
             is SearchableListItem -> item.getSearchableContent().any {
-                item.toString().contains(currentSearchFilter, true)
+                it.toString().contains(currentSearchFilter, true)
             }
             else -> item.toString().contains(currentSearchFilter, true)
         }

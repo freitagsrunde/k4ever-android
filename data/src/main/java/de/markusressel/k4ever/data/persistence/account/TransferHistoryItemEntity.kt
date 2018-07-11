@@ -35,7 +35,6 @@ data class TransferHistoryItemEntity(@Id var entityId: Long = 0, val id: Long = 
     override fun getItemId(): Long = id
 
     override fun getSearchableContent(): List<Any> {
-        recipient.target.display_name
-        return listOf(recipient.target.display_name, recipient.target.user_name, amount)
+        return listOf(recipient.target.display_name, amount)
     }
 }
