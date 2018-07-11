@@ -40,13 +40,6 @@ class K4EverRestClient(private val requestManager: RequestManager = RequestManag
     }
 
     /**
-     * Set the api resource for this client (in case it is not the default "/")
-     */
-    override fun setApiResource(apiResource: String) {
-        requestManager.apiResource = apiResource
-    }
-
-    /**
      * Set the BasicAuthConfig for this client
      */
     override fun getBasicAuthConfig(): BasicAuthConfig? {

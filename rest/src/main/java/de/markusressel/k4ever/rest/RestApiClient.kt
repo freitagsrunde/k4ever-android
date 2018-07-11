@@ -30,11 +30,6 @@ interface RestApiClient {
     fun setHostname(hostname: String)
 
     /**
-     * Set the api resource for this client (in case it is not the default "/")
-     */
-    fun setApiResource(apiResource: String)
-
-    /**
      * Set the BasicAuthConfig for this client
      */
     fun getBasicAuthConfig(): BasicAuthConfig?

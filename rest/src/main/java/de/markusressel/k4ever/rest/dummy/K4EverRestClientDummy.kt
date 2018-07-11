@@ -38,7 +38,13 @@ class K4EverRestClientDummy : K4EverRestApiClient {
                 "Spritziges Erfrischungsgetränk, so schwarz wie deine Seele \uD83D\uDE08", 1.1,
                 0.25, true)
 
-        return Single.just(listOf(p1, p2, p3, p4, p5, p6).shuffled())
+        val fakeRealItems = listOf(p1, p2, p3, p4, p5, p6)
+        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
+            ProductModel(it, "Product $it", "Product description ($it)", 1.0 + it.toDouble() / 100,
+                    0.2 + it.toDouble() / 100, false)
+        }
+
+        return Single.just(listOf(fakeRealItems, randomItems).flatten().shuffled())
     }
 
     override fun getProduct(id: Long): Single<ProductModel> {
@@ -51,7 +57,13 @@ class K4EverRestClientDummy : K4EverRestApiClient {
         val p2 = UserModel(1, "max", "Max Rosin")
         val p3 = UserModel(2, "phillip", "Zucker")
 
-        return Single.just(listOf(p1, p2, p3).shuffled())
+        val fakeRealItems = listOf(p1, p2, p3)
+
+        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
+            UserModel(it, "User_$it", "User $it")
+        }
+
+        return Single.just(listOf(fakeRealItems, randomItems).flatten().shuffled())
     }
 
     override fun getUser(id: Long): Single<UserModel> {
@@ -60,37 +72,31 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     override fun getBalanceHistory(id: Long): Single<List<BalanceHistoryItemModel>> {
-        val b1 = BalanceHistoryItemModel(0, 5.0, Date(Date().time + 100))
-        val b2 = BalanceHistoryItemModel(0, 3.0, Date(Date().time - 100))
-        val b3 = BalanceHistoryItemModel(0, -5.0, Date(Date().time + 200))
+        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
+            BalanceHistoryItemModel(it, it.toDouble(), Date(Date().time + it))
+        }
 
-        return Single.just(listOf(b1, b2, b3).shuffled())
+        return Single.just(randomItems.shuffled())
     }
 
     override fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>> {
-        val p1 = PurchaseHistoryItemModel(0, listOf(getProduct(0).blockingGet()),
-                Date(Date().time + 110))
-        val p2 = PurchaseHistoryItemModel(1,
-                listOf(getProduct(0).blockingGet(), getProduct(1).blockingGet()),
-                Date(Date().time + 90))
-        val p3 = PurchaseHistoryItemModel(2, listOf(getProduct(3).blockingGet()),
-                Date(Date().time - 200))
+        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
+            PurchaseHistoryItemModel(it, listOf(getProduct(it).blockingGet()),
+                    Date(Date().time + it))
+        }
 
-        return Single.just(listOf(p1, p2, p3).shuffled())
+        return Single.just(randomItems.shuffled())
     }
 
     override fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>> {
-        val t1 = TransferHistoryItemModel(0, 5.0, getUser(1).blockingGet(), Date())
-        val t2 = TransferHistoryItemModel(1, 10.0, getUser(1).blockingGet(), Date())
-        val t3 = TransferHistoryItemModel(2, 15.0, getUser(1).blockingGet(), Date())
+        val randomItems = 10.rangeTo(1000).map { it.toLong() }.map {
+            TransferHistoryItemModel(it, 5.0, getUser(1).blockingGet(), Date(Date().time + it))
+        }
 
-        return Single.just(listOf(t1, t2, t3))
+        return Single.just(randomItems.shuffled())
     }
 
     override fun setHostname(hostname: String) {
-    }
-
-    override fun setApiResource(apiResource: String) {
     }
 
     override fun getBasicAuthConfig(): BasicAuthConfig? {

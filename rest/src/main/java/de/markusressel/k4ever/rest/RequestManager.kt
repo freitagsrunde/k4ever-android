@@ -28,15 +28,9 @@ import io.reactivex.Single
 /**
  * Created by Markus on 08.02.2018.
  */
-class RequestManager(hostname: String = "localhost", apiResource: String = "", var basicAuthConfig: BasicAuthConfig? = null) {
+class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicAuthConfig? = null) {
 
     var hostname: String = hostname
-        set(value) {
-            field = value
-            updateBaseUrl()
-        }
-
-    var apiResource: String = apiResource
         set(value) {
             field = value
             updateBaseUrl()
@@ -66,9 +60,10 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * Updates the base URL in Fuel client according to configuration parameters
      */
     private fun updateBaseUrl() {
-        fuelManager.basePath = "http://$hostname"
-        if (apiResource.isNotEmpty()) {
-            fuelManager.basePath = fuelManager.basePath + "/$apiResource/"
+        if (hostname.startsWith("http")) {
+            fuelManager.basePath = hostname
+        } else {
+            fuelManager.basePath = "http://$hostname"
         }
     }
 
@@ -79,7 +74,8 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param urlParameters query parameters
      * @param method the request type (f.ex. GET)
      */
-    private fun createRequest(url: String, urlParameters: List<Pair<String, Any?>> = emptyList(), method: Method): Request {
+    private fun createRequest(url: String, urlParameters: List<Pair<String, Any?>> = emptyList(),
+                              method: Method): Request {
         return getAuthenticatedRequest(fuelManager.request(method, url, urlParameters))
     }
 
@@ -100,15 +96,16 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param url the URL
      * @param method the request type (f.ex. GET)
      */
-    fun doRequest(url: String, method: Method): Single<Pair<Response, Result<ByteArray, FuelError>>> {
+    fun doRequest(url: String,
+                  method: Method): Single<Pair<Response, Result<ByteArray, FuelError>>> {
         return createRequest(url = url, method = method).rx_response().map {
-                    it.second.component2()?.let {
-                                throw it
-                            }
-                    it
-                }.map {
-                    it
-                }
+            it.second.component2()?.let {
+                throw it
+            }
+            it
+        }.map {
+            it
+        }
     }
 
     /**
@@ -118,10 +115,11 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param method the request type (f.ex. GET)
      * @param deserializer a deserializer for the response json body
      */
-    fun <T : Any> doRequest(url: String, method: Method, deserializer: ResponseDeserializable<T>): Single<T> {
+    fun <T : Any> doRequest(url: String, method: Method,
+                            deserializer: ResponseDeserializable<T>): Single<T> {
         return createRequest(url = url, method = method).rx_object(deserializer).map {
-                    it.component1() ?: throw it.component2() ?: throw Exception()
-                }
+            it.component1() ?: throw it.component2() ?: throw Exception()
+        }
     }
 
     /**
@@ -132,11 +130,12 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param method the request type (f.ex. GET)
      * @param deserializer a deserializer for the <b>response</b> json body
      */
-    fun <T : Any> doRequest(url: String, urlParameters: List<Pair<String, Any?>>, method: Method, deserializer: ResponseDeserializable<T>): Single<T> {
-        return createRequest(url = url, urlParameters = urlParameters, method = method).rx_object(deserializer)
-                .map {
-                    it.component1() ?: throw it.component2() ?: throw Exception()
-                }
+    fun <T : Any> doRequest(url: String, urlParameters: List<Pair<String, Any?>>, method: Method,
+                            deserializer: ResponseDeserializable<T>): Single<T> {
+        return createRequest(url = url, urlParameters = urlParameters, method = method).rx_object(
+                deserializer).map {
+            it.component1() ?: throw it.component2() ?: throw Exception()
+        }
     }
 
     /**
@@ -147,7 +146,8 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param jsonData an Object that will be serialized to json
      * @param deserializer a deserializer for the <b>response</b> json body
      */
-    fun <T : Any> doJsonRequest(url: String, method: Method, jsonData: Any, deserializer: ResponseDeserializable<T>): Single<T> {
+    fun <T : Any> doJsonRequest(url: String, method: Method, jsonData: Any,
+                                deserializer: ResponseDeserializable<T>): Single<T> {
         val json = Gson().toJson(jsonData)
 
         return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
@@ -163,7 +163,8 @@ class RequestManager(hostname: String = "localhost", apiResource: String = "", v
      * @param method the request type (f.ex. GET)
      * @param jsonData an Object that will be serialized to json
      */
-    fun doJsonRequest(url: String, method: Method, jsonData: Any): Single<Pair<Response, Result<ByteArray, FuelError>>> {
+    fun doJsonRequest(url: String, method: Method,
+                      jsonData: Any): Single<Pair<Response, Result<ByteArray, FuelError>>> {
         val json = Gson().toJson(jsonData)
 
         return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
