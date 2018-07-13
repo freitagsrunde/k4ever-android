@@ -69,7 +69,7 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
      * Navigate to a specific page
      */
     fun navigateTo(drawerMenuItem: DrawerMenuItem, bundle: Bundle? = null): String {
-        val newFragment: Fragment
+        var newFragment: Fragment?
 
         // page tag HAS to be set
         drawerMenuItem.navigationPage.tag!!
@@ -77,14 +77,12 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
         // initiate transaction
         var transaction: FragmentTransaction = activity.supportFragmentManager.beginTransaction()
 
-        // try to find previous fragment
-        //        if (lastPageTag != null && lastPageTag == page.tag) {
-        //            newFragment = activityContext
-        //                    .supportFragmentManager
-        //                    .findFragmentById(R.id.contentLayout)
-        //        } else {
-        newFragment = drawerMenuItem.navigationPage.fragment!!()
-        //        }
+        // if the fragment already exists, just use it
+        newFragment = activity.supportFragmentManager.findFragmentByTag(
+                drawerMenuItem.navigationPage.tag)
+        if (newFragment == null) {
+            newFragment = drawerMenuItem.navigationPage.fragment!!()
+        }
 
         newFragment.arguments = bundle
 
@@ -92,7 +90,8 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
             transaction = transaction.addToBackStack(null)
         }
 
-        transaction.replace(R.id.contentLayout, newFragment, drawerMenuItem.navigationPage.tag).commit()
+        transaction.replace(R.id.contentLayout, newFragment, drawerMenuItem.navigationPage.tag)
+                .commit()
         activity.supportFragmentManager.executePendingTransactions()
 
         activity.setTitle(drawerMenuItem.title)
@@ -136,8 +135,12 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
             Libs.ActivityStyle.DARK
         }
 
-        LibsBuilder().withActivityStyle(aboutLibTheme).withActivityColor(Colors(ContextCompat.getColor(activityContext, R.color.colorPrimary), ContextCompat.getColor(activityContext, R.color.colorPrimaryDark)))
-                .withActivityTitle(activityContext.getString(R.string.menu_item_about)).start(activityContext)
+        LibsBuilder().withActivityStyle(aboutLibTheme)
+                .withActivityColor(
+                        Colors(ContextCompat.getColor(activityContext, R.color.colorPrimary),
+                                ContextCompat.getColor(activityContext, R.color.colorPrimaryDark)))
+                .withActivityTitle(activityContext.getString(R.string.menu_item_about))
+                .start(activityContext)
     }
 
     /**

@@ -23,9 +23,11 @@ import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 
 @Entity
-data class UserEntity(@Id var entityId: Long = 0, val id: Long, val user_name: String,
-                      val display_name: String, val balance: Double,
-                      val permissions: List<PermissionEntity>) : IdentifiableListItem, SearchableListItem {
+data class UserEntity(@Id var entityId: Long = 0, val id: Long = -1L, val user_name: String = "",
+                      val display_name: String = "", val balance: Double = -1.0,
+                      val permissions: List<PermissionEntity> = emptyList()) : IdentifiableListItem, SearchableListItem {
+
     override fun getItemId(): Long = id
     override fun getSearchableContent(): List<Any> = listOf(user_name, display_name)
+
 }

@@ -128,10 +128,6 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadingComponent.showContent(false)
-    }
-
-    override fun onResume() {
-        super.onResume()
 
         if (System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(
                         5) > getLastUpdatedFromSource()) {

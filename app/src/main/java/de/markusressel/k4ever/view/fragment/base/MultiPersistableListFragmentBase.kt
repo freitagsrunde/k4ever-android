@@ -112,19 +112,8 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadingComponent.showContent(false)
-    }
 
-    override fun onResume() {
-        super.onResume()
-
-        if (System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(
-                        5) > getLastUpdatedFromSource()) {
-            Timber.d { "Persisted list data is old, refreshing from source" }
-            reloadDataFromSource()
-        } else {
-            Timber.d { "Persisted list data is probably still valid, just loading from persistence" }
-            updateListFromPersistence()
-        }
+        reloadDataFromSource()
     }
 
     /**
