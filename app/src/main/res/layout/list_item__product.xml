@@ -43,8 +43,8 @@
             android:padding="8dp">
 
             <FrameLayout
-                android:layout_width="56dp"
-                android:layout_height="56dp">
+                android:layout_width="@dimen/product_image_size"
+                android:layout_height="@dimen/product_image_size">
 
                 <com.sackcentury.shinebuttonlib.ShineButton
                     android:id="@+id/favoriteButton"
@@ -61,8 +61,9 @@
 
                 <ImageView
                     android:id="@+id/productImage"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="@dimen/product_image_size"
+                    android:layout_height="@dimen/product_image_size"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/club_mate_0_5l" />
 
             </FrameLayout>
@@ -85,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:maxLines="1"
+                    android:maxLines="2"
                     android:text="@{item.description}" />
 
             </LinearLayout>
