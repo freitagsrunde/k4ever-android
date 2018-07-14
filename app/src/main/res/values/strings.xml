@@ -46,6 +46,10 @@
     <string name="search">Search</string>
     <string name="filter">Filter</string>
 
+    <string name="show_deposit_withdrawals">Deposits/Withdrawals</string>
+    <string name="show_purchases">Purchases</string>
+    <string name="show_transfers">Money Transfers</string>
+
     <string name="no_items_found">No items found</string>
 
     <string name="error">Error</string>

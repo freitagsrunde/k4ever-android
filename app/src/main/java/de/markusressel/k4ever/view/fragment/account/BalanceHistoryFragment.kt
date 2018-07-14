@@ -256,7 +256,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
     private var showBalanceHistory by savedInstanceState(true)
     private var showPurchaseHistory by savedInstanceState(true)
-    private var showTransactionHistory by savedInstanceState(true)
+    private var showTransferHistory by savedInstanceState(true)
 
     private fun openFilterPopoupMenu(anchorView: View) {
         val popupMenu = popupMenu {
@@ -265,6 +265,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                     layoutResId = R.layout.view__popup_menu__checkbox
                     viewBoundCallback = { view ->
                         val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
+                        checkBox.setText(R.string.show_deposit_withdrawals)
                         checkBox.isChecked = showBalanceHistory
                     }
                     callback = {
@@ -276,6 +277,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                     layoutResId = R.layout.view__popup_menu__checkbox
                     viewBoundCallback = { view ->
                         val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
+                        checkBox.setText(R.string.show_purchases)
                         checkBox.isChecked = showPurchaseHistory
                     }
                     callback = {
@@ -287,10 +289,11 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                     layoutResId = R.layout.view__popup_menu__checkbox
                     viewBoundCallback = { view ->
                         val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
-                        checkBox.isChecked = showTransactionHistory
+                        checkBox.setText(R.string.show_transfers)
+                        checkBox.isChecked = showTransferHistory
                     }
                     callback = {
-                        showTransactionHistory = !showTransactionHistory
+                        showTransferHistory = !showTransferHistory
                         updateListFromPersistence()
                     }
                 }
@@ -301,9 +304,12 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
     }
 
     override fun filterListItem(item: IdentifiableListItem): Boolean {
-        // TODO: filter history items by type (if set by user)
-        return super.filterListItem(item)
-        //        return item is PurchaseHistoryItemEntity
+        return when (item) {
+            is BalanceHistoryItemEntity -> showBalanceHistory
+            is TransferHistoryItemEntity -> showTransferHistory
+            is PurchaseHistoryItemEntity -> showPurchaseHistory
+            else -> true
+        }
     }
 
     override fun sortListData(listData: List<IdentifiableListItem>): List<IdentifiableListItem> {
