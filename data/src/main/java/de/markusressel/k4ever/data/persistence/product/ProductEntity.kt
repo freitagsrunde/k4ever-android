@@ -23,10 +23,12 @@ import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 
 @Entity
-data class ProductEntity(@Id var entityId: Long = 0, val id: Long, val name: String,
-                         val description: String, val price: Double, val deposit: Double,
-                         val barcode: String, val typeId: List<ProductTypeEntity>,
-                         var isFavorite: Boolean) : IdentifiableListItem, SearchableListItem {
+data class ProductEntity(@Id var entityId: Long = 0, val id: Long = -1L, val name: String = "",
+                         val description: String = "", val price: Double = 0.0,
+                         val deposit: Double = 0.0, val barcode: String = "",
+                         val typeId: List<ProductTypeEntity> = emptyList(),
+                         var isFavorite: Boolean = false) : IdentifiableListItem, SearchableListItem {
+
     override fun getItemId(): Long = id
 
     override fun getSearchableContent(): List<Any> {

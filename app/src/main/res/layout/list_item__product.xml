@@ -42,24 +42,30 @@
             android:orientation="horizontal"
             android:padding="8dp">
 
-            <com.sackcentury.shinebuttonlib.ShineButton
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:onClick="@{() -> presenter.toggleFavorite(item) }"
-                android:src="@android:color/darker_gray"
-                android:checked="@{item.isFavorite}"
-                app:allow_random_color="false"
-                app:big_shine_color="@color/md_red_A400"
-                app:btn_color="@android:color/darker_gray"
-                app:btn_fill_color="@color/md_red_A400"
-                app:siShape="@drawable/baseline_favorite_black_36"
-                app:small_shine_color="@color/md_red_A700" />
+            <FrameLayout
+                android:layout_width="56dp"
+                android:layout_height="56dp">
 
-            <ImageView
-                android:id="@+id/productImage"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/club_mate_0_5l" />
+                <com.sackcentury.shinebuttonlib.ShineButton
+                    android:id="@+id/favoriteButton"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:checked="@{item.isFavorite}"
+                    android:src="@android:color/darker_gray"
+                    app:allow_random_color="false"
+                    app:big_shine_color="@color/md_red_A400"
+                    app:btn_color="@android:color/darker_gray"
+                    app:btn_fill_color="@color/md_red_A400"
+                    app:siShape="@drawable/baseline_favorite_black_36"
+                    app:small_shine_color="@color/md_red_A700" />
+
+                <ImageView
+                    android:id="@+id/productImage"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@drawable/club_mate_0_5l" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -78,41 +84,19 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="@{item.description}" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/addToCartLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:gravity="center"
                 android:onClick="@{() -> presenter.addItemToShoppingCart(item, true, true)}"
-                android:orientation="vertical"
-                android:visibility="@{presenter.getBuyWithDepositVisibility(item)}">
-
-                <com.mikepenz.iconics.view.IconicsImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:iiv_color="?android:attr/textColorPrimary"
-                    app:iiv_icon="gmi-shopping-cart-add" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center"
-                    android:text="@{presenter.getPriceString(item, true)}"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackgroundBorderless"
-                android:gravity="center"
-                android:onClick="@{() -> presenter.addItemToShoppingCart(item, false, true) }"
                 android:orientation="vertical"
                 android:paddingLeft="8dp">
 
@@ -127,7 +111,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:gravity="center"
-                    android:text="@{presenter.getPriceString(item, false)}"
+                    android:maxLines="1"
+                    android:text="@{presenter.getPriceString(item, true)}"
                     android:textStyle="bold" />
 
             </LinearLayout>

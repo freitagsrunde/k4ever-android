@@ -51,25 +51,18 @@
                 android:layout_marginRight="16dp"
                 app:iiv_color="?android:attr/textColorSecondary" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/recipient"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:text="@{String.valueOf(item.recipient.target.display_name)}" />
 
-                <TextView
-                    android:id="@+id/recipient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{String.valueOf(item.recipient.target.display_name)}" />
-
-                <TextView
-                    android:id="@+id/money_amount_transfer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{String.valueOf(item.amount)}" />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/money_amount_transfer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

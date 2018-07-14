@@ -101,9 +101,19 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                 onBind { holder ->
                     val balanceItem = holder.binding.item
 
+                    val money_amount_balance = holder.binding.root.money_amount_balance
+
                     balanceItem?.let {
-                        holder.binding.root.money_amount_balance.text = getString(
-                                R.string.shopping_cart__item_cost, balanceItem.amount)
+                        holder.binding.root.balance_history_item_description.text = if (balanceItem.amount < 0) {
+                            getString(R.string.withdrawal)
+                        } else {
+                            getString(R.string.deposition)
+                        }
+
+                        money_amount_balance.text = getString(R.string.shopping_cart__item_cost,
+                                balanceItem.amount)
+                        money_amount_balance.setTextColor(
+                                themeHelper.getBalanceColor(balanceItem.amount))
                     }
                 }
             }
@@ -127,6 +137,8 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                                 val purchaseTotalCost = purchaseItem.products.map { it.price }.sum()
                                 holder.binding.root.total_price.text = getString(
                                         R.string.shopping_cart__item_cost, purchaseTotalCost)
+                                holder.binding.root.total_price.setTextColor(
+                                        themeHelper.getBalanceColor(-1.0))
                             }
                         }
                     }
@@ -154,6 +166,11 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                                     iconHandler.getHistoryItemIcon(
                                             MaterialDesignIconic.Icon.gmi_chevron_up)
                                 }
+
+                                holder.binding.root.money_amount_transfer.text = getString(
+                                        R.string.shopping_cart__item_cost, transferItem.amount)
+                                holder.binding.root.money_amount_transfer.setTextColor(
+                                        themeHelper.getBalanceColor(transferItem.amount))
                             }
                         }
                     }

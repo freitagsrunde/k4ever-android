@@ -69,7 +69,7 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
      * Navigate to a specific page
      */
     fun navigateTo(drawerMenuItem: DrawerMenuItem, bundle: Bundle? = null): String {
-        var newFragment: Fragment?
+        val newFragment: Fragment
 
         // page tag HAS to be set
         drawerMenuItem.navigationPage.tag!!
@@ -77,12 +77,8 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
         // initiate transaction
         var transaction: FragmentTransaction = activity.supportFragmentManager.beginTransaction()
 
-        // if the fragment already exists, just use it
-        newFragment = activity.supportFragmentManager.findFragmentByTag(
-                drawerMenuItem.navigationPage.tag)
-        if (newFragment == null) {
-            newFragment = drawerMenuItem.navigationPage.fragment!!()
-        }
+        // try to find previous fragment
+        newFragment = drawerMenuItem.navigationPage.fragment!!()
 
         newFragment.arguments = bundle
 

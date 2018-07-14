@@ -47,6 +47,7 @@ import io.reactivex.Single
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_cart.*
 import kotlinx.android.synthetic.main.list_item__cart_item.view.*
+import kotlinx.android.synthetic.main.list_item__product.view.*
 import nl.dionsegijn.steppertouch.OnStepCallback
 import javax.inject.Inject
 
@@ -69,6 +70,21 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                 R.layout.list_item__product) {
             onCreate {
                 it.binding.presenter = this@ProductsFragment
+            }
+            onBind {
+                val productItem = it.binding.item
+
+                val productImage = it.binding.root.productImage
+                val favoriteButton = it.binding.root.favoriteButton
+
+                productItem?.let {
+                    productImage.setOnClickListener {
+                        favoriteButton.setChecked(!productItem.isFavorite, true)
+                    }
+                    favoriteButton.setOnCheckStateChangeListener { view, checked ->
+                        setFavorite(productItem, checked)
+                    }
+                }
             }
             onClick {
                 openDetailView(listValues[it.adapterPosition])
@@ -223,14 +239,16 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     /**
      * Returns a nice text representation of the price of a product
      * @param product the product to use
-     * @param withDeposit true, if deposit should be included in the text
+     * @param withDeposit true, if deposit should be included, false if not
      */
     fun getPriceString(product: ProductEntity, withDeposit: Boolean): String {
-        return when {
-            withDeposit -> getString(R.string.shopping_cart__item_cost_with_deposit, product.price,
-                    product.deposit)
-            else -> getString(R.string.shopping_cart__item_cost, product.price)
+        val price = if (withDeposit) {
+            product.price + product.deposit
+        } else {
+            product.price
         }
+
+        return getString(R.string.shopping_cart__item_cost, price)
     }
 
     /**
@@ -317,9 +335,12 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     /**
      * Toggles the "favorite" state of a product
      */
-    fun toggleFavorite(product: ProductEntity) {
-        product.isFavorite = !product.isFavorite
+    fun setFavorite(product: ProductEntity, isFavorite: Boolean) {
+        product.isFavorite = isFavorite
         persistenceManager.getStore().put(product)
+
+
+        // TODO: maybe wait a short period before updating the list?
 
         updateListFromPersistence()
 
