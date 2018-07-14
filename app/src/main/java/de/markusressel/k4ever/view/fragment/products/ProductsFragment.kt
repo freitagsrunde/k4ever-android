@@ -120,6 +120,10 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initShoppingCart()
+    }
+
+    private fun initShoppingCart() {
         shoppingCartBottomSheetBehaviour = BottomSheetBehavior.from<View>(shoppingCartCardView)
         setCardViewPeekHeight()
 
@@ -148,6 +152,10 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                 // React to dragging events
             }
         })
+
+        shoppingCartTitlebar.setOnClickListener {
+            onShoppingCartTitlebarClicked()
+        }
     }
 
     private fun initShoppingCartList() {
@@ -222,14 +230,29 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         }
     }
 
+    private fun onShoppingCartTitlebarClicked() {
+        if (shoppingCartBottomSheetBehaviour.isHideable) {
+            // should not be possible, shopping cart is hidden
+            return
+        }
+
+        when (shoppingCartBottomSheetBehaviour.state) {
+            BottomSheetBehavior.STATE_EXPANDED -> shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
+            BottomSheetBehavior.STATE_COLLAPSED -> shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+            else -> return
+        }
+    }
+
     private fun setShoppingCartVisibility(visible: Boolean) {
         shoppingCartBottomSheetBehaviour.isHideable = !visible
 
         if (visible) {
             // only open bottom sheet if is currently invisible
             // otherwise keep the current state
-            if (shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_HIDDEN || shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_EXPANDED || shoppingCartBottomSheetBehaviour.state == BottomSheetBehavior.STATE_SETTLING) {
-                shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
+            shoppingCartBottomSheetBehaviour.state.let {
+                if (it == BottomSheetBehavior.STATE_HIDDEN || it == BottomSheetBehavior.STATE_EXPANDED || it == BottomSheetBehavior.STATE_SETTLING) {
+                    shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
             }
         } else {
             shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_HIDDEN
