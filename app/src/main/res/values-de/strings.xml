@@ -39,6 +39,7 @@
     <string name="refresh">Aktualisieren</string>
     <string name="sort_order">Sortierung</string>
     <string name="search">Suchen</string>
+    <string name="filter">Filtern</string>
 
     <string name="no_items_found">Keine Einträge gefunden</string>
 

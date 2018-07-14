@@ -25,7 +25,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import com.github.nitrico.lastadapter.LastAdapter
+import com.github.zawadz88.materialpopupmenu.popupMenu
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
@@ -234,11 +236,68 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
     }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none,
+        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_filter,
                 onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
+                    val filterMenuItem = menu?.findItem(R.id.filter)
+                    filterMenuItem?.icon = iconHandler.getOptionsMenuIcon(
+                            MaterialDesignIconic.Icon.gmi_filter_list)
                 }, onOptionsMenuItemClicked = {
+            when {
+                it.itemId == R.id.filter -> {
+                    openFilterPopoupMenu(activity!!.findViewById(R.id.filter))
+                    true
+                }
+                else -> false
+            }
+
             false
         })
+    }
+
+    private var showBalanceHistory by savedInstanceState(true)
+    private var showPurchaseHistory by savedInstanceState(true)
+    private var showTransactionHistory by savedInstanceState(true)
+
+    private fun openFilterPopoupMenu(anchorView: View) {
+        val popupMenu = popupMenu {
+            section {
+                customItem {
+                    layoutResId = R.layout.view__popup_menu__checkbox
+                    viewBoundCallback = { view ->
+                        val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
+                        checkBox.isChecked = showBalanceHistory
+                    }
+                    callback = {
+                        showBalanceHistory = !showBalanceHistory
+                        updateListFromPersistence()
+                    }
+                }
+                customItem {
+                    layoutResId = R.layout.view__popup_menu__checkbox
+                    viewBoundCallback = { view ->
+                        val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
+                        checkBox.isChecked = showPurchaseHistory
+                    }
+                    callback = {
+                        showPurchaseHistory = !showPurchaseHistory
+                        updateListFromPersistence()
+                    }
+                }
+                customItem {
+                    layoutResId = R.layout.view__popup_menu__checkbox
+                    viewBoundCallback = { view ->
+                        val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
+                        checkBox.isChecked = showTransactionHistory
+                    }
+                    callback = {
+                        showTransactionHistory = !showTransactionHistory
+                        updateListFromPersistence()
+                    }
+                }
+            }
+        }
+
+        popupMenu.show(context as Context, anchorView)
     }
 
     override fun filterListItem(item: IdentifiableListItem): Boolean {
