@@ -91,32 +91,35 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/addToCartLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="?android:selectableItemBackgroundBorderless"
-                android:gravity="center"
                 android:onClick="@{() -> presenter.addItemToShoppingCart(item, true, true)}"
                 android:orientation="vertical"
                 android:paddingLeft="8dp">
 
-                <com.mikepenz.iconics.view.IconicsImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:iiv_color="?android:attr/textColorPrimary"
-                    app:iiv_icon="gmi-shopping-cart-add" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="4dp"
-                    android:gravity="center"
                     android:maxLines="1"
                     android:text="@{presenter.getPriceString(item, true)}"
                     android:textStyle="bold" />
 
-            </LinearLayout>
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="8dp"
+                    app:iiv_color="?android:attr/textColorPrimary"
+                    app:iiv_icon="gmi-shopping-cart-add" />
+
+            </RelativeLayout>
 
         </LinearLayout>
 
