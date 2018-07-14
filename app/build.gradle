@@ -15,7 +15,8 @@ android {
         versionName rootProject.ext.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        setProperty("archivesBaseName", "k4ever_${versionName}_(${versionCode})")
+        def compileTime = new Date().format("yyyy-MM-dd_HH-mm-ss")
+        setProperty("archivesBaseName", "k4ever-v${versionName}-(${versionCode})_${compileTime}")
 
         multiDexEnabled true
 
