@@ -16,6 +16,7 @@ script:
   # install jq (needed for json parsing in build script)
   - sudo apt-get install -y jq
   - bash ./travis/build.sh
+  - bash ./travis/distribute_result.sh
 
 #branches:
 #  except:
