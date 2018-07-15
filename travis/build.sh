@@ -23,20 +23,22 @@ EOF
 )
   fi
   
-  if [[ "${TRAVIS_TEST_RESULT}" == "1" ]]; then
-    TRAVIS_TEST_RESULT="OK"
+  if [[ "${TRAVIS_TEST_RESULT}" == "0" ]]; then
+    TRAVIS_TEST_RESULT="✅"
   else
-    TRAVIS_TEST_RESULT="FAILED"
+    TRAVIS_TEST_RESULT="🔥"
   fi 
   
+  COMMITS_INVOLVED=$(git log --oneline ${TRAVIS_COMMIT_RANGE})
+  
   MESSAGE=$(cat <<EOF
-*Travis Build #${TRAVIS_BUILD_NUMBER} (${TRAVIS_EVENT_TYPE})*
+*Travis Build [#${TRAVIS_BUILD_NUMBER}](https://travis-ci.org/freitagsrunde/k4ever-android/builds/${TRAVIS_BUILD_ID}) (${TRAVIS_EVENT_TYPE})*
 Test Result: ${TRAVIS_TEST_RESULT}
 
 Commits:
-\`${TRAVIS_COMMIT_RANGE}\`
+\`${COMMITS_INVOLVED}\`
 
-[Travis Build](https://travis-ci.org/freitagsrunde/k4ever-android/builds/${TRAVIS_BUILD_ID})    ${PR_LINK_TEXT}
+${PR_LINK_TEXT}
 EOF
 )
 
