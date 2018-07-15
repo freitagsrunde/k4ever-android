@@ -21,10 +21,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.CheckBox
 import com.github.nitrico.lastadapter.LastAdapter
 import com.github.zawadz88.materialpopupmenu.popupMenu
@@ -249,8 +246,6 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                 }
                 else -> false
             }
-
-            false
         })
     }
 
@@ -260,6 +255,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
     private fun openFilterPopoupMenu(anchorView: View) {
         val popupMenu = popupMenu {
+            dropdownGravity = Gravity.BOTTOM
             section {
                 customItem {
                     layoutResId = R.layout.view__popup_menu__checkbox
@@ -296,11 +292,12 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         showTransferHistory = !showTransferHistory
                         updateListFromPersistence()
                     }
+
                 }
             }
         }
 
-        popupMenu.show(context as Context, anchorView)
+        popupMenu.show(activity as Context, anchorView)
     }
 
     override fun filterListItem(item: IdentifiableListItem): Boolean {
