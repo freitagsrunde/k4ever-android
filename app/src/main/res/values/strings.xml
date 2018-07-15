@@ -50,6 +50,8 @@
     <string name="no_items_found">No items found</string>
 
     <string name="description">Description</string>
+    <string name="price">Price</string>
+    <string name="deposit">Deposit</string>
 
     <string name="error">Error</string>
     <string name="exception_raised">Exception raised</string>

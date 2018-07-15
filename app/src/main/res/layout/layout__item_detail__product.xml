@@ -51,6 +51,22 @@
                     android:id="@+id/productDescription"
                     style="@style/detail_item_content_textview" />
 
+                <TextView
+                    style="@style/detail_item_header"
+                    android:text="@string/price" />
+
+                <TextView
+                    android:id="@+id/productPrice"
+                    style="@style/detail_item_content_textview" />
+
+                <TextView
+                    style="@style/detail_item_header"
+                    android:text="@string/deposit" />
+
+                <TextView
+                    android:id="@+id/productDeposit"
+                    style="@style/detail_item_content_textview" />
+
             </LinearLayout>
 
         </android.support.v7.widget.CardView>

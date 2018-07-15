@@ -42,8 +42,9 @@ class ProductDetailContentFragment : DetailContentFragmentBase<ProductEntity>() 
 
         val entity = getEntityFromPersistence()
         productName.text = entity.name
-
         productDescription.text = entity.description
+        productPrice.text = entity.price.toString()
+        productDeposit.text = entity.deposit.toString()
     }
 
 }

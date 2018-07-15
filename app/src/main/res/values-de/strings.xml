@@ -43,6 +43,8 @@
     <string name="details">Details</string>
 
     <string name="description">Beschreibung</string>
+    <string name="price">Preis</string>
+    <string name="deposit">Pfand</string>
 
     <string name="no_items_found">Keine Einträge gefunden</string>
 
