@@ -13,15 +13,15 @@ EOF
   fi
   
   if [[ "${TRAVIS_TEST_RESULT}" == "0" ]]; then
-    TRAVIS_TEST_RESULT="✅"
+    RESULT_EMOJI="✅"
   else
-    TRAVIS_TEST_RESULT="🔥"
+    RESULT_EMOJI="🔥"
   fi 
   
   COMMITS_INVOLVED=$(git log --oneline ${TRAVIS_COMMIT_RANGE})
   
   MESSAGE=$(cat <<EOF
-${TRAVIS_TEST_RESULT} *Travis Build* [#${TRAVIS_BUILD_NUMBER}](https://travis-ci.org/freitagsrunde/k4ever-android/builds/${TRAVIS_BUILD_ID}) *(${TRAVIS_EVENT_TYPE})*
+${RESULT_EMOJI} *Travis Build* [#${TRAVIS_BUILD_NUMBER}](https://travis-ci.org/freitagsrunde/k4ever-android/builds/${TRAVIS_BUILD_ID}) *(${TRAVIS_EVENT_TYPE})*
 
 Commits:
 \`${COMMITS_INVOLVED}\`
