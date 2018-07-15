@@ -13,15 +13,21 @@ if [[ "${TRAVIS_BRANCH}" == "dev" ]]; then
     --form document=@"${APK_FILE}" \
     "${BASE_URL}/sendDocument" \
     2>/dev/null \
-    | jq 'if (.ok == true) then .result.message_id else empty end'.)
+    | jq 'if (.ok == true) then .result.message_id else empty end')
   
   # prepare telegram message to send as reply to the apk file
-  if [["${TRAVIS_PULL_REQUEST}" != "false"]]; then
-    PR_LINK_TEXT = $(cat <<EOF
+  if [[ "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
+    PR_LINK_TEXT=$(cat <<EOF
 [Pull Request](https://github.com/freitagsrunde/k4ever-android/pull/${TRAVIS_PULL_REQUEST})
 EOF
 )
   fi
+  
+  if [[ "${TRAVIS_TEST_RESULT}" == "1" ]]; then
+    TRAVIS_TEST_RESULT="OK"
+  else
+    TRAVIS_TEST_RESULT="FAILED"
+  fi 
   
   MESSAGE=$(cat <<EOF
 *Travis Build #${TRAVIS_BUILD_NUMBER} (${TRAVIS_EVENT_TYPE})*
@@ -41,9 +47,10 @@ EOF
     "${BASE_URL}/sendMessage" \
     -d "chat_id=${CHAT_ID}" \
     -d "text=${MESSAGE}" \
-    -d "reply_to_message_id=${MESSAGE_ID}"
+    -d "reply_to_message_id=${MESSAGE_ID}" \
     -d "parse_mode=markdown" \
-    -d "disable_web_page_preview=true"
+    -d "disable_web_page_preview=true" \
+    >/dev/null 2>&1
 
 else
   ./gradlew clean testDebug lintDebug --stacktrace
