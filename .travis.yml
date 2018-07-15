@@ -3,7 +3,7 @@ jdk: oraclejdk8
 
 before_install:
   - chmod +x gradlew  # to prevent "Permission Denied" error
-  - mkdir $HOME/.android
+  - mkdir -p $HOME/.android
   - cp ./travis/debug.keystore $HOME/.android/debug.keystore
 
 install:
