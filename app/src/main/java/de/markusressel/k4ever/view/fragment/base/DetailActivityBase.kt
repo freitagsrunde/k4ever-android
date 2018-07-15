@@ -23,11 +23,12 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
+import com.github.florent37.materialviewpager.header.HeaderDesign
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.view.activity.base.DaggerSupportActivityBase
 import kotlinx.android.synthetic.main.fragment__item_detail.*
-import kotlinx.android.synthetic.main.view__item_detail__header.*
+import kotlinx.android.synthetic.main.view__item_detail__logo.*
 
 /**
  * Base class for detail screens
@@ -73,6 +74,13 @@ abstract class DetailActivityBase<T : Any> : DaggerSupportActivityBase() {
 
     private fun setHeader() {
         headerText.text = headerTextString
+
+        materialViewPager.setMaterialViewPagerListener {
+            val pageIndex = it
+
+            HeaderDesign.fromColorResAndDrawable(R.color.primary,
+                    getDrawable(R.drawable.club_mate_0_5l))
+        }
 
         //        materialViewPager.setMaterialViewPagerListener {
         //            val pageIndex = it
