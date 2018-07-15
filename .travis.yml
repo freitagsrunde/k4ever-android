@@ -1,6 +1,11 @@
 language: android
 jdk: oraclejdk8
 
+before_install:
+  - chmod +x gradlew  # to prevent "Permission Denied" error
+  - mkdir $HOME/.android
+  - cp ./travis/debug.keystore $HOME/.android/debug.keystore
+
 install:
   - echo yes | sdkmanager "tools" &>/dev/null
   - echo yes | sdkmanager "platform-tools" &>/dev/null
@@ -16,9 +21,6 @@ script:
 
 #sudo: false
 
-before_install:
-  - chmod +x gradlew  # to prevent "Permission Denied" error
-
 # Remove old local cache files before and cache again after the build
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -29,3 +31,4 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
+    - $HOME/.android/debug.keystore
