@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Travis Container environment variables:"
-env
+env | sort
 
 echo
 
@@ -31,7 +31,7 @@ EOF
   COMMITS_INVOLVED=$(git log --oneline ${TRAVIS_COMMIT_RANGE})
   
   MESSAGE=$(cat <<EOF
-*Travis Build [#${TRAVIS_BUILD_NUMBER}](https://travis-ci.org/freitagsrunde/k4ever-android/builds/${TRAVIS_BUILD_ID}) (${TRAVIS_EVENT_TYPE})*
+*Travis Build* [#${TRAVIS_BUILD_NUMBER}](https://travis-ci.org/freitagsrunde/k4ever-android/builds/${TRAVIS_BUILD_ID}) *(${TRAVIS_EVENT_TYPE})*
 Test Result: ${TRAVIS_TEST_RESULT}
 
 Commits:
@@ -52,7 +52,6 @@ EOF
     --form chat_id="${CHAT_ID}" \
     --form document=@"${APK_FILE}" \
     "${BASE_URL}/sendDocument" \
-    2>/dev/null \
     | jq 'if (.ok == true) then .result.message_id else empty end')
 
   echo "Sending info message as reply to apk..."
@@ -67,7 +66,7 @@ EOF
     -d "reply_to_message_id=${MESSAGE_ID}" \
     -d "parse_mode=markdown" \
     -d "disable_web_page_preview=true" \
-    >/dev/null 2>&1
+    >/dev/null
 
 else
   echo "Start compiling WITHOUT assembling apk..."
