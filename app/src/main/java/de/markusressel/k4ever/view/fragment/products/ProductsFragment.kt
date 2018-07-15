@@ -323,6 +323,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
      * Shows a detail view of the specified product
      */
     fun openDetailView(productEntity: ProductEntity) {
+        val detailFragment = ProductDetailFragment.newInstance(productId = productEntity.entityId)
         // TODO:
     }
 

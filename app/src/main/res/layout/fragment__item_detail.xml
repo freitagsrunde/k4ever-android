@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2018 Markus Ressel
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as published
+  ~ by the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.activity.MainActivity">
+
+    <com.github.florent37.materialviewpager.MaterialViewPager
+        android:id="@+id/materialViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:viewpager_animatedHeaderImage="true"
+        app:viewpager_color="@color/colorPrimary"
+        app:viewpager_disableToolbar="false"
+        app:viewpager_displayToolbarWhenSwipe="true"
+        app:viewpager_enableToolbarElevation="true"
+        app:viewpager_header="@layout/view__item_detail__header"
+        app:viewpager_headerAdditionalHeight="20dp"
+        app:viewpager_headerAlpha="1.0"
+        app:viewpager_headerHeight="200dp"
+        app:viewpager_hideLogoWithFade="false"
+        app:viewpager_hideToolbarAndTitle="true"
+        app:viewpager_logoMarginTop="100dp"
+        app:viewpager_parallaxHeaderFactor="1.5"
+        app:viewpager_transparentToolbar="true" />
+
+</LinearLayout>

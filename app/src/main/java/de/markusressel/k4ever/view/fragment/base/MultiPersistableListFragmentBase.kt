@@ -141,7 +141,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
      * Filter list items that don't match this function from the visible list
      * @return true, if the item is ok, false if it should be filtered
      */
-    open internal fun filterListItem(item: IdentifiableListItem): Boolean {
+    internal open fun filterListItem(item: IdentifiableListItem): Boolean {
         return true
     }
 
