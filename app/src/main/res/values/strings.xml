@@ -49,6 +49,8 @@
 
     <string name="no_items_found">No items found</string>
 
+    <string name="description">Description</string>
+
     <string name="error">Error</string>
     <string name="exception_raised">Exception raised</string>
     <string name="unknown_error">Unknown Error</string>

@@ -17,11 +17,14 @@
 
 package de.markusressel.k4ever.view.fragment.products
 
+import android.os.Bundle
+import android.view.View
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
 import de.markusressel.k4ever.view.fragment.base.DetailContentFragmentBase
+import kotlinx.android.synthetic.main.layout__item_detail__product.*
 import javax.inject.Inject
 
 class ProductDetailContentFragment : DetailContentFragmentBase<ProductEntity>() {
@@ -33,5 +36,14 @@ class ProductDetailContentFragment : DetailContentFragmentBase<ProductEntity>() 
         get() = R.layout.layout__item_detail__product
 
     override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val entity = getEntityFromPersistence()
+        productName.text = entity.name
+
+        productDescription.text = entity.description
+    }
 
 }

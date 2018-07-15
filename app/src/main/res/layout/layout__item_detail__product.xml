@@ -35,6 +35,22 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <TextView
+                    style="@style/detail_item_header"
+                    android:text="@string/name" />
+
+                <TextView
+                    android:id="@+id/productName"
+                    style="@style/detail_item_content_textview" />
+
+                <TextView
+                    style="@style/detail_item_header"
+                    android:text="@string/description" />
+
+                <TextView
+                    android:id="@+id/productDescription"
+                    style="@style/detail_item_content_textview" />
+
             </LinearLayout>
 
         </android.support.v7.widget.CardView>
