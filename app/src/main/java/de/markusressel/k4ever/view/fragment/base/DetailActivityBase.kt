@@ -21,29 +21,45 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
+import de.markusressel.k4ever.view.activity.base.DaggerSupportActivityBase
 import kotlinx.android.synthetic.main.fragment__item_detail.*
 import kotlinx.android.synthetic.main.view__item_detail__header.*
 
 /**
  * Base class for detail screens
  */
-abstract class DetailFragmentBase<T : Any> : DaggerSupportFragmentBase() {
+abstract class DetailActivityBase<T : Any> : DaggerSupportActivityBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__item_detail
 
+    override val style: Int
+        get() {
+            return if (resources.getBoolean(R.bool.is_tablet)) {
+                DIALOG
+            } else {
+                DEFAULT
+            }
+        }
+
+    /**
+     * Title text of the detail screen
+     */
     protected abstract val headerTextString: String
 
+    /**
+     * List of tabbed items
+     * Tab title StringRes -> Tab content fragment
+     */
     abstract val tabItems: List<Pair<Int, () -> DaggerSupportFragmentBase>>
 
-    private val usedHeaders: MutableSet<HeaderConfig> = mutableSetOf()
-
+    /**
+     * The current state of the item that is displayed by this detail screen
+     */
     private var currentState: T? by savedInstanceState()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,7 +106,7 @@ abstract class DetailFragmentBase<T : Any> : DaggerSupportFragmentBase() {
 
     private fun setAdapter() {
         val viewPager = materialViewPager.viewPager
-        viewPager.adapter = object : FragmentStatePagerAdapter(childFragmentManager) {
+        viewPager.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 return tabItems[position].second().apply {
                     arguments = Bundle(2).apply {
@@ -139,7 +155,7 @@ abstract class DetailFragmentBase<T : Any> : DaggerSupportFragmentBase() {
     }
 
     private fun getEntityId(): Long {
-        return arguments!!.getLong(KEY_ITEM_ID, ENTITY_ID_MISSING_VALUE)
+        return intent.getLongExtra(KEY_ITEM_ID, ENTITY_ID_MISSING_VALUE)
     }
 
     /**
@@ -182,7 +198,5 @@ abstract class DetailFragmentBase<T : Any> : DaggerSupportFragmentBase() {
         }
 
     }
-
-    data class HeaderConfig(@ColorRes val colorRes: Int, @DrawableRes val drawableRes: Int)
 
 }

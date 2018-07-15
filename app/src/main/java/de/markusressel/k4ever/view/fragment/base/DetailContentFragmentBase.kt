@@ -44,7 +44,7 @@ abstract class DetailContentFragmentBase<EntityType : Any> : DaggerSupportFragme
      */
     protected fun getEntityFromPersistence(): EntityType {
         val args = arguments ?: throw IllegalStateException("Arguments must not be null!")
-        val entityId: Long = args.getLong(DetailFragmentBase.KEY_ITEM_ID)
+        val entityId: Long = args.getLong(DetailActivityBase.KEY_ITEM_ID)
         return getPersistenceHandler().getStore().get(entityId)
     }
 

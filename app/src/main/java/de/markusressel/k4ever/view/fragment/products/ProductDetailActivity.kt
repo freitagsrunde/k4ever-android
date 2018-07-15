@@ -17,13 +17,12 @@
 
 package de.markusressel.k4ever.view.fragment.products
 
-import android.os.Bundle
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
 import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
-import de.markusressel.k4ever.view.fragment.base.DetailFragmentBase
+import de.markusressel.k4ever.view.fragment.base.DetailActivityBase
 import javax.inject.Inject
 
 /**
@@ -31,7 +30,7 @@ import javax.inject.Inject
  *
  * Created by Markus on 07.01.2018.
  */
-class ProductDetailFragment : DetailFragmentBase<ProductEntity>() {
+class ProductDetailActivity : DetailActivityBase<ProductEntity>() {
 
     @Inject
     protected lateinit var persistenceManager: ProductPersistenceManager
@@ -44,21 +43,4 @@ class ProductDetailFragment : DetailFragmentBase<ProductEntity>() {
 
     override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
 
-    companion object {
-
-        private const val KEY_ID = "PRODUCT_ID"
-
-        /**
-         * Create a new instance
-         */
-        fun newInstance(productId: Long): ProductDetailFragment {
-            val fragment = ProductDetailFragment()
-            val bundle = Bundle()
-            fragment.arguments = bundle.apply {
-                KEY_ID to productId
-            }
-
-            return fragment
-        }
-    }
 }

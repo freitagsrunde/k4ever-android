@@ -41,6 +41,7 @@ import de.markusressel.k4ever.extensions.common.context
 import de.markusressel.k4ever.extensions.common.pxToSp
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.products.model.ProductModel
+import de.markusressel.k4ever.view.fragment.base.DetailActivityBase
 import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
@@ -322,9 +323,10 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     /**
      * Shows a detail view of the specified product
      */
-    fun openDetailView(productEntity: ProductEntity) {
-        val detailFragment = ProductDetailFragment.newInstance(productId = productEntity.entityId)
-        // TODO:
+    private fun openDetailView(productEntity: ProductEntity) {
+        val detailPage = DetailActivityBase.newInstanceIntent(ProductDetailActivity::class.java,
+                context(), productEntity.entityId)
+        startActivity(detailPage)
     }
 
     /**
