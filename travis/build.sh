@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
+
+echo "Travis Container environment variables:"
+env
+
+echo
+
 if [[ "${TRAVIS_BRANCH}" == "dev" ]]; then
+  echo "Start compiling and assembling apk..."
+
   ./gradlew clean testDebug lintDebug assembleDebug --stacktrace
 
-  BASE_URL="https://api.telegram.org/${TELEGRAM_TOKEN}"
+  echo "Generating Telegram Messages..."
   
-  # find compiled .apk file
-  APK_FILE=$(find ./app/build/outputs/apk/debug -type f -name "k4ever*.apk")
-  # send it file via telegram bot
-  MESSAGE_ID=$(curl \
-    --silent \
-    --form chat_id="${CHAT_ID}" \
-    --form document=@"${APK_FILE}" \
-    "${BASE_URL}/sendDocument" \
-    2>/dev/null \
-    | jq 'if (.ok == true) then .result.message_id else empty end')
+  BASE_URL="https://api.telegram.org/${TELEGRAM_TOKEN}"
   
   # prepare telegram message to send as reply to the apk file
   if [[ "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
@@ -41,7 +40,23 @@ Commits:
 ${PR_LINK_TEXT}
 EOF
 )
+  
+  # find compiled .apk file
+  APK_FILE=$(find ./app/build/outputs/apk/debug -type f -name "k4ever*.apk")
+  
+  echo "Sending apk file..."
+  
+  # send apk file via telegram bot
+  MESSAGE_ID=$(curl \
+    --silent \
+    --form chat_id="${CHAT_ID}" \
+    --form document=@"${APK_FILE}" \
+    "${BASE_URL}/sendDocument" \
+    2>/dev/null \
+    | jq 'if (.ok == true) then .result.message_id else empty end')
 
+  echo "Sending info message as reply to apk..."
+  
   # send telegram chat message
   curl \
     --silent \
@@ -55,6 +70,7 @@ EOF
     >/dev/null 2>&1
 
 else
+  echo "Start compiling WITHOUT assembling apk..."
   ./gradlew clean testDebug lintDebug --stacktrace
 fi
 
