@@ -67,6 +67,14 @@
                     android:id="@+id/productDeposit"
                     style="@style/detail_item_content_textview" />
 
+                <TextView
+                    style="@style/detail_item_header"
+                    android:text="@string/barcode" />
+
+                <TextView
+                    android:id="@+id/productBarcode"
+                    style="@style/detail_item_content_textview" />
+
             </LinearLayout>
 
         </android.support.v7.widget.CardView>

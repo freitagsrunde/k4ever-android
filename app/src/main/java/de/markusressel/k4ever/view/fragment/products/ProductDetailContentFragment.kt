@@ -45,6 +45,7 @@ class ProductDetailContentFragment : DetailContentFragmentBase<ProductEntity>() 
         productDescription.text = entity.description
         productPrice.text = entity.price.toString()
         productDeposit.text = entity.deposit.toString()
+        productBarcode.text = entity.barcode
     }
 
 }
