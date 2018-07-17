@@ -36,7 +36,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".view.fragment.products.ProductDetailActivity" />
+        <activity
+            android:name=".view.fragment.products.ProductDetailActivity"
+            android:parentActivityName=".view.activity.MainActivity" />
+
     </application>
 
 </manifest>

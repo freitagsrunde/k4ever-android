@@ -66,7 +66,7 @@ abstract class DetailActivityBase<T : Any> : DaggerSupportActivityBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //        setToolbar()
+        setToolbar()
         setAdapter()
         setHeader()
         initEntityState()
@@ -93,24 +93,24 @@ abstract class DetailActivityBase<T : Any> : DaggerSupportActivityBase() {
         //        }
     }
 
-    //    private fun setToolbar() {
-    //        val toolbar = materialViewPager.toolbar
-    //        if (toolbar != null) {
-    //            setSupportActionBar(toolbar)
-    //
-    //            val actionBar = supportActionBar!!
-    //            actionBar.setDisplayHomeAsUpEnabled(true)
-    //
-    //            //            actionBar
-    //            //                    .setDisplayShowHomeEnabled(true)
-    //
-    //            // activity title comes from library
-    //            actionBar.setDisplayShowTitleEnabled(false)
-    //
-    //            actionBar.setDisplayUseLogoEnabled(false)
-    //            actionBar.setHomeButtonEnabled(true)
-    //        }
-    //    }
+    private fun setToolbar() {
+        val toolbar = materialViewPager.toolbar
+        if (toolbar != null) {
+            setSupportActionBar(toolbar)
+
+            val actionBar = supportActionBar!!
+            actionBar.setDisplayHomeAsUpEnabled(true)
+
+            //            actionBar
+            //                    .setDisplayShowHomeEnabled(true)
+
+            // activity title comes from library
+            actionBar.setDisplayShowTitleEnabled(false)
+
+            actionBar.setDisplayUseLogoEnabled(false)
+            actionBar.setHomeButtonEnabled(true)
+        }
+    }
 
     private fun setAdapter() {
         val viewPager = materialViewPager.viewPager
@@ -194,6 +194,13 @@ abstract class DetailActivityBase<T : Any> : DaggerSupportActivityBase() {
         const val KEY_ITEM_ID = "item_id"
         const val ENTITY_ID_MISSING_VALUE = -1L
 
+        /**
+         * Create a new instance of a detail activity
+         *
+         * @param clazz the class to instantiate (must implements this base class)
+         * @param context application context
+         * @param entityId the id of the item to display details for
+         */
         fun <T : Class<*>> newInstanceIntent(clazz: T, context: Context, entityId: Long?): Intent {
             val intent = Intent(context, clazz)
             entityId?.let {
