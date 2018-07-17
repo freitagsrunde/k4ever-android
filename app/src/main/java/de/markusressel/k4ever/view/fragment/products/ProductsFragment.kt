@@ -127,7 +127,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     override fun onResume() {
         super.onResume()
 
-        updateShoppingCartVisibility()
+        updateShoppingCart(0.0)
     }
 
     private fun initShoppingCart() {
