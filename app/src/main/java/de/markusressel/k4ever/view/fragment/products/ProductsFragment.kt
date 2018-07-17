@@ -124,6 +124,12 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         initShoppingCart()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        updateShoppingCartVisibility()
+    }
+
     private fun initShoppingCart() {
         shoppingCartBottomSheetBehaviour = BottomSheetBehavior.from<View>(shoppingCartCardView)
         setCardViewPeekHeight()

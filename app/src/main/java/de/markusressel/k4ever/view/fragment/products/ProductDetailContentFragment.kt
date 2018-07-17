@@ -17,9 +17,14 @@
 
 package de.markusressel.k4ever.view.fragment.products
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import com.jakewharton.rxbinding2.view.RxView
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
+import de.markusressel.k4ever.business.ShoppingCart
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
@@ -32,6 +37,9 @@ class ProductDetailContentFragment : DetailContentFragmentBase<ProductEntity>() 
     @Inject
     protected lateinit var persistenceManager: ProductPersistenceManager
 
+    @Inject
+    protected lateinit var shoppingCart: ShoppingCart
+
     override val layoutRes: Int
         get() = R.layout.layout__item_detail__product
 
@@ -43,9 +51,20 @@ class ProductDetailContentFragment : DetailContentFragmentBase<ProductEntity>() 
         val entity = getEntityFromPersistence()
         productName.text = entity.name
         productDescription.text = entity.description
-        productPrice.text = entity.price.toString()
-        productDeposit.text = entity.deposit.toString()
+        productPrice.text = getString(R.string.shopping_cart__item_cost, entity.price)
+        productDeposit.text = getString(R.string.shopping_cart__item_cost, entity.deposit)
         productBarcode.text = entity.barcode
+
+        RxView.clicks(addToCartWithout).bindToLifecycle(addToCartWithout).subscribe {
+            shoppingCart.add(getEntityFromPersistence(), 1, false)
+        }
+        RxView.clicks(addToCartWithDeposit).bindToLifecycle(addToCartWithDeposit).subscribe {
+            shoppingCart.add(getEntityFromPersistence(), 1, true)
+        }
+        RxView.clicks(addToCartOnlyDeposit).bindToLifecycle(addToCartOnlyDeposit).subscribe {
+            Toast.makeText(context as Context, "Not (yet) supported", Toast.LENGTH_LONG).show()
+            //            shoppingCart.add(getEntityFromPersistence(), 1, false)
+        }
     }
 
 }

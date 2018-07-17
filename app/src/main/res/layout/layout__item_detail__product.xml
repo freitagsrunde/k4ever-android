@@ -36,6 +36,42 @@
                 android:padding="16dp">
 
                 <TextView
+                    style="@style/detail_item_section"
+                    android:text="@string/add_to_cart" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/addToCartWithDeposit"
+                        style="@style/borderless_button"
+                        android:layout_weight="1"
+                        android:maxWidth="96dp"
+                        android:text="@string/with_deposit" />
+
+                    <Button
+                        android:id="@+id/addToCartWithout"
+                        style="@style/borderless_button"
+                        android:layout_weight="1"
+                        android:maxWidth="96dp"
+                        android:text="@string/without_deposit" />
+
+                    <Button
+                        android:id="@+id/addToCartOnlyDeposit"
+                        style="@style/borderless_button"
+                        android:layout_weight="1"
+                        android:maxWidth="96dp"
+                        android:text="@string/only_deposit" />
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/detail_item_section"
+                    android:text="@string/product_details" />
+
+                <TextView
                     style="@style/detail_item_header"
                     android:text="@string/name" />
 
