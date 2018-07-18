@@ -23,6 +23,7 @@ import android.support.annotation.CallSuper
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -39,6 +40,7 @@ import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import kotlinx.android.synthetic.main.layout_empty_list.*
 import javax.inject.Inject
 
+
 /**
  * List base class
  */
@@ -50,6 +52,8 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
     @Inject
     @field:Implementation(ImplementationTypeEnum.DUMMY)
     lateinit var restClient: K4EverRestApiClient
+
+    protected var lastScrollPosition by savedInstanceState(0)
 
     protected open val fabConfig: FabConfig = FabConfig(left = mutableListOf(),
             right = mutableListOf())
@@ -75,6 +79,28 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
 
         swipeRefreshLayout.setOnRefreshListener {
             reloadDataFromSource()
+        }
+    }
+
+    override fun onStop() {
+        val layoutManager = recyclerView.layoutManager
+        if (layoutManager != null && layoutManager is StaggeredGridLayoutManager) {
+            val visibleItems = layoutManager.findFirstVisibleItemPositions(null)
+            lastScrollPosition = if (visibleItems.isNotEmpty()) {
+                visibleItems.first()
+            } else {
+                0
+            }
+        }
+
+        super.onStop()
+    }
+
+    internal fun scrollToItemPosition(itemPosition: Int) {
+        val layoutManager = recyclerView.layoutManager
+        // this always returns 0 :(
+        if (itemPosition != RecyclerView.NO_POSITION && layoutManager.childCount > 0) {
+            layoutManager.scrollToPosition((itemPosition.coerceIn(0, layoutManager.childCount - 1)))
         }
     }
 

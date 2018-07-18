@@ -127,6 +127,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
                     updateAdapterList(it.first, it.second)
+                    scrollToItemPosition(lastScrollPosition)
                 }, onError = {
                     if (it is CancellationException) {
                         Timber.d { "reload from persistence cancelled" }
@@ -214,6 +215,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
                     updateLastUpdatedFromSource()
                     updateAdapterList(it.first, it.second)
+                    scrollToItemPosition(lastScrollPosition)
                 }, onError = {
                     if (it is CancellationException) {
                         Timber.d { "reload from source cancelled" }
