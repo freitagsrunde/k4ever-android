@@ -39,14 +39,15 @@
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
     </style>
 
-    <style name="detail_content_cardview">
+    <style name="detail_content_cardview" parent="CardView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/cardMarginVertical</item>
         <item name="android:layout_marginBottom">@dimen/cardMarginVertical</item>
         <item name="android:layout_marginStart">@dimen/cardMarginHorizontal</item>
         <item name="android:layout_marginEnd">@dimen/cardMarginHorizontal</item>
-        <item name="cardElevation">4dp</item>
+        <item name="cardElevation">@dimen/cardview_elevation</item>
+        <item name="cardCornerRadius">@dimen/cardview_corner_radius</item>
     </style>
 
     <style name="detail_item_section">

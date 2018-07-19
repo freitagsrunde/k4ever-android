@@ -17,20 +17,6 @@
 
 <resources>
 
-    <dimen name="product_image_size">64dp</dimen>
-
-    <dimen name="shopping_bag__peek_height">56dp</dimen>
-    <dimen name="shopping_bag__peek_elevation">4dp</dimen>
-    <dimen name="shopping_bag__elevation">8dp</dimen>
-
-    <dimen name="tab_bar_height">42dp</dimen>
-
-    <dimen name="cardview_corner_radius">4dp</dimen>
-    <dimen name="cardview_padding">0dp</dimen>
-    <dimen name="cardview_elevation">4dp</dimen>
-    <dimen name="cardview_elevation_while_moving">8dp</dimen>
-    <dimen name="cardview_default_height">64dp</dimen>
-
-    <dimen name="history_list_item_height">64dp</dimen>
+    <integer name="list_column_count">3</integer>
 
 </resources>
