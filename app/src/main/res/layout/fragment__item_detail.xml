@@ -16,12 +16,13 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemDetailMainLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.activity.MainActivity">
+    tools:context=".view.activity.base.DetailActivityBase">
 
     <com.github.florent37.materialviewpager.MaterialViewPager
         android:id="@+id/materialViewPager"
@@ -33,7 +34,7 @@
         app:viewpager_displayToolbarWhenSwipe="true"
         app:viewpager_enableToolbarElevation="true"
         app:viewpager_headerAdditionalHeight="20dp"
-        app:viewpager_headerAlpha="1.0"
+        app:viewpager_headerAlpha="0.6"
         app:viewpager_headerHeight="200dp"
         app:viewpager_hideLogoWithFade="false"
         app:viewpager_hideToolbarAndTitle="true"

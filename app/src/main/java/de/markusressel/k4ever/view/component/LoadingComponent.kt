@@ -33,7 +33,7 @@ import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.view.RxView
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.extensions.common.prettyPrint
+import de.markusressel.k4ever.extensions.common.android.prettyPrint
 import de.markusressel.k4ever.view.fragment.base.LifecycleFragmentBase
 
 /**

@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.extensions.common
+package de.markusressel.k4ever.extensions.common.android
 
 import android.content.Context
 import android.os.AsyncTask
 import android.support.v4.app.Fragment
+import android.support.v7.util.DiffUtil
 import de.markusressel.k4ever.R
+import de.markusressel.k4ever.data.persistence.IdentifiableListItem
+import de.markusressel.k4ever.view.fragment.base.DiffCallback
 
 /**
  * Returns true if the current device is considered a tablet
@@ -50,4 +53,16 @@ fun Fragment.context(): Context {
 
 fun Float.pxToSp(context: Context): Float {
     return this / context.resources.displayMetrics.scaledDensity
+}
+
+/**
+ * Creates a diff from the this to the given list
+ *
+ * @param newData the list to compare to
+ * @return a diff usable for recyclerview updates
+ */
+fun List<IdentifiableListItem>.recyclerviewDiff(
+        newData: List<IdentifiableListItem>): DiffUtil.DiffResult {
+    val diffCallback = DiffCallback(this, newData)
+    return DiffUtil.calculateDiff(diffCallback)
 }

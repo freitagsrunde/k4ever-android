@@ -21,8 +21,8 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
+import de.markusressel.k4ever.view.activity.base.DetailActivityBase
 import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
-import de.markusressel.k4ever.view.fragment.base.DetailActivityBase
 import javax.inject.Inject
 
 /**

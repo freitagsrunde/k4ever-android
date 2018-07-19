@@ -21,12 +21,23 @@ import android.os.Bundle
 import android.view.View
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
+import de.markusressel.k4ever.view.activity.base.DetailActivityBase
 import kotlinx.android.synthetic.main.layout__item_detail__product.*
 
 /**
  * Created by Markus on 15.02.2018.
  */
 abstract class DetailContentFragmentBase<EntityType : Any> : DaggerSupportFragmentBase() {
+
+    /**
+     * The parent activity
+     */
+    lateinit var parentActivity: DetailActivityBase<EntityType>
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        parentActivity = activity as DetailActivityBase<EntityType>
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

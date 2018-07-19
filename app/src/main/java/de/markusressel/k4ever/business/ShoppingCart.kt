@@ -19,6 +19,7 @@ package de.markusressel.k4ever.business
 
 import com.github.ajalt.timberkt.Timber
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -45,7 +46,7 @@ class ShoppingCart @Inject constructor() {
         if (matchingItem != null) {
             matchingItem.amount += amount
         } else {
-            val item = ShoppingCartItem(product, amount, withDeposit)
+            val item = ShoppingCartItem(idCounter.getAndIncrement(), product, amount, withDeposit)
             items.add(item)
         }
     }
@@ -118,6 +119,10 @@ class ShoppingCart @Inject constructor() {
      */
     fun isEmpty(): Boolean {
         return items.isEmpty()
+    }
+
+    companion object {
+        private val idCounter = AtomicLong(1)
     }
 
 }

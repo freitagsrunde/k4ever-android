@@ -24,7 +24,7 @@ import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.view.animation.FastOutSlowInInterpolator
-import android.support.v7.widget.StaggeredGridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
 import android.util.TypedValue
 import android.view.View
 import com.github.nitrico.lastadapter.LastAdapter
@@ -37,11 +37,12 @@ import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemCartItemBinding
 import de.markusressel.k4ever.databinding.ListItemProductBinding
-import de.markusressel.k4ever.extensions.common.context
-import de.markusressel.k4ever.extensions.common.pxToSp
+import de.markusressel.k4ever.extensions.common.android.context
+import de.markusressel.k4ever.extensions.common.android.pxToSp
+import de.markusressel.k4ever.extensions.common.android.recyclerviewDiff
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.products.model.ProductModel
-import de.markusressel.k4ever.view.fragment.base.DetailActivityBase
+import de.markusressel.k4ever.view.activity.base.DetailActivityBase
 import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
@@ -113,6 +114,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     private lateinit var shoppingCartBottomSheetBehaviour: BottomSheetBehavior<View>
 
     private lateinit var shoppingCartItemsAdapter: LastAdapter
+    private lateinit var shoppingCartItemList: MutableList<ShoppingCartItem>
 
     val normalPriceSize by lazy { totalItemCountAndCost.textSize.pxToSp(context()) }
 
@@ -166,7 +168,8 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     }
 
     private fun initShoppingCartList() {
-        shoppingCartItemsAdapter = LastAdapter(shoppingCart.items,
+        shoppingCartItemList = shoppingCart.items.toMutableList()
+        shoppingCartItemsAdapter = LastAdapter(shoppingCartItemList,
                 BR.item).map<ShoppingCartItem, ListItemCartItemBinding>(
                 R.layout.list_item__cart_item) {
             onCreate {
@@ -192,14 +195,9 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                     stepper.stepper.setValue(it.amount)
                 }
             }
-            onRecycle {
-                //                val stepper = it.binding.root.productAmountStepper
-                //                ???
-                //                stepper.stepper.removeStepCallback()
-            }
         }.into(shoppingCartItemsLayout)
 
-        val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
+        val layoutManager = LinearLayoutManager(context)
         shoppingCartItemsLayout.layoutManager = layoutManager
     }
 
@@ -223,9 +221,14 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
 
         animateTotalItemCountAndCost(oldTotalPrice)
 
-        // TODO: update items using diff/direct animations
         if (notifyListAdapter) {
-            shoppingCartItemsAdapter.notifyDataSetChanged()
+            val newData = shoppingCart.items.toList()
+            val diff = shoppingCartItemList.recyclerviewDiff(newData)
+
+            shoppingCartItemList.clear()
+            shoppingCartItemList.addAll(newData)
+
+            diff.dispatchUpdatesTo(shoppingCartItemsAdapter)
         }
     }
 
@@ -257,7 +260,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
             // only open bottom sheet if is currently invisible
             // otherwise keep the current state
             shoppingCartBottomSheetBehaviour.state.let {
-                if (it == BottomSheetBehavior.STATE_HIDDEN || it == BottomSheetBehavior.STATE_EXPANDED || it == BottomSheetBehavior.STATE_SETTLING) {
+                if (it == BottomSheetBehavior.STATE_HIDDEN) {
                     shoppingCartBottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
             }

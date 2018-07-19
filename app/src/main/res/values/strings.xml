@@ -50,7 +50,7 @@
     <string name="add_to_cart">Add to cart</string>
     <string name="with_deposit">with deposit</string>
     <string name="without_deposit">without deposit</string>
-    <string name="only_deposit">only deposit</string>
+    <string name="product_added_to_cart">Product was added to the shopping cart</string>
 
     <string name="product_details">Product Details</string>
 

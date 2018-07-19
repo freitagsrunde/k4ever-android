@@ -33,7 +33,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IProfile
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.extensions.common.isTablet
+import de.markusressel.k4ever.extensions.common.android.isTablet
 import de.markusressel.k4ever.navigation.DrawerItemHolder
 import de.markusressel.k4ever.navigation.DrawerItemHolder.About
 import de.markusressel.k4ever.navigation.DrawerItemHolder.Account

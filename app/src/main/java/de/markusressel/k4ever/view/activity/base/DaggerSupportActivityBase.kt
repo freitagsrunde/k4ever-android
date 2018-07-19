@@ -66,7 +66,7 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
     protected abstract val style: Int
 
     /**
-     * The layout ressource for this Activity
+     * The layout resource for this Activity
      */
     @get:LayoutRes
     protected abstract val layoutRes: Int
@@ -126,11 +126,11 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
         val theme = preferencesDataProvider.getValueUnsafe(R.string.theme_key,
                 getString(R.string.theme_dark_value))
 
-        if (style == DIALOG) {
-            themeHandler.applyDialogTheme(this, theme)
-        } else {
-            themeHandler.applyTheme(this, theme)
-        }
+        //        if (style == DIALOG) {
+        //            themeHandler.applyDialogTheme(this, theme)
+        //        } else {
+        themeHandler.applyTheme(this, theme)
+        //        }
     }
 
     @IntDef(DEFAULT, DIALOG)

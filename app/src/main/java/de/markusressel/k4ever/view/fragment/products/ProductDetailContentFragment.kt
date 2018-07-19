@@ -17,10 +17,8 @@
 
 package de.markusressel.k4ever.view.fragment.products
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import com.jakewharton.rxbinding2.view.RxView
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
@@ -57,13 +55,11 @@ class ProductDetailContentFragment : DetailContentFragmentBase<ProductEntity>() 
 
         RxView.clicks(addToCartWithout).bindToLifecycle(addToCartWithout).subscribe {
             shoppingCart.add(getEntityFromPersistence(), 1, false)
+            parentActivity.showSnackbar(R.string.product_added_to_cart)
         }
         RxView.clicks(addToCartWithDeposit).bindToLifecycle(addToCartWithDeposit).subscribe {
             shoppingCart.add(getEntityFromPersistence(), 1, true)
-        }
-        RxView.clicks(addToCartOnlyDeposit).bindToLifecycle(addToCartOnlyDeposit).subscribe {
-            Toast.makeText(context as Context, "Not (yet) supported", Toast.LENGTH_LONG).show()
-            //            shoppingCart.add(getEntityFromPersistence(), 1, false)
+            parentActivity.showSnackbar(R.string.product_added_to_cart)
         }
     }
 

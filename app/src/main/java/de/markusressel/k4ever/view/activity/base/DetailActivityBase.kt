@@ -15,18 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.view.fragment.base
+package de.markusressel.k4ever.view.activity.base
 
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.annotation.StringRes
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
+import android.view.View
 import com.github.florent37.materialviewpager.header.HeaderDesign
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
-import de.markusressel.k4ever.view.activity.base.DaggerSupportActivityBase
+import de.markusressel.k4ever.extensions.common.android.gui.snack
+import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
 import kotlinx.android.synthetic.main.fragment__item_detail.*
 import kotlinx.android.synthetic.main.view__item_detail__logo.*
 
@@ -182,6 +186,17 @@ abstract class DetailActivityBase<T : Any> : DaggerSupportActivityBase() {
         }
 
         return currentState!!
+    }
+
+    fun showSnackbar(@StringRes text: Int, duration: Int = Snackbar.LENGTH_SHORT,
+                     actionTitle: String? = null, action: ((View) -> Unit)? = null) {
+        itemDetailMainLayout.snack(text, duration, actionTitle, action)
+    }
+
+    fun showSnackbar(@StringRes text: Int,
+                     duration: Int = Snackbar.LENGTH_SHORT, @StringRes actionTitle: Int,
+                     action: ((View) -> Unit)) {
+        showSnackbar(text, duration, actionTitle, action)
     }
 
     /**
