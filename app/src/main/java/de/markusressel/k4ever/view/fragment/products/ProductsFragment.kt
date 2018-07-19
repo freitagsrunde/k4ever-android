@@ -174,15 +174,15 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                 R.layout.list_item__cart_item) {
             onCreate {
                 it.binding.presenter = this@ProductsFragment
+                val cartItem = it.binding.item!!
 
                 val stepper = it.binding.root.productAmountStepper
                 stepper.enableSideTap(true)
                 stepper.stepper.setMin(0)
+                stepper.stepper.setValue(cartItem.amount)
                 stepper.stepper.addStepCallback(object : OnStepCallback {
                     override fun onStep(value: Int, positive: Boolean) {
-                        val cartItem = it.binding.item
-
-                        setShoppingCardItemAmount(cartItem!!.product, cartItem.withDeposit, value,
+                        setShoppingCardItemAmount(cartItem.product, cartItem.withDeposit, value,
                                 false)
                     }
                 })
@@ -362,9 +362,12 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     fun setShoppingCardItemAmount(productEntity: ProductEntity, withDeposit: Boolean, amount: Int,
                                   updateCartVisibility: Boolean = true) {
         val oldTotalPrice = shoppingCart.getTotalPrice()
-        shoppingCart.set(productEntity, amount, withDeposit)
-        updateShoppingCart(oldTotalPrice = oldTotalPrice, updateVisibility = updateCartVisibility,
-                notifyListAdapter = amount == 0)
+        val shoppingCartChanged = shoppingCart.set(productEntity, amount, withDeposit)
+
+        if (shoppingCartChanged) {
+            updateShoppingCart(oldTotalPrice = oldTotalPrice,
+                    updateVisibility = updateCartVisibility, notifyListAdapter = amount == 0)
+        }
     }
 
     /**
