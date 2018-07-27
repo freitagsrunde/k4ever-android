@@ -45,6 +45,20 @@
     <string name="show_purchases">Einkäufe</string>
     <string name="show_transfers">Überweisungen</string>
 
+    <string name="details">Details</string>
+
+    <string name="add_to_cart">In den Einkaufswagen</string>
+    <string name="with_deposit">Mit Pfand</string>
+    <string name="without_deposit">Ohne Pfand</string>
+    <string name="product_added_to_cart">Produkt wurde zum Einkaufswagen hinzugefügt</string>
+
+    <string name="product_details">Produkt Details</string>
+
+    <string name="description">Beschreibung</string>
+    <string name="price">Preis</string>
+    <string name="deposit">Pfand</string>
+    <string name="barcode">Barcode</string>
+
     <string name="no_items_found">Keine Einträge gefunden</string>
 
     <string name="error">Fehler</string>

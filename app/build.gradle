@@ -121,6 +121,9 @@ dependencies {
     implementation 'com.github.nitrico.lastadapter:lastadapter:2.3.0'
     kapt "com.android.databinding:compiler:$gradle_plugin_version"
 
+    // MaterialViewPager
+    implementation 'com.github.florent37:materialviewpager:1.2.3'
+
     // Context popup menus
     implementation 'com.github.zawadz88.materialpopupmenu:material-popup-menu:2.1.0'
 

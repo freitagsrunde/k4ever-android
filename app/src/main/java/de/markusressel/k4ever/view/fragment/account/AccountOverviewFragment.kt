@@ -78,7 +78,7 @@ class AccountOverviewFragment : DaggerSupportFragmentBase() {
 
         account_balance.let {
             it.text = getString(R.string.account_balance, currentBalance)
-            it.setTextColor(themeHelper.getBalanceColor(currentBalance))
+            it.setTextColor(themeHandler.getBalanceColor(currentBalance))
         }
     }
 

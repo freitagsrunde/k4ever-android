@@ -151,6 +151,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
                 }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
                     updateAdapterList(it.first, it.second)
+                    scrollToItemPosition(lastScrollPosition)
                 }, onError = {
                     if (it is CancellationException) {
                         Timber.d { "reload from persistence cancelled" }
@@ -273,6 +274,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
                     updateLastUpdatedFromSource()
                     updateAdapterList(it.first, it.second)
+                    scrollToItemPosition(lastScrollPosition)
                 }, onError = {
                     swipeRefreshLayout.isRefreshing = false
 

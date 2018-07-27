@@ -24,7 +24,6 @@ import android.support.annotation.LayoutRes
 import android.support.v4.app.Fragment
 import android.view.Window
 import android.view.WindowManager
-import com.github.ajalt.timberkt.Timber
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -33,7 +32,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.navigation.Navigator
 import de.markusressel.k4ever.view.IconHandler
-import de.markusressel.k4ever.view.ThemeHelper
+import de.markusressel.k4ever.view.ThemeHandler
 import de.markusressel.kutepreferences.library.persistence.KutePreferenceDataProvider
 import kotlinx.android.synthetic.main.view__toolbar.*
 import javax.inject.Inject
@@ -58,7 +57,7 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
     lateinit var iconHandler: IconHandler
 
     @Inject
-    lateinit var themeHelper: ThemeHelper
+    lateinit var themeHandler: ThemeHandler
 
     /**
      * @return true if this activity should use a dialog theme instead of a normal activity theme
@@ -67,7 +66,7 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
     protected abstract val style: Int
 
     /**
-     * The layout ressource for this Activity
+     * The layout resource for this Activity
      */
     @get:LayoutRes
     protected abstract val layoutRes: Int
@@ -119,21 +118,19 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
      * Hide the status bar
      */
     protected fun hideStatusBar() {
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
     private fun initTheme() {
         val theme = preferencesDataProvider.getValueUnsafe(R.string.theme_key,
                 getString(R.string.theme_dark_value))
 
-        if (style == DIALOG) {
-            // TODO: Dialog theming
-            Timber.w { "Dialog Theming is not yet supported" }
-            //            themeHelper
-            //                    .applyDialogTheme(this, theme) //set up notitle
-        } else {
-            themeHelper.applyTheme(this, theme)
-        }
+        //        if (style == DIALOG) {
+        //            themeHandler.applyDialogTheme(this, theme)
+        //        } else {
+        themeHandler.applyTheme(this, theme)
+        //        }
     }
 
     @IntDef(DEFAULT, DIALOG)

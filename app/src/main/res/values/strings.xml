@@ -50,7 +50,21 @@
     <string name="show_purchases">Purchases</string>
     <string name="show_transfers">Money Transfers</string>
 
+    <string name="details">Details</string>
+
+    <string name="add_to_cart">Add to cart</string>
+    <string name="with_deposit">with deposit</string>
+    <string name="without_deposit">without deposit</string>
+    <string name="product_added_to_cart">Product was added to the shopping cart</string>
+
+    <string name="product_details">Product Details</string>
+
     <string name="no_items_found">No items found</string>
+
+    <string name="description">Description</string>
+    <string name="price">Price</string>
+    <string name="deposit">Deposit</string>
+    <string name="barcode">Barcode</string>
 
     <string name="error">Error</string>
     <string name="exception_raised">Exception raised</string>

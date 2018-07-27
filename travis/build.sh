@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
+
+echo "Travis Container environment variables:"
+env | sort
+
+echo
+
 if [[ "${TRAVIS_BRANCH}" == "dev" ]]; then
+  echo "Start compiling and assembling apk..."
   ./gradlew clean testDebug lintDebug assembleDebug --stacktrace
-  
-  # find compiled .apk file
-  RELEASE=$(find ./app/build/outputs/apk/debug -type f -name "k4ever*.apk")
-  # send it file via telegram bot
-  curl \
-  --silent \
-  --form chat_id="${CHAT_ID}" \
-  --form document=@"${RELEASE}" \
-  "https://api.telegram.org/${TELEGRAM_TOKEN}/sendDocument" \
-  >/dev/null 2>&1
-  
 else
+  echo "Start compiling WITHOUT assembling apk..."
   ./gradlew clean testDebug lintDebug --stacktrace
 fi
+

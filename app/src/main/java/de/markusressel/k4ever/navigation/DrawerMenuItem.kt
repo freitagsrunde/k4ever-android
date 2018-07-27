@@ -43,7 +43,8 @@ data class DrawerMenuItem(@StringRes val title: Int, val icon: IIcon? = null, @D
 
         drawableRes?.let {
             val drawable = iconHandler.context.getDrawable(drawableRes)
-            val color = iconHandler.themeHelper.getThemeAttrColor(iconHandler.context, android.R.attr.textColorPrimary)
+            val color = iconHandler.themeHandler.getThemeAttrColor(iconHandler.context,
+                    android.R.attr.textColorPrimary)
             drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
 
             return drawable

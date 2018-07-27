@@ -32,6 +32,8 @@ import de.markusressel.k4ever.view.fragment.account.BalanceHistoryFragment
 import de.markusressel.k4ever.view.fragment.base.TabNavigationFragment
 import de.markusressel.k4ever.view.fragment.moneytransfer.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
+import de.markusressel.k4ever.view.fragment.products.ProductDetailActivity
+import de.markusressel.k4ever.view.fragment.products.ProductDetailContentFragment
 import de.markusressel.k4ever.view.fragment.products.ProductsFragment
 import de.markusressel.kutepreferences.library.persistence.DefaultKutePreferenceDataProvider
 import de.markusressel.kutepreferences.library.persistence.KutePreferenceDataProvider
@@ -73,6 +75,12 @@ abstract class AppModule {
     @ContributesAndroidInjector
     internal abstract fun PreferencesFragment(): PreferencesFragment
 
+    @ContributesAndroidInjector
+    internal abstract fun ProductDetailActivity(): ProductDetailActivity
+
+    @ContributesAndroidInjector
+    internal abstract fun ProductDetailContentFragment(): ProductDetailContentFragment
+
     @Module
     companion object {
 
@@ -86,7 +94,8 @@ abstract class AppModule {
         @Provides
         @Singleton
         @JvmStatic
-        internal fun provideKutePreferenceDataProvider(context: Context): KutePreferenceDataProvider {
+        internal fun provideKutePreferenceDataProvider(
+                context: Context): KutePreferenceDataProvider {
             return DefaultKutePreferenceDataProvider(context)
         }
 
