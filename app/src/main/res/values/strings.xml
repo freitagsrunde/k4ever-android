@@ -44,6 +44,11 @@
     <string name="refresh">Refresh</string>
     <string name="sort_order">Sort order</string>
     <string name="search">Search</string>
+    <string name="filter">Filter</string>
+
+    <string name="show_deposit_withdrawals">Deposits/Withdrawals</string>
+    <string name="show_purchases">Purchases</string>
+    <string name="show_transfers">Money Transfers</string>
 
     <string name="details">Details</string>
 
@@ -64,4 +69,5 @@
     <string name="error">Error</string>
     <string name="exception_raised">Exception raised</string>
     <string name="unknown_error">Unknown Error</string>
+    <string name="retry">Retry</string>
 </resources>

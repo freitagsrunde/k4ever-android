@@ -21,11 +21,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
+import android.widget.CheckBox
 import com.github.nitrico.lastadapter.LastAdapter
+import com.github.zawadz88.materialpopupmenu.popupMenu
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
@@ -234,17 +233,80 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
     }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none,
+        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_filter,
                 onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
+                    val filterMenuItem = menu?.findItem(R.id.filter)
+                    filterMenuItem?.icon = iconHandler.getOptionsMenuIcon(
+                            MaterialDesignIconic.Icon.gmi_filter_list)
                 }, onOptionsMenuItemClicked = {
-            false
+            when {
+                it.itemId == R.id.filter -> {
+                    openFilterPopoupMenu(activity!!.findViewById(R.id.filter))
+                    true
+                }
+                else -> false
+            }
         })
     }
 
+    private var showBalanceHistory by savedInstanceState(true)
+    private var showPurchaseHistory by savedInstanceState(true)
+    private var showTransferHistory by savedInstanceState(true)
+
+    private fun openFilterPopoupMenu(anchorView: View) {
+        val popupMenu = popupMenu {
+            dropdownGravity = Gravity.BOTTOM
+            section {
+                customItem {
+                    layoutResId = R.layout.view__popup_menu__checkbox
+                    viewBoundCallback = { view ->
+                        val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
+                        checkBox.setText(R.string.show_deposit_withdrawals)
+                        checkBox.isChecked = showBalanceHistory
+                    }
+                    callback = {
+                        showBalanceHistory = !showBalanceHistory
+                        updateListFromPersistence()
+                    }
+                }
+                customItem {
+                    layoutResId = R.layout.view__popup_menu__checkbox
+                    viewBoundCallback = { view ->
+                        val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
+                        checkBox.setText(R.string.show_purchases)
+                        checkBox.isChecked = showPurchaseHistory
+                    }
+                    callback = {
+                        showPurchaseHistory = !showPurchaseHistory
+                        updateListFromPersistence()
+                    }
+                }
+                customItem {
+                    layoutResId = R.layout.view__popup_menu__checkbox
+                    viewBoundCallback = { view ->
+                        val checkBox: CheckBox = view.findViewById(R.id.popup_menu_checkbox)
+                        checkBox.setText(R.string.show_transfers)
+                        checkBox.isChecked = showTransferHistory
+                    }
+                    callback = {
+                        showTransferHistory = !showTransferHistory
+                        updateListFromPersistence()
+                    }
+
+                }
+            }
+        }
+
+        popupMenu.show(activity as Context, anchorView)
+    }
+
     override fun filterListItem(item: IdentifiableListItem): Boolean {
-        // TODO: filter history items by type (if set by user)
-        return super.filterListItem(item)
-        //        return item is PurchaseHistoryItemEntity
+        return when (item) {
+            is BalanceHistoryItemEntity -> showBalanceHistory
+            is TransferHistoryItemEntity -> showTransferHistory
+            is PurchaseHistoryItemEntity -> showPurchaseHistory
+            else -> true
+        }
     }
 
     override fun sortListData(listData: List<IdentifiableListItem>): List<IdentifiableListItem> {

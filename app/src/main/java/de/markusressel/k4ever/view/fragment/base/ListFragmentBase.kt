@@ -36,8 +36,8 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.dagger.module.Implementation
 import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.rest.K4EverRestApiClient
+import de.markusressel.k4ever.view.component.LoadingComponent
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
-import kotlinx.android.synthetic.main.layout_empty_list.*
 import javax.inject.Inject
 
 
@@ -48,6 +48,18 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__recyclerview
+
+    protected val loadingComponent by lazy {
+        LoadingComponent(this, onShowContent = {
+            updateFabVisibility(View.VISIBLE)
+        }, onShowError = { message: String, throwable: Throwable? ->
+            hideEmpty()
+            setRefreshing(false)
+            updateFabVisibility(View.INVISIBLE)
+        }, onRetryClicked = {
+            reloadDataFromSource()
+        })
+    }
 
     @Inject
     @field:Implementation(ImplementationTypeEnum.DUMMY)
@@ -63,9 +75,22 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
 
     internal var currentSearchFilter: String by savedInstanceState("")
 
+    override fun initComponents(context: Context) {
+        super.initComponents(context)
+        loadingComponent
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val parent = super.onCreateView(inflater, container, savedInstanceState) as ViewGroup
+        return loadingComponent.onCreateView(inflater, parent, savedInstanceState)
+    }
+
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        loadingComponent.showContent()
 
         recyclerViewAdapter = createAdapter()
 
@@ -78,6 +103,9 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
         setupFabs()
 
         swipeRefreshLayout.setOnRefreshListener {
+            reloadDataFromSource()
+        }
+        swipeRefreshLayoutEmpty.setOnRefreshListener {
             reloadDataFromSource()
         }
     }
@@ -214,16 +242,21 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
      * Show the "empty" screen
      */
     internal fun showEmpty() {
-        recyclerView.visibility = View.INVISIBLE
-        layoutEmpty.visibility = View.VISIBLE
+        swipeRefreshLayout.visibility = View.GONE
+        swipeRefreshLayoutEmpty.visibility = View.VISIBLE
     }
 
     /**
      * Hide the "empty" screen
      */
     internal fun hideEmpty() {
-        recyclerView.visibility = View.VISIBLE
-        layoutEmpty.visibility = View.INVISIBLE
+        swipeRefreshLayout.visibility = View.VISIBLE
+        swipeRefreshLayoutEmpty.visibility = View.GONE
+    }
+
+    fun setRefreshing(refreshing: Boolean) {
+        swipeRefreshLayout.isRefreshing = refreshing
+        swipeRefreshLayoutEmpty.isRefreshing = refreshing
     }
 
 }

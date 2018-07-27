@@ -39,6 +39,11 @@
     <string name="refresh">Aktualisieren</string>
     <string name="sort_order">Sortierung</string>
     <string name="search">Suchen</string>
+    <string name="filter">Filtern</string>
+
+    <string name="show_deposit_withdrawals">Ein- und Auszahlungen</string>
+    <string name="show_purchases">Einkäufe</string>
+    <string name="show_transfers">Überweisungen</string>
 
     <string name="details">Details</string>
 
@@ -59,4 +64,5 @@
     <string name="error">Fehler</string>
     <string name="exception_raised">Ausnahme aufgetreten</string>
     <string name="unknown_error">Unbekannter Fehler</string>
+    <string name="retry">Erneut versuchen</string>
 </resources>
