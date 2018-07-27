@@ -140,6 +140,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
                     if (it is CancellationException) {
                         Timber.d { "reload from persistence cancelled" }
                     } else {
+                        loadingComponent.showError(it)
                         setRefreshing(false)
                     }
                 })
@@ -267,6 +268,8 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
 
                     if (it is CancellationException) {
                         Timber.d { "reload from source cancelled" }
+                    } else {
+                        loadingComponent.showError(it)
                     }
                 })
     }

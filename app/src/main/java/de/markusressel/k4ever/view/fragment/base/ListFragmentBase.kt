@@ -36,6 +36,7 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.dagger.module.Implementation
 import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.rest.K4EverRestApiClient
+import de.markusressel.k4ever.view.component.LoadingComponent
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import javax.inject.Inject
 
@@ -47,6 +48,18 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__recyclerview
+
+    protected val loadingComponent by lazy {
+        LoadingComponent(this, onShowContent = {
+            updateFabVisibility(View.VISIBLE)
+        }, onShowError = { message: String, throwable: Throwable? ->
+            hideEmpty()
+            setRefreshing(false)
+            updateFabVisibility(View.INVISIBLE)
+        }, onRetryClicked = {
+            reloadDataFromSource()
+        })
+    }
 
     @Inject
     @field:Implementation(ImplementationTypeEnum.DUMMY)
@@ -62,9 +75,22 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
 
     internal var currentSearchFilter: String by savedInstanceState("")
 
+    override fun initComponents(context: Context) {
+        super.initComponents(context)
+        loadingComponent
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val parent = super.onCreateView(inflater, container, savedInstanceState) as ViewGroup
+        return loadingComponent.onCreateView(inflater, parent, savedInstanceState)
+    }
+
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        loadingComponent.showContent()
 
         recyclerViewAdapter = createAdapter()
 

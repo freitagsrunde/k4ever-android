@@ -69,4 +69,5 @@
     <string name="error">Error</string>
     <string name="exception_raised">Exception raised</string>
     <string name="unknown_error">Unknown Error</string>
+    <string name="retry">Retry</string>
 </resources>

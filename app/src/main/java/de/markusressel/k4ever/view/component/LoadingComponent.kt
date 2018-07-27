@@ -26,6 +26,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.afollestad.materialdialogs.MaterialDialog
@@ -48,7 +49,8 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
                         * Called when the error is clicked
                         * Show a sophisticated error screen here
                         */
-                       val onErrorClicked: ((message: String, t: Throwable?) -> Unit)? = null) : FragmentComponent(hostFragment) {
+                       val onErrorClicked: ((message: String, t: Throwable?) -> Unit)? = null,
+                       val onRetryClicked: () -> Unit) : FragmentComponent(hostFragment) {
 
     protected lateinit var loadingLayout: ViewGroup
 
@@ -56,6 +58,7 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
     protected var contentView: ViewGroup? = null
 
     lateinit var errorDescription: TextView
+    lateinit var buttonRetry: Button
 
 
     fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -65,6 +68,10 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
         loadingLayout = rootView.findViewById(R.id.layoutLoading)
         errorLayout = rootView.findViewById(R.id.layoutError)
         errorDescription = errorLayout.findViewById(R.id.errorDescription)
+        buttonRetry = errorLayout.findViewById(R.id.button_retry)
+        buttonRetry.setOnClickListener {
+            onRetryClicked()
+        }
 
         return rootView
     }
