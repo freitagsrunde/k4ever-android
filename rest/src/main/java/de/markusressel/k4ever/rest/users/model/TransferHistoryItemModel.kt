@@ -19,5 +19,6 @@ package de.markusressel.k4ever.rest.users.model
 
 import java.util.*
 
-data class TransferHistoryItemModel(val id: Long, val amount: Double, val recipient: UserModel,
+data class TransferHistoryItemModel(val id: Long, val amount: Double, val sender: UserModel,
+                                    val recipient: UserModel,
                                     val date: Date)

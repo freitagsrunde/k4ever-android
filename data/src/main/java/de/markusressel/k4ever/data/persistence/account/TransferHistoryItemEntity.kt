@@ -30,6 +30,7 @@ data class TransferHistoryItemEntity(@Id var entityId: Long = 0, val id: Long = 
                                      val amount: Double = 0.0,
                                      val date: Date = Date()) : IdentifiableListItem, SearchableListItem {
 
+    lateinit var sender: ToOne<UserEntity>
     lateinit var recipient: ToOne<UserEntity>
 
     override fun getItemId(): Long = id
