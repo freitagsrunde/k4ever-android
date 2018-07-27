@@ -113,7 +113,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         money_amount_balance.text = getString(R.string.shopping_cart__item_cost,
                                 balanceItem.amount)
                         money_amount_balance.setTextColor(
-                                themeHelper.getBalanceColor(balanceItem.amount))
+                                themeHandler.getBalanceColor(balanceItem.amount))
                     }
                 }
             }
@@ -138,7 +138,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                                 holder.binding.root.total_price.text = getString(
                                         R.string.shopping_cart__item_cost, purchaseTotalCost)
                                 holder.binding.root.total_price.setTextColor(
-                                        themeHelper.getBalanceColor(-1.0))
+                                        themeHandler.getBalanceColor(-1.0))
                             }
                         }
                     }
@@ -170,7 +170,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                                 holder.binding.root.money_amount_transfer.text = getString(
                                         R.string.shopping_cart__item_cost, transferItem.amount)
                                 holder.binding.root.money_amount_transfer.setTextColor(
-                                        themeHelper.getBalanceColor(transferItem.amount))
+                                        themeHandler.getBalanceColor(transferItem.amount))
                             }
                         }
                     }
@@ -301,7 +301,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
         account_balance.let {
             it.text = getString(R.string.account_balance, currentBalance)
-            it.setTextColor(themeHelper.getBalanceColor(currentBalance))
+            it.setTextColor(themeHandler.getBalanceColor(currentBalance))
         }
 
     }

@@ -35,6 +35,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".view.fragment.products.ProductDetailActivity"
+            android:parentActivityName=".view.activity.MainActivity" />
+
     </application>
 
 </manifest>

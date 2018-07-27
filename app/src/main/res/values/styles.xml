@@ -39,5 +39,48 @@
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
     </style>
 
+    <style name="detail_content_cardview" parent="CardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/cardMarginVertical</item>
+        <item name="android:layout_marginBottom">@dimen/cardMarginVertical</item>
+        <item name="android:layout_marginStart">@dimen/cardMarginHorizontal</item>
+        <item name="android:layout_marginEnd">@dimen/cardMarginHorizontal</item>
+        <item name="cardElevation">@dimen/cardview_elevation</item>
+        <item name="cardCornerRadius">@dimen/cardview_corner_radius</item>
+    </style>
+
+    <style name="detail_item_section">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="borderless_button" parent="Base.Widget.AppCompat.Button.Colored">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <style name="detail_item_header">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
+    <style name="detail_item_content_textview">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:maxLines">999</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 
 </resources>

@@ -42,7 +42,7 @@ class IconHandler @Inject constructor() {
     lateinit var context: Context
 
     @Inject
-    lateinit var themeHelper: ThemeHelper
+    lateinit var themeHandler: ThemeHandler
 
     /**
      * Get an icon suitable for the swipe menu
@@ -52,7 +52,7 @@ class IconHandler @Inject constructor() {
      * @return the icon
      */
     fun getNavigationIcon(icon: IIcon): IconicsDrawable {
-        val color = themeHelper.getThemeAttrColor(context, android.R.attr.textColorPrimary)
+        val color = themeHandler.getThemeAttrColor(context, android.R.attr.textColorPrimary)
         return getIcon(icon, color, 24)
     }
 
@@ -64,7 +64,7 @@ class IconHandler @Inject constructor() {
      * @return the icon
      */
     fun getBottomNavigationIcon(icon: IIcon): IconicsDrawable {
-        val color = themeHelper.getThemeAttrColor(context, android.R.attr.textColorPrimary)
+        val color = themeHandler.getThemeAttrColor(context, android.R.attr.textColorPrimary)
         return getIcon(icon, color, 48)
     }
 
@@ -106,12 +106,13 @@ class IconHandler @Inject constructor() {
      * @return an icon for a preference
      */
     fun getPreferenceIcon(icon: IIcon): Drawable {
-        val color = themeHelper.getThemeAttrColor(context, R.attr.kute_preferences__setting__default_icon_color)
+        val color = themeHandler.getThemeAttrColor(context,
+                R.attr.kute_preferences__setting__default_icon_color)
         return getIcon(icon, color = color, sizeDp = 36)
     }
 
     fun getHistoryItemIcon(icon: IIcon): IconicsDrawable {
-        val color = themeHelper.getThemeAttrColor(context, android.R.attr.textColorPrimary)
+        val color = themeHandler.getThemeAttrColor(context, android.R.attr.textColorPrimary)
         return getIcon(icon, color, 36)
     }
 

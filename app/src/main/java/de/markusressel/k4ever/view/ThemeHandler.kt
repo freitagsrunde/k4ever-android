@@ -36,7 +36,7 @@ import javax.inject.Singleton
  * Created by Markus on 20.12.2017.
  */
 @Singleton
-class ThemeHelper @Inject constructor(private var context: Context) {
+class ThemeHandler @Inject constructor(private var context: Context) {
 
     private val darkThemeValue: String by lazy {
         context.getString(R.string.theme_dark_value)
@@ -64,13 +64,13 @@ class ThemeHelper @Inject constructor(private var context: Context) {
      *
      * @param activity Activity to apply theme on
      */
-    //    fun applyDialogTheme(activity: Activity, theme: String) {
-    //        when (theme) {
-    //            lightThemeValue -> setTheme(activity, R.style.AppDialogThemeLight)
-    //            darkThemeValue -> setTheme(activity, R.style.AppDialogThemeDark)
-    //            else -> setTheme(activity, R.style.AppDialogThemeDark)
-    //        }
-    //    }
+    fun applyDialogTheme(activity: Activity, theme: String) {
+        when (theme) {
+            lightThemeValue -> setTheme(activity, R.style.DialogThemeLight)
+            darkThemeValue -> setTheme(activity, R.style.DialogThemeDark)
+            else -> setTheme(activity, R.style.DialogThemeDark)
+        }
+    }
 
 
     /**
@@ -78,13 +78,15 @@ class ThemeHelper @Inject constructor(private var context: Context) {
      *
      * @param dialogFragment Fragment to apply theme on
      */
-    //    fun applyDialogTheme(dialogFragment: DialogFragment, theme: String) {
-    //        when (theme) {
-    //            lightThemeValue -> dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppDialogThemeLight)
-    //            darkThemeValue -> dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppDialogThemeDark)
-    //            else -> dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppDialogThemeDark)
-    //        }
-    //    }
+    fun applyDialogTheme(dialogFragment: DialogFragment, theme: String) {
+        when (theme) {
+            lightThemeValue -> dialogFragment.setStyle(DialogFragment.STYLE_NORMAL,
+                    R.style.DialogThemeLight)
+            darkThemeValue -> dialogFragment.setStyle(DialogFragment.STYLE_NORMAL,
+                    R.style.DialogThemeDark)
+            else -> dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogThemeDark)
+        }
+    }
 
     private fun setTheme(activity: Activity, @StyleRes themeRes: Int) {
         activity.applicationContext.setTheme(themeRes)
@@ -120,8 +122,10 @@ class ThemeHelper @Inject constructor(private var context: Context) {
      */
     fun applyTheme(fragment: BottomSheetDialogFragment, theme: String) {
         when (theme) {
-            lightThemeValue -> fragment.setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeLight)
-            darkThemeValue -> fragment.setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeDark)
+            lightThemeValue -> fragment.setStyle(BottomSheetDialogFragment.STYLE_NORMAL,
+                    R.style.BottomSheetThemeLight)
+            darkThemeValue -> fragment.setStyle(BottomSheetDialogFragment.STYLE_NORMAL,
+                    R.style.BottomSheetThemeDark)
             else -> fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.BottomSheetThemeDark)
         }
     }
