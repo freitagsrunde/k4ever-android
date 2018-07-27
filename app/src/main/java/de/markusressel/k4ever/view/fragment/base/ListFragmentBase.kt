@@ -37,7 +37,6 @@ import de.markusressel.k4ever.dagger.module.Implementation
 import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.rest.K4EverRestApiClient
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
-import kotlinx.android.synthetic.main.layout_empty_list.*
 import javax.inject.Inject
 
 
@@ -78,6 +77,9 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
         setupFabs()
 
         swipeRefreshLayout.setOnRefreshListener {
+            reloadDataFromSource()
+        }
+        swipeRefreshLayoutEmpty.setOnRefreshListener {
             reloadDataFromSource()
         }
     }
@@ -214,16 +216,21 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
      * Show the "empty" screen
      */
     internal fun showEmpty() {
-        recyclerView.visibility = View.INVISIBLE
-        layoutEmpty.visibility = View.VISIBLE
+        swipeRefreshLayout.visibility = View.GONE
+        swipeRefreshLayoutEmpty.visibility = View.VISIBLE
     }
 
     /**
      * Hide the "empty" screen
      */
     internal fun hideEmpty() {
-        recyclerView.visibility = View.VISIBLE
-        layoutEmpty.visibility = View.INVISIBLE
+        swipeRefreshLayout.visibility = View.VISIBLE
+        swipeRefreshLayoutEmpty.visibility = View.GONE
+    }
+
+    fun setRefreshing(refreshing: Boolean) {
+        swipeRefreshLayout.isRefreshing = refreshing
+        swipeRefreshLayoutEmpty.isRefreshing = refreshing
     }
 
 }

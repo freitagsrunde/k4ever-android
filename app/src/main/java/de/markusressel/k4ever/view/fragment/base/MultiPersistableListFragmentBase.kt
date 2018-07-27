@@ -22,7 +22,10 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.SearchView
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
@@ -30,7 +33,6 @@ import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
-import de.markusressel.k4ever.view.component.LoadingComponent
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -38,7 +40,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
-import kotlinx.android.synthetic.main.layout_empty_list.*
 import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
@@ -50,15 +51,6 @@ import java.util.concurrent.TimeUnit
 abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
 
     protected val listValues: MutableList<IdentifiableListItem> = ArrayList()
-
-    protected val loadingComponent by lazy {
-        LoadingComponent(this, onShowContent = {
-            updateFabVisibility(View.VISIBLE)
-        }, onShowError = { message: String, throwable: Throwable? ->
-            layoutEmpty.visibility = View.GONE
-            updateFabVisibility(View.INVISIBLE)
-        })
-    }
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
         OptionsMenuComponent(hostFragment = this, optionsMenuRes = R.menu.options_menu_multi_list,
@@ -87,7 +79,6 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
 
     override fun initComponents(context: Context) {
         super.initComponents(context)
-        loadingComponent
         optionsMenuComponent
     }
 
@@ -103,15 +94,8 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
         return optionsMenuComponent.onOptionsItemSelected(item)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val parent = super.onCreateView(inflater, container, savedInstanceState) as ViewGroup
-        return loadingComponent.onCreateView(inflater, parent, savedInstanceState)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadingComponent.showContent(false)
 
         reloadDataFromSource()
     }
@@ -120,7 +104,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
      * Loads the data using {@link loadListDataFromPersistence()}
      */
     protected fun updateListFromPersistence() {
-        swipeRefreshLayout.isRefreshing = true
+        setRefreshing(true)
 
         Observable.fromIterable(loadListDataFromPersistence()).toList()
                 .map { filterAndSortList(it) }.map { createListDiff(listValues, it) to it }
@@ -132,8 +116,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
                     if (it is CancellationException) {
                         Timber.d { "reload from persistence cancelled" }
                     } else {
-                        loadingComponent.showError(it)
-                        swipeRefreshLayout.isRefreshing = false
+                        setRefreshing(false)
                     }
                 })
     }
@@ -174,10 +157,11 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
         } else {
             hideEmpty()
         }
-        loadingComponent.showContent()
-        swipeRefreshLayout.isRefreshing = false
+        setRefreshing(false)
 
         diffResult.dispatchUpdatesTo(recyclerViewAdapter)
+        recyclerViewAdapter.notifyDataSetChanged()
+        recyclerView.invalidate()
     }
 
     /**
@@ -200,7 +184,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
      * Reload list data from it's original source, persist it and display it to the user afterwards
      */
     override fun reloadDataFromSource() {
-        swipeRefreshLayout.isRefreshing = true
+        setRefreshing(true)
 
         getLoadDataFromSourceFunction().map {
             it.map { mapToEntity(it) }
@@ -220,8 +204,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
                     if (it is CancellationException) {
                         Timber.d { "reload from source cancelled" }
                     } else {
-                        swipeRefreshLayout.isRefreshing = false
-                        loadingComponent.showError(it)
+                        setRefreshing(false)
                     }
                 })
     }
