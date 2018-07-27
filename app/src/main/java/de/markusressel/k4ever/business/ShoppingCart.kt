@@ -38,6 +38,7 @@ class ShoppingCart @Inject constructor() {
      * @param amount the amount of items to add
      * @param withDeposit true, if the item should be added with deposit, false otherwise
      */
+    @Synchronized
     fun add(product: ProductEntity, amount: Int, withDeposit: Boolean) {
         val matchingItem = items.firstOrNull {
             it.product.id == product.id && it.withDeposit == withDeposit
@@ -59,12 +60,13 @@ class ShoppingCart @Inject constructor() {
      * @param withDeposit if the item was/will be added with deposit
      * @return true, if the the shopping cart changed, false otherwise
      */
+    @Synchronized
     fun set(product: ProductEntity, amount: Int, withDeposit: Boolean): Boolean {
         val matchingItem = items.firstOrNull {
             it.product.id == product.id && it.withDeposit == withDeposit
         }
 
-        matchingItem?.let {
+        if (matchingItem != null) {
             return when {
                 matchingItem.amount == amount -> false
                 amount <= 0 -> items.remove(matchingItem)
@@ -73,9 +75,14 @@ class ShoppingCart @Inject constructor() {
                     true
                 }
             }
+        } else {
+            return if (amount <= 0) {
+                false
+            } else {
+                add(product, amount, withDeposit)
+                true
+            }
         }
-
-        return false
     }
 
     /**
@@ -84,20 +91,24 @@ class ShoppingCart @Inject constructor() {
      * @param product the product to remove
      * @param amount the amount to remove
      * @param withDeposit true, if the item was added with deposit, false otherwise
+     * @return true, if the the shopping cart changed, false otherwise
      */
-    fun remove(product: ProductEntity, amount: Int, withDeposit: Boolean) {
+    @Synchronized
+    fun remove(product: ProductEntity, amount: Int, withDeposit: Boolean): Boolean {
         val matchingItem = items.firstOrNull {
             it.product.id == product.id && it.withDeposit == withDeposit
         }
 
-        if (matchingItem != null) {
+        return if (matchingItem != null) {
             if (amount >= matchingItem.amount) {
                 items.remove(matchingItem)
             } else {
                 matchingItem.amount -= amount
             }
+            true
         } else {
             Timber.e { "Unable to find matching item in shopping cart!" }
+            false
         }
     }
 

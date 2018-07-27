@@ -24,6 +24,7 @@ import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.view.animation.FastOutSlowInInterpolator
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.util.TypedValue
 import android.view.View
@@ -39,10 +40,10 @@ import de.markusressel.k4ever.databinding.ListItemCartItemBinding
 import de.markusressel.k4ever.databinding.ListItemProductBinding
 import de.markusressel.k4ever.extensions.common.android.context
 import de.markusressel.k4ever.extensions.common.android.pxToSp
-import de.markusressel.k4ever.extensions.common.android.recyclerviewDiff
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.activity.base.DetailActivityBase
+import de.markusressel.k4ever.view.fragment.base.DiffCallback
 import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
@@ -167,6 +168,10 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         }
     }
 
+    // map to remember the callbacks associated with a counter
+    // (needed because the view has no support for removing all or replacing a listener)
+    private val callbackMap = mutableMapOf<Any, OnStepCallback>()
+
     private fun initShoppingCartList() {
         shoppingCartItemList = shoppingCart.items.toMutableList()
         shoppingCartItemsAdapter = LastAdapter(shoppingCartItemList,
@@ -174,25 +179,32 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                 R.layout.list_item__cart_item) {
             onCreate {
                 it.binding.presenter = this@ProductsFragment
-                val cartItem = it.binding.item!!
-
                 val stepper = it.binding.root.productAmountStepper
                 stepper.enableSideTap(true)
                 stepper.stepper.setMin(0)
-                stepper.stepper.setValue(cartItem.amount)
-                stepper.stepper.addStepCallback(object : OnStepCallback {
-                    override fun onStep(value: Int, positive: Boolean) {
-                        setShoppingCardItemAmount(cartItem.product, cartItem.withDeposit, value,
-                                false)
-                    }
-                })
             }
             onBind { holder ->
                 val cartItem = holder.binding.item
 
                 cartItem?.let {
                     val stepper = holder.binding.root.productAmountStepper
+
+                    // remove any existing callback
+                    callbackMap[stepper]?.let {
+                        stepper.stepper.removeStepCallback(it)
+                    }
+
                     stepper.stepper.setValue(it.amount)
+
+                    // create new one to use correct product item
+                    val callback = object : OnStepCallback {
+                        override fun onStep(value: Int, positive: Boolean) {
+                            setShoppingCardItemAmount({ holder.binding.item!!.product }(),
+                                    cartItem.withDeposit, value, false)
+                        }
+                    }
+                    stepper.stepper.addStepCallback(callback)
+                    callbackMap[stepper] = callback
                 }
             }
         }.into(shoppingCartItemsLayout)
@@ -223,7 +235,8 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
 
         if (notifyListAdapter) {
             val newData = shoppingCart.items.toList()
-            val diff = shoppingCartItemList.recyclerviewDiff(newData)
+            val diffCallback = DiffCallback(shoppingCartItemList, newData)
+            val diff = DiffUtil.calculateDiff(diffCallback)
 
             shoppingCartItemList.clear()
             shoppingCartItemList.addAll(newData)
