@@ -16,6 +16,7 @@
   -->
 
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -35,34 +36,80 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:minWidth="400dp"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:padding="16dp">
 
-                <TextView
-                    style="@style/detail_item_header"
-                    android:text="@string/sender" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/transferSender"
-                    style="@style/detail_item_content_textview" />
+                    <TextView
+                        style="@style/detail_item_header"
+                        android:paddingBottom="8dp"
+                        android:text="@string/sender" />
 
-                <TextView
-                    style="@style/detail_item_header"
-                    android:text="@string/recipient" />
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:id="@+id/sender_avatar"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        app:placeholderImage="@drawable/baseline_account_circle_24px"
+                        app:roundAsCircle="true" />
 
-                <TextView
-                    android:id="@+id/transferRecipient"
-                    style="@style/detail_item_content_textview" />
+                    <TextView
+                        android:id="@+id/transferSender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp" />
 
-                <TextView
-                    style="@style/detail_item_header"
-                    android:text="@string/amount" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/transferAmount"
-                    style="@style/detail_item_content_textview" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/transferAmount"
+                        style="@style/detail_item_header"
+                        android:text="@string/amount" />
+
+                    <!-- ARROW HERE -->
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/detail_item_header"
+                        android:paddingBottom="8dp"
+                        android:text="@string/recipient" />
+
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:id="@+id/recipient_avatar"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        app:placeholderImage="@drawable/baseline_account_circle_24px"
+                        app:placeholderImageScaleType="centerInside"
+                        app:roundAsCircle="true" />
+
+                    <TextView
+                        android:id="@+id/transferRecipient"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

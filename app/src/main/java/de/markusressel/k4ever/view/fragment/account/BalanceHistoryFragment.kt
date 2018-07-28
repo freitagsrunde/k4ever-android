@@ -257,9 +257,9 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
     }
 
     private var showBalanceHistory by savedInstanceState(true)
-
     private var showPurchaseHistory by savedInstanceState(true)
     private var showTransferHistory by savedInstanceState(true)
+
     private fun openFilterPopoupMenu(anchorView: View) {
         val popupMenu = popupMenu {
             dropdownGravity = Gravity.BOTTOM
