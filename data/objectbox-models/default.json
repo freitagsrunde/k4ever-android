@@ -132,7 +132,7 @@
     },
     {
       "id": "5:5700052018675308609",
-      "lastPropertyId": "6:646089466477932127",
+      "lastPropertyId": "7:844040608733700324",
       "name": "TransferHistoryItemEntity",
       "properties": [
         {
@@ -160,6 +160,10 @@
           "id": "6:646089466477932127",
           "indexId": "2:2527477723416927587",
           "name": "senderId"
+        },
+        {
+          "id": "7:844040608733700324",
+          "name": "description"
         }
       ],
       "relations": []

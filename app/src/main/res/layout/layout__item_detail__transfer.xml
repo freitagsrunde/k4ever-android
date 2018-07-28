@@ -36,87 +36,105 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:minWidth="400dp"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="16dp">
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/detail_item_header"
+                            android:paddingBottom="8dp"
+                            android:text="@string/sender" />
+
+                        <com.facebook.drawee.view.SimpleDraweeView
+                            android:id="@+id/sender_avatar"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            app:placeholderImage="@drawable/baseline_account_circle_24px"
+                            app:roundAsCircle="true" />
+
+                        <TextView
+                            android:id="@+id/transferSender"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="8dp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="4dp">
+
+                        <TextView
+                            android:id="@+id/transferAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="4dp"
+                            android:gravity="center"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_transfer" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/detail_item_header"
+                            android:paddingBottom="8dp"
+                            android:text="@string/recipient" />
+
+                        <com.facebook.drawee.view.SimpleDraweeView
+                            android:id="@+id/recipient_avatar"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            app:placeholderImage="@drawable/baseline_account_circle_24px"
+                            app:placeholderImageScaleType="centerInside"
+                            app:roundAsCircle="true" />
+
+                        <TextView
+                            android:id="@+id/transferRecipient"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="8dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/detail_item_header"
+                    android:paddingTop="8dp"
+                    android:text="@string/description" />
+
+                <TextView
+                    android:id="@+id/transferDescription"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/detail_item_header"
-                        android:paddingBottom="8dp"
-                        android:text="@string/sender" />
-
-                    <com.facebook.drawee.view.SimpleDraweeView
-                        android:id="@+id/sender_avatar"
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        app:placeholderImage="@drawable/baseline_account_circle_24px"
-                        app:roundAsCircle="true" />
-
-                    <TextView
-                        android:id="@+id/transferSender"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="8dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:id="@+id/transferAmount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="4dp"
-                        android:gravity="center" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_transfer" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/detail_item_header"
-                        android:paddingBottom="8dp"
-                        android:text="@string/recipient" />
-
-                    <com.facebook.drawee.view.SimpleDraweeView
-                        android:id="@+id/recipient_avatar"
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        app:placeholderImage="@drawable/baseline_account_circle_24px"
-                        app:placeholderImageScaleType="centerInside"
-                        app:roundAsCircle="true" />
-
-                    <TextView
-                        android:id="@+id/transferRecipient"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="8dp" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 

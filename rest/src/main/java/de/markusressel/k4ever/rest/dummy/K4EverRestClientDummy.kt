@@ -91,7 +91,8 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     private val transferItems = 10.rangeTo(100).map { it.toLong() }.map {
-        TransferHistoryItemModel(it, 5.0, getUser(0).blockingGet(), getUser(1).blockingGet(),
+        TransferHistoryItemModel(it, 5.0, "Money transfer description #$it",
+                getUser(0).blockingGet(), getUser(1).blockingGet(),
                 Date(Date().time + it))
     }
 

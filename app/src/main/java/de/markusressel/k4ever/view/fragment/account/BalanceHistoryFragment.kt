@@ -210,7 +210,8 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                     equal(UserEntity_.id, it.recipient.id)
                 }.build().findUnique()
 
-                val item = TransferHistoryItemEntity(id = it.id, amount = it.amount, date = it.date)
+                val item = TransferHistoryItemEntity(id = it.id, amount = it.amount,
+                        description = it.description, date = it.date)
                 item.sender.target = sender
                 item.recipient.target = recipient
 

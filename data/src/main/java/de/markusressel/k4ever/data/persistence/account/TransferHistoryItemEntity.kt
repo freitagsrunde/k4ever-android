@@ -27,7 +27,7 @@ import java.util.*
 
 @Entity
 data class TransferHistoryItemEntity(@Id var entityId: Long = 0, val id: Long = -1,
-                                     val amount: Double = 0.0,
+                                     val amount: Double = 0.0, val description: String = "",
                                      val date: Date = Date()) : IdentifiableListItem, SearchableListItem {
 
     lateinit var sender: ToOne<UserEntity>
