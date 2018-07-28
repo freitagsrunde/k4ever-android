@@ -59,6 +59,10 @@
     <string name="deposit">Pfand</string>
     <string name="barcode">Barcode</string>
 
+    <string name="sender">Sender</string>
+    <string name="recipient">Empfänger</string>
+    <string name="amount">Wert</string>
+
     <string name="no_items_found">Keine Einträge gefunden</string>
 
     <string name="error">Fehler</string>

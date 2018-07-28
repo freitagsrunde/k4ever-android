@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.view.fragment.products
+package de.markusressel.k4ever.view.fragment.account.transfer
 
 import de.markusressel.k4ever.R
+import de.markusressel.k4ever.data.persistence.account.TransferHistoryItemEntity
+import de.markusressel.k4ever.data.persistence.account.TransferHistoryItemPersistenceManager
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
-import de.markusressel.k4ever.data.persistence.product.ProductEntity
-import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
 import de.markusressel.k4ever.view.activity.base.DetailActivityBase
 import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
 import javax.inject.Inject
@@ -30,22 +30,19 @@ import javax.inject.Inject
  *
  * Created by Markus on 07.01.2018.
  */
-class ProductDetailActivity : DetailActivityBase<ProductEntity>() {
+class TransferDetailActivity : DetailActivityBase<TransferHistoryItemEntity>() {
 
     @Inject
-    protected lateinit var persistenceManager: ProductPersistenceManager
+    protected lateinit var persistenceManager: TransferHistoryItemPersistenceManager
 
-    override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
+    override fun getPersistenceHandler(): PersistenceManagerBase<TransferHistoryItemEntity> = persistenceManager
 
     override val headerTextString: String
-        get() = getItem().name
+        get() = getItem().recipient.target.display_name
 
-    override fun getHeaderImage(): Int? {
-        // TODO: get product image to display in header
-        return super.getHeaderImage()
-    }
+    override fun getHeaderImage(): Int? = R.drawable.item_detail__transfer__title_background
 
     override val tabItems: List<Pair<Int, () -> DaggerSupportFragmentBase>>
-        get() = listOf(R.string.details to ::ProductDetailContentFragment)
+        get() = listOf(R.string.details to ::TransferDetailContentFragment)
 
 }

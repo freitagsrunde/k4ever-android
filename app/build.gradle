@@ -127,6 +127,9 @@ dependencies {
     // Context popup menus
     implementation 'com.github.zawadz88.materialpopupmenu:material-popup-menu:2.1.0'
 
+    // Fresco (Image loading and Caching)
+    implementation 'com.facebook.fresco:fresco:1.10.0'
+
     // AboutLibraries ("About" screen)
     implementation("com.mikepenz:aboutlibraries:$aboutlibrariesVersion@aar") {
         transitive = true

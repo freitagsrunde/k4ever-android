@@ -17,10 +17,13 @@
 
 package de.markusressel.k4ever.extensions.common.android
 
+import android.content.ContentResolver
 import android.content.Context
+import android.net.Uri
 import android.os.AsyncTask
 import android.support.v4.app.Fragment
 import de.markusressel.k4ever.R
+
 
 /**
  * Returns true if the current device is considered a tablet
@@ -50,4 +53,20 @@ fun Fragment.context(): Context {
 
 fun Float.pxToSp(context: Context): Float {
     return this / context.resources.displayMetrics.scaledDensity
+}
+
+/**
+ * Computes a URL to a resource file
+ */
+fun resourceToURL(context: Context, resID: Int): String {
+    return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.resources.getResourcePackageName(
+            resID) + '/'.toString() + context.resources.getResourceTypeName(
+            resID) + '/'.toString() + context.resources.getResourceEntryName(resID)
+}
+
+/**
+ * Computes the URI to a resource file
+ */
+fun resourceToUri(context: Context, resID: Int): Uri {
+    return Uri.parse(resourceToURL(context, resID))
 }

@@ -17,6 +17,7 @@
 
 package de.markusressel.k4ever.rest.users
 
+import android.graphics.drawable.Drawable
 import com.github.kittinunf.fuel.core.Method
 import de.markusressel.k4ever.rest.RequestManager
 import de.markusressel.k4ever.rest.listDeserializer
@@ -38,16 +39,26 @@ class UserManager(val requestManager: RequestManager) : UserApi {
     }
 
     override fun getBalanceHistory(id: Long): Single<List<BalanceHistoryItemModel>> {
-        return requestManager.doRequest("/user/$id/balance_history/", Method.GET, singleDeserializer())
+        return requestManager.doRequest("/user/$id/balance_history/", Method.GET,
+                singleDeserializer())
     }
 
     override fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>> {
-        return requestManager.doRequest("/user/$id/purchase_history/", Method.GET, singleDeserializer())
+        return requestManager.doRequest("/user/$id/purchase_history/", Method.GET,
+                singleDeserializer())
     }
 
     override fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>> {
         return requestManager.doRequest("/user/$id/transfer_history/", Method.GET,
                 singleDeserializer())
+    }
+
+    override fun getUserAvatar(id: Long): Single<Drawable> {
+        throw NotImplementedError()
+    }
+
+    override fun getUserAvatarURL(id: Long): String {
+        return "${requestManager.hostname}/user/$id/image/"
     }
 
 }

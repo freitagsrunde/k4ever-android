@@ -39,6 +39,9 @@
         <activity
             android:name=".view.fragment.products.ProductDetailActivity"
             android:parentActivityName=".view.activity.MainActivity" />
+        <activity
+            android:name=".view.fragment.account.transfer.TransferDetailActivity"
+            android:parentActivityName=".view.activity.MainActivity" />
 
     </application>
 

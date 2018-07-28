@@ -17,6 +17,7 @@
 
 package de.markusressel.k4ever.rest.users
 
+import android.graphics.drawable.Drawable
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
@@ -53,5 +54,15 @@ interface UserApi {
      * @param id the id of the user
      */
     fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>>
+
+    /**
+     * Download the avatar of a user
+     */
+    fun getUserAvatar(id: Long): Single<Drawable>
+
+    /**
+     * Get the URL to download the avatar of a user
+     */
+    fun getUserAvatarURL(id: Long): String
 
 }

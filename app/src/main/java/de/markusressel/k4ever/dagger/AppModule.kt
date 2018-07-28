@@ -29,6 +29,8 @@ import de.markusressel.k4ever.view.activity.base.DaggerSupportActivityBase
 import de.markusressel.k4ever.view.fragment.account.AccountOverviewFragment
 import de.markusressel.k4ever.view.fragment.account.AccountTabFragment
 import de.markusressel.k4ever.view.fragment.account.BalanceHistoryFragment
+import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailActivity
+import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailContentFragment
 import de.markusressel.k4ever.view.fragment.base.TabNavigationFragment
 import de.markusressel.k4ever.view.fragment.moneytransfer.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
@@ -80,6 +82,14 @@ abstract class AppModule {
 
     @ContributesAndroidInjector
     internal abstract fun ProductDetailContentFragment(): ProductDetailContentFragment
+
+    @ContributesAndroidInjector
+    internal abstract fun TransferDetailActivity(): TransferDetailActivity
+
+    @ContributesAndroidInjector
+    internal abstract fun TransferDetailContentFragment(): TransferDetailContentFragment
+
+
 
     @Module
     companion object {

@@ -35,12 +35,15 @@ import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemBalanceHistoryItemBinding
 import de.markusressel.k4ever.databinding.ListItemPurchaseHistoryItemBinding
 import de.markusressel.k4ever.databinding.ListItemTransferHistoryItemBinding
+import de.markusressel.k4ever.extensions.common.android.context
 import de.markusressel.k4ever.extensions.common.filterByExpectedType
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
+import de.markusressel.k4ever.view.activity.base.DetailActivityBase
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
+import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailActivity
 import de.markusressel.k4ever.view.fragment.base.FabConfig
 import de.markusressel.k4ever.view.fragment.base.MultiPersistableListFragmentBase
 import io.reactivex.Single
@@ -174,8 +177,9 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         }
                     }
                     onClick {
-                        // TODO: should there be any detail view of purchase history items?
-                        //                        openDetailView(listValues[it.adapterPosition])
+                        it.binding.item?.let {
+                            openTransferDetailView(it)
+                        }
                     }
                 }.into(recyclerView)
     }
@@ -199,13 +203,17 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
         return when (it) {
             is BalanceHistoryItemModel -> BalanceHistoryItemEntity(0, it.id, it.amount, it.date)
             is TransferHistoryItemModel -> {
-
-                val user = userPersistenceManager.getStore().query().run {
+                val sender = userPersistenceManager.getStore().query().run {
+                    equal(UserEntity_.id, it.sender.id)
+                }.build().findUnique()
+                val recipient = userPersistenceManager.getStore().query().run {
                     equal(UserEntity_.id, it.recipient.id)
                 }.build().findUnique()
 
-                val item = TransferHistoryItemEntity(id = it.id, amount = it.amount, date = it.date)
-                item.recipient.target = user
+                val item = TransferHistoryItemEntity(id = it.id, amount = it.amount,
+                        description = it.description, date = it.date)
+                item.sender.target = sender
+                item.recipient.target = recipient
 
                 item
             }
@@ -366,6 +374,12 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
             it.setTextColor(themeHandler.getBalanceColor(currentBalance))
         }
 
+    }
+
+    private fun openTransferDetailView(item: TransferHistoryItemEntity) {
+        val detailPage = DetailActivityBase.newInstanceIntent(TransferDetailActivity::class.java,
+                context(), item.entityId)
+        startActivity(detailPage)
     }
 
 }

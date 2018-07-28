@@ -17,6 +17,7 @@
 
 package de.markusressel.k4ever.application
 
+import com.facebook.drawee.backends.pipeline.Fresco
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import de.markusressel.k4ever.BuildConfig
@@ -45,6 +46,7 @@ class App : DaggerApplicationBase() {
 
         createListeners()
 
+        Fresco.initialize(this)
 
     }
 

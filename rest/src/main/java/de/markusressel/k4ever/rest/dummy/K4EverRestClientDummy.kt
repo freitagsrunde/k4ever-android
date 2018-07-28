@@ -17,8 +17,10 @@
 
 package de.markusressel.k4ever.rest.dummy
 
+import android.graphics.drawable.Drawable
 import de.markusressel.k4ever.rest.BasicAuthConfig
 import de.markusressel.k4ever.rest.K4EverRestApiClient
+import de.markusressel.k4ever.rest.R
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
@@ -28,6 +30,19 @@ import io.reactivex.Single
 import java.util.*
 
 class K4EverRestClientDummy : K4EverRestApiClient {
+    override fun getUserAvatar(id: Long): Single<Drawable> {
+        throw NotImplementedError()
+    }
+
+    override fun getUserAvatarURL(id: Long): String {
+        val userName = getUser(id).blockingGet().user_name
+
+        return when (userName) {
+            "g_markus" -> "android.resource://de.markusressel.k4ever/${R.drawable.demo_avatar__markus}"
+            else -> "https://api.adorable.io/avatars/285/$userName.png"
+        //            else -> "https://ui-avatars.com/api/?name=$userName"
+        }
+    }
 
     companion object {
         private val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, "000000000",
@@ -76,7 +91,9 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     private val transferItems = 10.rangeTo(100).map { it.toLong() }.map {
-        TransferHistoryItemModel(it, 5.0, getUser(1).blockingGet(), Date(Date().time + it))
+        TransferHistoryItemModel(it, 5.0, "Money transfer description #$it",
+                getUser(0).blockingGet(), getUser(1).blockingGet(),
+                Date(Date().time + it))
     }
 
     override fun getAllProducts(): Single<List<ProductModel>> {
