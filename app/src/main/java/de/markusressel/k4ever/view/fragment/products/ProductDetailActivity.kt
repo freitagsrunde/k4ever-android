@@ -35,12 +35,17 @@ class ProductDetailActivity : DetailActivityBase<ProductEntity>() {
     @Inject
     protected lateinit var persistenceManager: ProductPersistenceManager
 
+    override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
+
     override val headerTextString: String
         get() = getItem().name
 
+    override fun getHeaderImage(): Int? {
+        // TODO: get product image to display in header
+        return super.getHeaderImage()
+    }
+
     override val tabItems: List<Pair<Int, () -> DaggerSupportFragmentBase>>
         get() = listOf(R.string.details to ::ProductDetailContentFragment)
-
-    override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
 
 }

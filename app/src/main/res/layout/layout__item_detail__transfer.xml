@@ -73,14 +73,21 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="8dp">
+                    android:padding="4dp">
 
                     <TextView
                         android:id="@+id/transferAmount"
-                        style="@style/detail_item_header"
-                        android:text="@string/amount" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="4dp"
+                        android:gravity="center" />
 
-                    <!-- ARROW HERE -->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_transfer" />
 
                 </LinearLayout>
 

@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -82,8 +83,9 @@ abstract class DetailActivityBase<T : Any> : DaggerSupportActivityBase() {
         materialViewPager.setMaterialViewPagerListener {
             val pageIndex = it
 
-            HeaderDesign.fromColorResAndDrawable(R.color.primary,
-                    getDrawable(R.drawable.club_mate_0_5l))
+            // set header image from child class implementation
+            val headerImage = getHeaderImage() ?: R.drawable.item_detail__default__title_background
+            HeaderDesign.fromColorResAndDrawable(R.color.primary, getDrawable(headerImage))
         }
 
         //        materialViewPager.setMaterialViewPagerListener {
@@ -95,6 +97,11 @@ abstract class DetailActivityBase<T : Any> : DaggerSupportActivityBase() {
         //            HeaderDesign.fromColorResAndDrawable(config.colorRes,
         //                    getDrawable(config.drawableRes))
         //        }
+    }
+
+    @DrawableRes
+    internal open fun getHeaderImage(): Int? {
+        return null
     }
 
     private fun setToolbar() {

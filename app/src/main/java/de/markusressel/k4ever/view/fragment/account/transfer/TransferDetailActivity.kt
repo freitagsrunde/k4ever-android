@@ -35,12 +35,14 @@ class TransferDetailActivity : DetailActivityBase<TransferHistoryItemEntity>() {
     @Inject
     protected lateinit var persistenceManager: TransferHistoryItemPersistenceManager
 
+    override fun getPersistenceHandler(): PersistenceManagerBase<TransferHistoryItemEntity> = persistenceManager
+
     override val headerTextString: String
         get() = getItem().recipient.target.display_name
 
+    override fun getHeaderImage(): Int? = R.drawable.item_detail__transfer__title_background
+
     override val tabItems: List<Pair<Int, () -> DaggerSupportFragmentBase>>
         get() = listOf(R.string.details to ::TransferDetailContentFragment)
-
-    override fun getPersistenceHandler(): PersistenceManagerBase<TransferHistoryItemEntity> = persistenceManager
 
 }
