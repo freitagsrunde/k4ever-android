@@ -41,7 +41,13 @@ class UserArrayAdapter(context: Context, private val restClient: K4EverRestApiCl
      * Set the list of items to autocomplete
      */
     fun setItems(items: List<UserEntity>) {
-        originalItems = ArrayList(items)
+        val comparator = compareBy<UserEntity> {
+            it.display_name
+        }.thenBy { it.user_name }
+
+        val sortedUsers = items.sortedWith(comparator)
+
+        originalItems = ArrayList(sortedUsers)
 
         currentItems.clear()
         currentItems.addAll(originalItems)

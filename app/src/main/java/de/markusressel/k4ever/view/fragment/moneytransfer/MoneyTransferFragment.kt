@@ -101,6 +101,11 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
         recipient_searchview.setOnItemClickListener { parent, view, position, id ->
             setSelectedUser(autocompleteUsersArrayAdapter.getItem(position))
         }
+        recipient_searchview.setOnClickListener {
+            if (!recipient_searchview.isPopupShowing) {
+                recipient_searchview.showDropDown()
+            }
+        }
 
         money_amount_edittext.setText("0,00")
         money_amount_edittext.addTextChangedListener(object : TextWatcher {
@@ -140,7 +145,6 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
 
     private fun loadUsersFromPersistence() {
         val persistedUsers = userPersistenceManager.getStore().all
-
         autocompleteUsersArrayAdapter.setItems(persistedUsers)
     }
 
