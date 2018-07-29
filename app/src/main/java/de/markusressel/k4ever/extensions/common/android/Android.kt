@@ -22,6 +22,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.support.v4.app.Fragment
+import android.view.LayoutInflater
 import de.markusressel.k4ever.R
 
 
@@ -53,6 +54,13 @@ fun Fragment.context(): Context {
 
 fun Float.pxToSp(context: Context): Float {
     return this / context.resources.displayMetrics.scaledDensity
+}
+
+/**
+ * Create a layout inflater from this context
+ */
+fun Context.layoutInflater(): LayoutInflater {
+    return LayoutInflater.from(this)
 }
 
 /**

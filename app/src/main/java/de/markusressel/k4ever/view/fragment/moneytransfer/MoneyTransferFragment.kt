@@ -18,6 +18,7 @@
 package de.markusressel.k4ever.view.fragment.moneytransfer
 
 import android.annotation.SuppressLint
+import android.arch.lifecycle.Lifecycle
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
@@ -27,11 +28,25 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import com.github.ajalt.timberkt.Timber
+import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import de.markusressel.k4ever.R
+import de.markusressel.k4ever.dagger.module.Implementation
+import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
+import de.markusressel.k4ever.data.persistence.user.UserEntity
+import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
+import de.markusressel.k4ever.extensions.common.android.context
+import de.markusressel.k4ever.extensions.data.toEntity
+import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment__money_transfer.*
 import java.text.DecimalFormat
+import java.util.concurrent.CancellationException
+import javax.inject.Inject
 
 
 /**
@@ -43,6 +58,13 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__money_transfer
+
+    @Inject
+    lateinit var userPersistenceManager: UserPersistenceManager
+
+    @Inject
+    @field:Implementation(ImplementationTypeEnum.DUMMY)
+    lateinit var restClient: K4EverRestApiClient
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
         OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none)
@@ -65,10 +87,20 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
         return optionsMenuComponent.onOptionsItemSelected(item)
     }
 
+    private lateinit var autocompleteUsersArrayAdapter: UserArrayAdapter
+    private var currentUser: UserEntity? = null
+
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        autocompleteUsersArrayAdapter = UserArrayAdapter(context(), restClient)
+        recipient_searchview.setAdapter(autocompleteUsersArrayAdapter)
+        recipient_searchview.threshold = 1
+        recipient_searchview.setOnItemClickListener { parent, view, position, id ->
+            setSelectedUser(autocompleteUsersArrayAdapter.getItem(position))
+        }
 
         money_amount_edittext.setText("0,00")
         money_amount_edittext.addTextChangedListener(object : TextWatcher {
@@ -86,7 +118,8 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
 
                 money_amount_edittext.removeTextChangedListener(this)
                 money_amount_edittext.setText(result)
-                money_amount_edittext.setSelection(cursorIndexBeforeChange.coerceIn(0, result.length))
+                money_amount_edittext.setSelection(
+                        cursorIndexBeforeChange.coerceIn(0, result.length))
                 money_amount_edittext.addTextChangedListener(this)
             }
 
@@ -94,6 +127,36 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
             }
 
         })
+
+        loadUsersFromPersistence()
+
+        updateUserList()
+    }
+
+    private fun setSelectedUser(userEntity: UserEntity) {
+        currentUser = userEntity
+        recipient_avatar.setImageURI(restClient.getUserAvatarURL(userEntity.id))
+    }
+
+    private fun loadUsersFromPersistence() {
+        val persistedUsers = userPersistenceManager.getStore().all
+
+        autocompleteUsersArrayAdapter.setItems(persistedUsers)
+    }
+
+    private fun updateUserList() {
+        restClient.getAllUsers().map { it.map { it.toEntity() } }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
+                    userPersistenceManager.getStore().removeAll()
+                    userPersistenceManager.getStore().put(it)
+                    loadUsersFromPersistence()
+                }, onError = {
+                    if (it is CancellationException) {
+                        Timber.d { "reload from source cancelled" }
+                    }
+                })
+
     }
 
 }
