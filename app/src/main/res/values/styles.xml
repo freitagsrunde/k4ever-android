@@ -94,6 +94,8 @@
     <style name="MeterViewStyle">
         <item name="mv_numberOfFirst">3</item>
         <item name="mv_numberOfSecond">2</item>
+        <item name="mv_showDivider">true</item>
+        <item name="mv_dividerText">,</item>
         <item name="mv_firstColor">?attr/money_picker_firstColor</item>
         <item name="mv_secondColor">?attr/money_picker_secondColor</item>
         <item name="mv_pickerStyle">@style/MeterNumberPickerStyle</item>
