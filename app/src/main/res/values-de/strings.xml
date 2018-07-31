@@ -63,6 +63,9 @@
     <string name="recipient">Empfänger</string>
     <string name="amount">Wert</string>
 
+    <string name="hint__money_transfer__recipient">Benutzername eingeben…</string>
+    <string name="hint__money_transfer__description">Pizza Bestellung 🍕</string>
+
     <string name="send">Senden</string>
 
     <string name="no_items_found">Keine Einträge gefunden</string>

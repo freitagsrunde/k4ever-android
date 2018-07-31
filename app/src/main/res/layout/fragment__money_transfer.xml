@@ -53,7 +53,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="8dp" />
+                android:layout_marginLeft="8dp"
+                android:hint="@string/hint__money_transfer__recipient" />
 
         </LinearLayout>
 
@@ -62,15 +63,30 @@
             android:paddingTop="8dp"
             android:text="@string/amount" />
 
-        <EditText
-            android:id="@+id/money_amount_edittext"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:gravity="right"
-            android:inputType="numberDecimal"
-            android:maxLength="8"
-            android:textSize="18sp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
+
+            <com.alexzaitsev.meternumberpicker.MeterView
+                android:id="@+id/money_amount_edittext"
+                style="@style/MeterViewStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:paddingLeft="4dp"
+                android:text="@string/currency_symbol__euro"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
 
         <TextView
             style="@style/detail_item_header"
@@ -78,17 +94,22 @@
             android:text="@string/description" />
 
         <EditText
-            android:id="@+id/message_edittext"
+            android:id="@+id/description_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp" />
+            android:layout_marginLeft="8dp"
+            android:hint="@string/hint__money_transfer__description"
+            android:inputType="textAutoCorrect|textAutoComplete|textMultiLine" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/button_send"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="bottom|right"
             android:layout_marginTop="8dp"
-            android:text="@string/send" />
+            android:background="?android:selectableItemBackgroundBorderless"
+            app:iiv_color="?android:textColorPrimary"
+            app:iiv_icon="gmi-mail-send" />
 
     </LinearLayout>
 

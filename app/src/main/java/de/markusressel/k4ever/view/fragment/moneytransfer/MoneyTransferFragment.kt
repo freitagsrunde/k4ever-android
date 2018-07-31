@@ -22,20 +22,21 @@ import android.arch.lifecycle.Lifecycle
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import com.github.ajalt.timberkt.Timber
+import com.jakewharton.rxbinding2.view.RxView
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.dagger.module.Implementation
 import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.data.persistence.user.UserEntity
 import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
 import de.markusressel.k4ever.extensions.common.android.context
+import de.markusressel.k4ever.extensions.common.android.gui.toast
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
@@ -44,7 +45,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment__money_transfer.*
-import java.text.DecimalFormat
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
@@ -88,7 +88,7 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
     }
 
     private lateinit var autocompleteUsersArrayAdapter: UserArrayAdapter
-    private var currentUser: UserEntity? = null
+    private var currentRecipientUser: UserEntity? = null
 
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
@@ -107,39 +107,40 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
             }
         }
 
-        money_amount_edittext.setText("0,00")
-        money_amount_edittext.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        RxView.clicks(button_send).bindToLifecycle(button_send).subscribe {
+            if (currentRecipientUser == null) {
+                context().toast("Please select a recipient")
+                return@subscribe
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // TODO: doesn't work as expected
-
-                val cursorIndexBeforeChange = money_amount_edittext.selectionStart
-
-                val df = DecimalFormat("####0.00")
-                val sourceAsDouble = s.toString().replace(",", ".").toDouble()
-                val result = df.format(sourceAsDouble).replace(".", ",")
-
-                money_amount_edittext.removeTextChangedListener(this)
-                money_amount_edittext.setText(result)
-                money_amount_edittext.setSelection(
-                        cursorIndexBeforeChange.coerceIn(0, result.length))
-                money_amount_edittext.addTextChangedListener(this)
+            val amount = getCurrentAmount()
+            if (amount <= 0) {
+                context().toast("Please enter a positive amount")
+                return@subscribe
             }
 
-            override fun afterTextChanged(s: Editable?) {
-            }
+            // TODO: send request to server
+            val thisUser = userPersistenceManager.getStore()[1]
+            val recipientUser = currentRecipientUser!!
 
-        })
+            val description = description_edittext.text.toString()
+
+            //            restClient.transferMoney(thisUser.id, recipientUser.id, amount, description)
+
+            context().toast("Transfered $amount€")
+        }
 
         loadUsersFromPersistence()
 
         updateUserList()
     }
 
+    private fun getCurrentAmount(): Double {
+        return money_amount_edittext.value.toDouble() / 100
+    }
+
     private fun setSelectedUser(userEntity: UserEntity) {
-        currentUser = userEntity
+        currentRecipientUser = userEntity
         recipient_avatar.setImageURI(restClient.getUserAvatarURL(userEntity.id))
     }
 

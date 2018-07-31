@@ -21,4 +21,9 @@
         <attr name="cardview_backgroundColor" format="color" />
     </declare-styleable>
 
+    <declare-styleable name="money_picker">
+        <attr name="money_picker_firstColor" format="color" />
+        <attr name="money_picker_secondColor" format="color" />
+    </declare-styleable>
+
 </resources>

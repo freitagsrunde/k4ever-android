@@ -70,6 +70,11 @@
     <string name="recipient">Recipient</string>
     <string name="amount">Amount</string>
 
+    <string name="hint__money_transfer__recipient">Enter username…</string>
+    <string name="hint__money_transfer__description">Pizza order 🍕</string>
+
+    <string name="currency_symbol__euro" translatable="false">€</string>
+
     <string name="send">Send</string>
 
     <string name="error">Error</string>
