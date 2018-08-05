@@ -86,9 +86,9 @@
         <item name="mnp_min">0</item>
         <item name="mnp_max">9</item>
         <item name="mnp_textColor">?android:attr/textColorPrimary</item>
-        <item name="mnp_textSize">18sp</item>
-        <item name="mnp_paddingHorizontal">6dp</item>
-        <item name="mnp_paddingVertical">14dp</item>
+        <item name="mnp_textSize">28sp</item>
+        <item name="mnp_paddingHorizontal">14dp</item>
+        <item name="mnp_paddingVertical">18dp</item>
     </style>
 
     <style name="MeterViewStyle">
