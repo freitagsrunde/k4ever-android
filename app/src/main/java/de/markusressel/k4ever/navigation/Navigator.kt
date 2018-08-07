@@ -19,7 +19,7 @@ package de.markusressel.k4ever.navigation
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -69,33 +69,34 @@ class Navigator @Inject constructor(private val kutePreferencesHolder: KutePrefe
      * Navigate to a specific page
      */
     fun navigateTo(drawerMenuItem: DrawerMenuItem, bundle: Bundle? = null): String {
-        val newFragment: Fragment
-
         // page tag HAS to be set
         drawerMenuItem.navigationPage.tag!!
 
-        // initiate transaction
-        var transaction: FragmentTransaction = activity.supportFragmentManager.beginTransaction()
-
         // try to find previous fragment
-        newFragment = drawerMenuItem.navigationPage.fragment!!()
-
+        val newFragment = drawerMenuItem.navigationPage.fragment!!()
         newFragment.arguments = bundle
 
-        if (stateStack.isNotEmpty()) {
-            transaction = transaction.addToBackStack(null)
+        if (newFragment is DialogFragment) {
+            newFragment.show(activity.supportFragmentManager, drawerMenuItem.navigationPage.tag)
+        } else {
+            // initiate transaction
+            var transaction: FragmentTransaction = activity.supportFragmentManager.beginTransaction()
+
+            if (stateStack.isNotEmpty()) {
+                transaction = transaction.addToBackStack(null)
+            }
+
+            transaction.replace(R.id.contentLayout, newFragment, drawerMenuItem.navigationPage.tag)
+                    .commit()
+            activity.supportFragmentManager.executePendingTransactions()
+
+            activity.setTitle(drawerMenuItem.title)
+            drawer.setSelection(drawerMenuItem.identifier, false)
+
+            // remember page stack
+            val newState = NavigationState(drawerMenuItem, drawerMenuItem.navigationPage)
+            stateStack.push(newState)
         }
-
-        transaction.replace(R.id.contentLayout, newFragment, drawerMenuItem.navigationPage.tag)
-                .commit()
-        activity.supportFragmentManager.executePendingTransactions()
-
-        activity.setTitle(drawerMenuItem.title)
-        drawer.setSelection(drawerMenuItem.identifier, false)
-
-        // remember page stack
-        val newState = NavigationState(drawerMenuItem, drawerMenuItem.navigationPage)
-        stateStack.push(newState)
 
         return drawerMenuItem.navigationPage.tag
     }

@@ -38,6 +38,13 @@
     <color name="cardview_backgroundDark">@color/md_grey_800</color>
     <color name="cardview_backgroundLight">@color/md_white_1000</color>
 
+    <!-- Money picker -->
+    <color name="money_picker__first_dark">@color/md_grey_700</color>
+    <color name="money_picker__second_dark">@color/md_grey_800</color>
+
+    <color name="money_picker__first_light">@color/md_grey_300</color>
+    <color name="money_picker__second_light">@color/md_grey_400</color>
+
     <!-- Preferences -->
     <color name="preference_item__default_icon_colorDark">@color/md_grey_200</color>
     <color name="preference_item__default_icon_colorLight">@color/md_grey_900</color>

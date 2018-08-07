@@ -17,35 +17,116 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".view.activity.MainActivity">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.SearchView
-        android:id="@+id/recipient_searchview"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <EditText
-        android:id="@+id/message_edittext"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <TextView
+                style="@style/detail_item_header"
+                android:paddingTop="8dp"
+                android:text="@string/recipient" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:orientation="horizontal"
+                android:paddingTop="8dp">
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/recipient_avatar"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    app:placeholderImage="@drawable/baseline_account_circle_24px"
+                    app:placeholderImageScaleType="centerInside"
+                    app:roundAsCircle="true" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/recipient_searchview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="8dp"
+                    android:hint="@string/hint__money_transfer__recipient" />
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/detail_item_header"
+                android:paddingTop="8dp"
+                android:text="@string/amount" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp">
+
+                <com.alexzaitsev.meternumberpicker.MeterView
+                    android:id="@+id/money_amount_edittext"
+                    style="@style/MeterViewStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/currency_symbol__euro"
+                    android:textSize="32sp" />
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/detail_item_header"
+                android:paddingTop="8dp"
+                android:text="@string/description" />
+
+            <EditText
+                android:id="@+id/description_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:hint="@string/hint__money_transfer__description"
+                android:inputType="textAutoCorrect|textAutoComplete|textMultiLine" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <RelativeLayout
+        android:id="@+id/bottom_button_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="48dp">
 
-    <EditText
-        android:id="@+id/money_amount_edittext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal" />
+        <Button
+            android:id="@+id/button_cancel"
+            style="@style/borderless_button"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/button_send"
+            android:text="@android:string/cancel" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Überweisung"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/button_send"
+            style="@style/borderless_button"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:text="@string/send" />
+
+    </RelativeLayout>
 
 </LinearLayout>

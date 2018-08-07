@@ -15,15 +15,11 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-
-    <declare-styleable name="cardview">
-        <attr name="cardview_backgroundColor" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="money_picker">
-        <attr name="money_picker_firstColor" format="color" />
-        <attr name="money_picker_secondColor" format="color" />
-    </declare-styleable>
-
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="4dp" />
+    <solid android:color="?android:attr/colorControlHighlight" />
+    <stroke
+        android:width="1dp"
+        android:color="@color/accent" />
+</shape>

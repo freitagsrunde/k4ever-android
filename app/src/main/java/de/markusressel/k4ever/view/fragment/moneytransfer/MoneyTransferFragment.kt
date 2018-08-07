@@ -18,20 +18,31 @@
 package de.markusressel.k4ever.view.fragment.moneytransfer
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.arch.lifecycle.Lifecycle
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
+import com.github.ajalt.timberkt.Timber
+import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxTextView
+import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.view.component.OptionsMenuComponent
-import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
+import de.markusressel.k4ever.dagger.module.Implementation
+import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
+import de.markusressel.k4ever.data.persistence.user.UserEntity
+import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
+import de.markusressel.k4ever.extensions.common.android.context
+import de.markusressel.k4ever.extensions.common.android.gui.toast
+import de.markusressel.k4ever.extensions.data.toEntity
+import de.markusressel.k4ever.rest.K4EverRestApiClient
+import de.markusressel.k4ever.view.fragment.base.DaggerDialogFragmentBase
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment__money_transfer.*
-import java.text.DecimalFormat
+import java.util.concurrent.CancellationException
+import javax.inject.Inject
 
 
 /**
@@ -39,61 +50,123 @@ import java.text.DecimalFormat
  *
  * Created by Markus on 07.01.2018.
  */
-class MoneyTransferFragment : DaggerSupportFragmentBase() {
+class MoneyTransferFragment : DaggerDialogFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__money_transfer
 
-    private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none)
-    }
+    @Inject
+    lateinit var userPersistenceManager: UserPersistenceManager
 
-    override fun initComponents(context: Context) {
-        super.initComponents(context)
-        optionsMenuComponent
-    }
+    @Inject
+    @field:Implementation(ImplementationTypeEnum.DUMMY)
+    lateinit var restClient: K4EverRestApiClient
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
-        optionsMenuComponent.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (super.onOptionsItemSelected(item)) {
-            return true
-        }
-        return optionsMenuComponent.onOptionsItemSelected(item)
-    }
+    private lateinit var autocompleteUsersArrayAdapter: UserArrayAdapter
+    private var currentRecipientUserId: Long? by savedInstanceState()
+    private var savedValue by savedInstanceState(0)
+    private var currentDescription by savedInstanceState("")
 
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        money_amount_edittext.setText("0,00")
-        money_amount_edittext.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        autocompleteUsersArrayAdapter = UserArrayAdapter(context(), restClient)
+        recipient_searchview.setAdapter(autocompleteUsersArrayAdapter)
+        recipient_searchview.threshold = 1
+        recipient_searchview.setOnItemClickListener { parent, view, position, id ->
+            setSelectedUser(autocompleteUsersArrayAdapter.getItem(position))
+        }
+        recipient_searchview.setOnClickListener {
+            if (!recipient_searchview.isPopupShowing) {
+                recipient_searchview.showDropDown()
+            }
+        }
+
+        RxView.clicks(button_cancel).bindToLifecycle(button_cancel).subscribe {
+            dismiss()
+        }
+
+        RxView.clicks(button_send).bindToLifecycle(button_send).subscribe {
+            if (currentRecipientUserId == null) {
+                context().toast("Please select a recipient")
+                return@subscribe
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // TODO: doesn't work as expected
-
-                val cursorIndexBeforeChange = money_amount_edittext.selectionStart
-
-                val df = DecimalFormat("####0.00")
-                val sourceAsDouble = s.toString().replace(",", ".").toDouble()
-                val result = df.format(sourceAsDouble).replace(".", ",")
-
-                money_amount_edittext.removeTextChangedListener(this)
-                money_amount_edittext.setText(result)
-                money_amount_edittext.setSelection(cursorIndexBeforeChange.coerceIn(0, result.length))
-                money_amount_edittext.addTextChangedListener(this)
+            val amount = getCurrentAmount()
+            if (amount <= 0) {
+                context().toast("Please enter a positive amount")
+                return@subscribe
             }
 
-            override fun afterTextChanged(s: Editable?) {
-            }
+            // TODO: send request to server
+            val thisUser = userPersistenceManager.getStore()[1]
+            val recipientUser = currentRecipientUserId!!
 
-        })
+            val description = description_edittext.text.toString()
+
+            //            restClient.transferMoney(thisUser.id, recipientUser.id, amount, description)
+
+            context().toast("Transfered $amount€")
+        }
+
+        RxTextView.textChanges(description_edittext).bindToLifecycle(description_edittext)
+                .subscribe {
+                    currentDescription = it.toString()
+                }
+
+        loadUsersFromPersistence()
+
+        updateUserList()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        applySavedInstanceState()
+    }
+
+    private fun applySavedInstanceState() {
+        currentRecipientUserId?.let {
+            recipient_avatar.setImageURI(restClient.getUserAvatarURL(it))
+        }
+
+        money_amount_edittext.value = savedValue
+        description_edittext.setText(currentDescription)
+    }
+
+    private fun getCurrentAmount(): Double {
+        return money_amount_edittext.value.toDouble() / 100
+    }
+
+    private fun setSelectedUser(userEntity: UserEntity) {
+        currentRecipientUserId = userEntity.id
+        recipient_avatar.setImageURI(restClient.getUserAvatarURL(userEntity.id))
+    }
+
+    private fun loadUsersFromPersistence() {
+        val persistedUsers = userPersistenceManager.getStore().all
+        autocompleteUsersArrayAdapter.setItems(persistedUsers)
+    }
+
+    override fun onStop() {
+        savedValue = money_amount_edittext.value
+        super.onStop()
+    }
+
+    private fun updateUserList() {
+        restClient.getAllUsers().map { it.map { it.toEntity() } }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
+                    userPersistenceManager.getStore().removeAll()
+                    userPersistenceManager.getStore().put(it)
+                    loadUsersFromPersistence()
+                }, onError = {
+                    if (it is CancellationException) {
+                        Timber.d { "reload from source cancelled" }
+                    }
+                })
+
     }
 
 }

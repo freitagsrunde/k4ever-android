@@ -19,17 +19,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="8dp"
     tools:context=".view.activity.MainActivity">
 
-    <ImageView
+    <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/profile_image"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:paddingBottom="16dp"
-        android:src="@drawable/ic_launcher_foreground" />
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:placeholderImage="@drawable/baseline_account_circle_24px"
+        app:placeholderImageScaleType="centerInside"
+        app:roundAsCircle="true" />
 
     <TextView
         android:layout_width="wrap_content"

@@ -60,11 +60,21 @@
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
 
-    <style name="borderless_button" parent="Base.Widget.AppCompat.Button.Colored">
+    <style name="outlined_button" parent="Base.Widget.AppCompat.Button.Colored">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:background">@drawable/outlined_button__background</item>
         <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:foreground">@drawable/outlined_button__foreground</item>
         <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <style name="borderless_button" parent="Base.Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
     <style name="detail_item_header">
@@ -80,6 +90,25 @@
         <item name="android:maxLines">999</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="MeterNumberPickerStyle">
+        <item name="mnp_min">0</item>
+        <item name="mnp_max">9</item>
+        <item name="mnp_textColor">?android:attr/textColorPrimary</item>
+        <item name="mnp_textSize">28sp</item>
+        <item name="mnp_paddingHorizontal">14dp</item>
+        <item name="mnp_paddingVertical">18dp</item>
+    </style>
+
+    <style name="MeterViewStyle">
+        <item name="mv_numberOfFirst">3</item>
+        <item name="mv_numberOfSecond">2</item>
+        <item name="mv_showDivider">true</item>
+        <item name="mv_dividerText">,</item>
+        <item name="mv_firstColor">?attr/money_picker_firstColor</item>
+        <item name="mv_secondColor">?attr/money_picker_secondColor</item>
+        <item name="mv_pickerStyle">@style/MeterNumberPickerStyle</item>
     </style>
 
 

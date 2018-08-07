@@ -114,6 +114,9 @@ dependencies {
     // Increase/Decrease number
     implementation 'com.github.DanielMartinus:Stepper-Touch:0.6'
 
+    // MeterNumberPicker
+    implementation 'com.github.markusressel:meter-number-picker:divider'
+
     // Shine Button (fancy animated buttons)
     implementation 'com.github.ChadCSong:ShineButton:d992d78032'
 

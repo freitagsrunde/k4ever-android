@@ -64,6 +64,10 @@
             @color/material_drawer_header_selection_text
         </item>
 
+        <!-- Money Picker -->
+        <item name="money_picker_firstColor">@color/money_picker__first_light</item>
+        <item name="money_picker_secondColor">@color/money_picker__second_light</item>
+
         <!-- KutePreferences -->
         <item name="kute_preferences__menu__icon_color">#fff</item>
         <item name="kute_preferences__setting__default_icon_color">
@@ -118,6 +122,10 @@
         <item name="material_drawer_header_selection_text">
             @color/material_drawer_dark_header_selection_text
         </item>
+
+        <!-- Money Picker -->
+        <item name="money_picker_firstColor">@color/money_picker__first_dark</item>
+        <item name="money_picker_secondColor">@color/money_picker__second_dark</item>
 
         <!-- KutePreferences -->
         <item name="kute_preferences__menu__icon_color">#fff</item>

@@ -15,15 +15,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-
-    <declare-styleable name="cardview">
-        <attr name="cardview_backgroundColor" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="money_picker">
-        <attr name="money_picker_firstColor" format="color" />
-        <attr name="money_picker_secondColor" format="color" />
-    </declare-styleable>
-
-</resources>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:enterFadeDuration="@android:integer/config_shortAnimTime" android:exitFadeDuration="@android:integer/config_shortAnimTime">
+    <item android:drawable="@drawable/outlined_button__background_selected" android:state_selected="true" />
+    <item android:drawable="@drawable/outlined_button__background_pressed" android:state_pressed="true" />
+    <item android:drawable="@drawable/outlined_button__background_normal" />
+</selector>

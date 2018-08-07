@@ -21,11 +21,12 @@ import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
+import java.io.Serializable
 
 @Entity
 data class UserEntity(@Id var entityId: Long = 0, val id: Long = -1L, val user_name: String = "",
                       val display_name: String = "", val balance: Double = -1.0,
-                      val permissions: List<PermissionEntity> = emptyList()) : IdentifiableListItem, SearchableListItem {
+                      val permissions: List<PermissionEntity> = emptyList()) : Serializable, IdentifiableListItem, SearchableListItem {
 
     override fun getItemId(): Long = id
     override fun getSearchableContent(): List<Any> = listOf(user_name, display_name)

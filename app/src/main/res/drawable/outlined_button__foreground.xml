@@ -14,16 +14,15 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<resources>
-
-    <declare-styleable name="cardview">
-        <attr name="cardview_backgroundColor" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="money_picker">
-        <attr name="money_picker_firstColor" format="color" />
-        <attr name="money_picker_secondColor" format="color" />
-    </declare-styleable>
-
-</resources>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlActivated">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="1dp"
+                android:color="#00000000" />
+            <solid android:color="#000000" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+</ripple>
