@@ -108,28 +108,28 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-    <view
-        android:id="@+id/bottom_button_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/md_black_1000" />
-
     <RelativeLayout
         android:id="@+id/bottom_button_bar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:padding="4dp">
+        android:layout_height="48dp">
 
-        <com.mikepenz.iconics.view.IconicsImageView
+        <TextView
+            android:id="@+id/button_abort"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/button_send"
+            android:text="@android:string/cancel" />
+
+        <TextView
             android:id="@+id/button_send"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:layout_margin="8dp"
-            android:background="?android:selectableItemBackgroundBorderless"
-            app:iiv_color="?android:textColorPrimary"
-            app:iiv_icon="gmi-mail-send" />
+            android:text="@string/send" />
 
     </RelativeLayout>
 
