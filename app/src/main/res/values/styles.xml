@@ -60,11 +60,21 @@
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
 
-    <style name="borderless_button" parent="Base.Widget.AppCompat.Button.Colored">
+    <style name="outlined_button" parent="Base.Widget.AppCompat.Button.Colored">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:background">@drawable/outlined_button__background</item>
         <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:foreground">@drawable/outlined_button__foreground</item>
         <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <style name="borderless_button" parent="Base.Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
     <style name="detail_item_header">

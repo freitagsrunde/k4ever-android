@@ -84,6 +84,10 @@ class MoneyTransferFragment : DaggerDialogFragmentBase() {
             }
         }
 
+        RxView.clicks(button_cancel).bindToLifecycle(button_cancel).subscribe {
+            dismiss()
+        }
+
         RxView.clicks(button_send).bindToLifecycle(button_send).subscribe {
             if (currentRecipientUserId == null) {
                 context().toast("Please select a recipient")

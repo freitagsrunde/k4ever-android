@@ -113,20 +113,16 @@
         android:layout_width="match_parent"
         android:layout_height="48dp">
 
-        <TextView
-            android:id="@+id/button_abort"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+        <Button
+            android:id="@+id/button_cancel"
+            style="@style/borderless_button"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@+id/button_send"
             android:text="@android:string/cancel" />
 
-        <TextView
+        <Button
             android:id="@+id/button_send"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            style="@style/borderless_button"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
             android:text="@string/send" />

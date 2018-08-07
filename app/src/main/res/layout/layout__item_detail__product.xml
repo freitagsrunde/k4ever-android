@@ -52,12 +52,12 @@
 
                     <Button
                         android:id="@+id/addToCartWithDeposit"
-                        style="@style/borderless_button"
+                        style="@style/outlined_button"
                         android:text="@string/with_deposit" />
 
                     <Button
                         android:id="@+id/addToCartWithout"
-                        style="@style/borderless_button"
+                        style="@style/outlined_button"
                         android:text="@string/without_deposit" />
 
                 </LinearLayout>
