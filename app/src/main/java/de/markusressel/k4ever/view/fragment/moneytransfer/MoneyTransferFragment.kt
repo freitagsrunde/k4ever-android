@@ -19,15 +19,12 @@ package de.markusressel.k4ever.view.fragment.moneytransfer
 
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Lifecycle
-import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
@@ -39,8 +36,7 @@ import de.markusressel.k4ever.extensions.common.android.context
 import de.markusressel.k4ever.extensions.common.android.gui.toast
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.K4EverRestApiClient
-import de.markusressel.k4ever.view.component.OptionsMenuComponent
-import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
+import de.markusressel.k4ever.view.fragment.base.DaggerDialogFragmentBase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -54,7 +50,7 @@ import javax.inject.Inject
  *
  * Created by Markus on 07.01.2018.
  */
-class MoneyTransferFragment : DaggerSupportFragmentBase() {
+class MoneyTransferFragment : DaggerDialogFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__money_transfer
@@ -66,29 +62,10 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
     @field:Implementation(ImplementationTypeEnum.DUMMY)
     lateinit var restClient: K4EverRestApiClient
 
-    private val optionsMenuComponent: OptionsMenuComponent by lazy {
-        OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none)
-    }
-
-    override fun initComponents(context: Context) {
-        super.initComponents(context)
-        optionsMenuComponent
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
-        optionsMenuComponent.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (super.onOptionsItemSelected(item)) {
-            return true
-        }
-        return optionsMenuComponent.onOptionsItemSelected(item)
-    }
-
     private lateinit var autocompleteUsersArrayAdapter: UserArrayAdapter
-    private var currentRecipientUser: UserEntity? = null
+    private var currentRecipientUserId: Long? by savedInstanceState()
+    private var savedValue by savedInstanceState(0)
+    private var currentDescription by savedInstanceState("")
 
     @SuppressLint("ClickableViewAccessibility")
     @CallSuper
@@ -108,7 +85,7 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
         }
 
         RxView.clicks(button_send).bindToLifecycle(button_send).subscribe {
-            if (currentRecipientUser == null) {
+            if (currentRecipientUserId == null) {
                 context().toast("Please select a recipient")
                 return@subscribe
             }
@@ -121,7 +98,7 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
 
             // TODO: send request to server
             val thisUser = userPersistenceManager.getStore()[1]
-            val recipientUser = currentRecipientUser!!
+            val recipientUser = currentRecipientUserId!!
 
             val description = description_edittext.text.toString()
 
@@ -130,9 +107,28 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
             context().toast("Transfered $amount€")
         }
 
+        RxTextView.textChanges(description_edittext).bindToLifecycle(description_edittext)
+                .subscribe {
+                    currentDescription = it.toString()
+                }
+
         loadUsersFromPersistence()
 
         updateUserList()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        applySavedInstanceState()
+    }
+
+    private fun applySavedInstanceState() {
+        currentRecipientUserId?.let {
+            recipient_avatar.setImageURI(restClient.getUserAvatarURL(it))
+        }
+
+        money_amount_edittext.value = savedValue
+        description_edittext.setText(currentDescription)
     }
 
     private fun getCurrentAmount(): Double {
@@ -140,13 +136,18 @@ class MoneyTransferFragment : DaggerSupportFragmentBase() {
     }
 
     private fun setSelectedUser(userEntity: UserEntity) {
-        currentRecipientUser = userEntity
+        currentRecipientUserId = userEntity.id
         recipient_avatar.setImageURI(restClient.getUserAvatarURL(userEntity.id))
     }
 
     private fun loadUsersFromPersistence() {
         val persistedUsers = userPersistenceManager.getStore().all
         autocompleteUsersArrayAdapter.setItems(persistedUsers)
+    }
+
+    override fun onStop() {
+        savedValue = money_amount_edittext.value
+        super.onStop()
     }
 
     private fun updateUserList() {
