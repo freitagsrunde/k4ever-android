@@ -89,7 +89,7 @@ dependencies {
     implementation "com.trello.rxlifecycle2:rxlifecycle-android-lifecycle-kotlin:$rxLifecycleVersion"
 
     // Android Architecture Components
-    implementation "androidx.core:core-ktx:$aacAndroidKtxVersion"
+    implementation "androidx.core:core-ktx:1.0.0"
 
     // Logging
     api "com.github.ajalt:timberkt:${timberKtVersion}"
