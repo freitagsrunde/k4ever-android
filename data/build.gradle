@@ -63,13 +63,18 @@ dependencies {
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
 
     // Preferences
-    api('com.github.markusressel.KutePreferences:library:v1.2.2') {
-        transitive = true
-    }
+    def kutePreferencesVersion = "v1.3.1"
+    api("com.github.markusressel.KutePreferences:core:${kutePreferencesVersion}")
+    api("com.github.markusressel.KutePreferences:boolean:${kutePreferencesVersion}")
+//    api("com.github.markusressel.KutePreferences:color:${kutePreferencesVersion}")
+//    api("com.github.markusressel.KutePreferences:date:${kutePreferencesVersion}")
+//    api("com.github.markusressel.KutePreferences:number:${kutePreferencesVersion}")
+    api("com.github.markusressel.KutePreferences:selection:${kutePreferencesVersion}")
+    api("com.github.markusressel.KutePreferences:text:${kutePreferencesVersion}")
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation "androidx.test:runner:1.1.0-beta02"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.1.0-beta02"
 }
 
 // Needed for LastAdapter

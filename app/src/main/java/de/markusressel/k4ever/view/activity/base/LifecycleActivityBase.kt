@@ -18,8 +18,7 @@
 package de.markusressel.k4ever.view.activity.base
 
 import android.os.Bundle
-import android.support.annotation.CallSuper
-import android.support.annotation.CheckResult
+import androidx.annotation.CheckResult
 import com.eightbitlab.rxbus.Bus
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer

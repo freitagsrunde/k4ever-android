@@ -17,15 +17,14 @@
 
 package de.markusressel.k4ever.view.fragment.base
 
-import android.arch.lifecycle.Lifecycle
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.DiffUtil
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic

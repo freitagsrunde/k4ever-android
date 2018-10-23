@@ -25,13 +25,13 @@ import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.rest.BasicAuthConfig
 import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.IconHandler
-import de.markusressel.kutepreferences.library.persistence.KutePreferenceDataProvider
-import de.markusressel.kutepreferences.library.preference.category.KuteCategory
-import de.markusressel.kutepreferences.library.preference.category.KuteDivider
-import de.markusressel.kutepreferences.library.preference.select.KuteSingleSelectPreference
-import de.markusressel.kutepreferences.library.preference.text.KutePasswordPreference
-import de.markusressel.kutepreferences.library.preference.text.KuteTextPreference
-import de.markusressel.kutepreferences.library.preference.toggle.KuteTogglePreference
+import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
+import de.markusressel.kutepreferences.core.preference.category.KuteCategory
+import de.markusressel.kutepreferences.core.preference.category.KuteDivider
+import de.markusressel.kutepreferences.preference.boolean.KuteBooleanPreference
+import de.markusressel.kutepreferences.preference.selection.single.KuteSingleSelectStringPreference
+import de.markusressel.kutepreferences.preference.text.KutePasswordPreference
+import de.markusressel.kutepreferences.preference.text.KuteTextPreference
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -98,7 +98,7 @@ class KutePreferencesHolder @Inject constructor(private val context: Context,
     }
 
     val showPricesWithDepositPreference by lazy {
-        KuteTogglePreference(key = R.string.hide_prices_with_deposit_key,
+        KuteBooleanPreference(key = R.string.hide_prices_with_deposit_key,
                 icon = iconHelper.getPreferenceIcon(MaterialDesignIconic.Icon.gmi_money),
                 title = context.getString(R.string.show_prices_with_deposit_title),
                 defaultValue = true, dataProvider = dataProvider, descriptionFunction = {
@@ -110,7 +110,7 @@ class KutePreferencesHolder @Inject constructor(private val context: Context,
     }
 
     val themePreference by lazy {
-        KuteSingleSelectPreference(context = context, key = R.string.theme_key,
+        KuteSingleSelectStringPreference(context = context, key = R.string.theme_key,
                 icon = iconHelper.getPreferenceIcon(MaterialDesignIconic.Icon.gmi_colorize),
                 title = context.getString(R.string.theme_title),
                 possibleValues = mapOf(R.string.theme_dark_value to R.string.theme_dark_value_name,

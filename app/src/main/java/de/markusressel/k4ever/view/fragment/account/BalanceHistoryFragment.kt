@@ -20,9 +20,9 @@ package de.markusressel.k4ever.view.fragment.account
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.view.*
 import android.widget.CheckBox
+import androidx.annotation.CallSuper
 import com.github.nitrico.lastadapter.LastAdapter
 import com.github.zawadz88.materialpopupmenu.popupMenu
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
@@ -35,7 +35,6 @@ import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemBalanceHistoryItemBinding
 import de.markusressel.k4ever.databinding.ListItemPurchaseHistoryItemBinding
 import de.markusressel.k4ever.databinding.ListItemTransferHistoryItemBinding
-import de.markusressel.k4ever.extensions.common.android.context
 import de.markusressel.k4ever.extensions.common.filterByExpectedType
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel

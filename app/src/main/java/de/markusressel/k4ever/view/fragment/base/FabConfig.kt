@@ -17,8 +17,8 @@
 
 package de.markusressel.k4ever.view.fragment.base
 
-import android.support.annotation.ColorRes
-import android.support.annotation.StringRes
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import com.mikepenz.iconics.typeface.IIcon
 
 /**

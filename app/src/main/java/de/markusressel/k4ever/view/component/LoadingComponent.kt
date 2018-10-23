@@ -19,8 +19,6 @@ package de.markusressel.k4ever.view.component
 
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
-import android.support.annotation.StringRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +27,8 @@ import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.CallSuper
+import androidx.annotation.StringRes
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.view.RxView

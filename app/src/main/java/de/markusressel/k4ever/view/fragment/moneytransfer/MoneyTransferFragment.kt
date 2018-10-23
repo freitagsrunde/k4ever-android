@@ -18,10 +18,9 @@
 package de.markusressel.k4ever.view.fragment.moneytransfer
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.Lifecycle
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.view.View
+import androidx.lifecycle.Lifecycle
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -32,8 +31,6 @@ import de.markusressel.k4ever.dagger.module.Implementation
 import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.data.persistence.user.UserEntity
 import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
-import de.markusressel.k4ever.extensions.common.android.context
-import de.markusressel.k4ever.extensions.common.android.gui.toast
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.fragment.base.DaggerDialogFragmentBase
