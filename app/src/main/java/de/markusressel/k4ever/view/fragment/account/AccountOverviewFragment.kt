@@ -20,11 +20,11 @@ package de.markusressel.k4ever.view.fragment.account
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.CallSuper
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.dagger.module.Implementation
 import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum

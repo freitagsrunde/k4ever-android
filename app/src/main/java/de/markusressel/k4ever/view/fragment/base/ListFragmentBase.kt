@@ -19,17 +19,17 @@ package de.markusressel.k4ever.view.fragment.base
 
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.CallSuper
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.nitrico.lastadapter.LastAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxbinding2.view.RxView
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
@@ -127,7 +127,7 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
     internal fun scrollToItemPosition(itemPosition: Int) {
         val layoutManager = recyclerView.layoutManager
         // this always returns 0 :(
-        if (itemPosition != RecyclerView.NO_POSITION && layoutManager.childCount > 0) {
+        if (layoutManager != null && itemPosition != RecyclerView.NO_POSITION && layoutManager.childCount > 0) {
             layoutManager.scrollToPosition((itemPosition.coerceIn(0, layoutManager.childCount - 1)))
         }
     }

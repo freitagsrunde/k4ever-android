@@ -20,9 +20,9 @@ package de.markusressel.k4ever.view.fragment.account
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.view.*
 import android.widget.CheckBox
+import androidx.annotation.CallSuper
 import com.github.nitrico.lastadapter.LastAdapter
 import com.github.zawadz88.materialpopupmenu.popupMenu
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic

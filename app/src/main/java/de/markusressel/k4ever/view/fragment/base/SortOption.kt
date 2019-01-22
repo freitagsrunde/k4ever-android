@@ -17,7 +17,8 @@
 
 package de.markusressel.k4ever.view.fragment.base
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
+
 
 /**
  * Class specifying a single SortOption for a list view

@@ -18,8 +18,8 @@
 package de.markusressel.k4ever.extensions.common.android.gui
 
 import android.content.Context
-import android.support.annotation.StringRes
 import android.widget.Toast
+import androidx.annotation.StringRes
 
 /**
  * Creates and instantly shows a toast message

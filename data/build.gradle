@@ -50,10 +50,10 @@ dependencies {
     // Kotlin bindings for GSON
     implementation "com.github.salomonbrys.kotson:kotson:${rootProject.ext.kotsonVersion}"
     implementation "io.reactivex.rxjava2:rxkotlin:${rootProject.ext.rxKotlinVersion}"
-    implementation "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
+    implementation "androidx.annotation:annotation:1.0.1"
 
     // Android Architecture Components
-    implementation "androidx.core:core-ktx:$aacAndroidKtxVersion"
+    implementation "androidx.core:core-ktx:1.0.1"
 
     // Logging
     api "com.github.ajalt:timberkt:${rootProject.ext.timberKtVersion}"
@@ -63,13 +63,18 @@ dependencies {
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
 
     // Preferences
-    api('com.github.markusressel.KutePreferences:library:v1.2.2') {
-        transitive = true
-    }
+    def kutePreferencesVersion = "v1.5.2"
+    api("com.github.markusressel.KutePreferences:core:${kutePreferencesVersion}")
+    api("com.github.markusressel.KutePreferences:bool:${kutePreferencesVersion}")
+//    api("com.github.markusressel.KutePreferences:color:${kutePreferencesVersion}")
+//    api("com.github.markusressel.KutePreferences:date:${kutePreferencesVersion}")
+//    api("com.github.markusressel.KutePreferences:number:${kutePreferencesVersion}")
+    api("com.github.markusressel.KutePreferences:selection:${kutePreferencesVersion}")
+    api("com.github.markusressel.KutePreferences:text:${kutePreferencesVersion}")
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation "androidx.test:runner:1.1.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.1.1"
 }
 
 // Needed for LastAdapter

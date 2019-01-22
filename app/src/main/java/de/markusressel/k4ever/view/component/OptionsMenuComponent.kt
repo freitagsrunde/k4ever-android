@@ -17,11 +17,11 @@
 
 package de.markusressel.k4ever.view.component
 
-import android.arch.lifecycle.Lifecycle
-import android.support.annotation.MenuRes
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.annotation.MenuRes
+import androidx.lifecycle.Lifecycle
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import de.markusressel.k4ever.view.fragment.base.LifecycleFragmentBase

@@ -19,9 +19,9 @@ package de.markusressel.k4ever.view.fragment.preferences.base
 
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
-import android.support.annotation.CheckResult
 import android.view.View
+import androidx.annotation.CallSuper
+import androidx.annotation.CheckResult
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer
 import com.trello.rxlifecycle2.RxLifecycle

@@ -29,7 +29,7 @@
             type="de.markusressel.k4ever.view.fragment.products.ProductsFragment" />
     </data>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         style="@style/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -123,6 +123,6 @@
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </layout>

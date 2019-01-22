@@ -19,8 +19,8 @@ package de.markusressel.k4ever.view.activity.base
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.github.ajalt.timberkt.Timber
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder

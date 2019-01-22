@@ -21,8 +21,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
+import androidx.fragment.app.Fragment
 import de.markusressel.k4ever.R
 
 

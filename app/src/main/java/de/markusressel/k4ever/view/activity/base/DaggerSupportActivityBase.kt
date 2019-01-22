@@ -18,12 +18,12 @@
 package de.markusressel.k4ever.view.activity.base
 
 import android.os.Bundle
-import android.support.annotation.CallSuper
-import android.support.annotation.IntDef
-import android.support.annotation.LayoutRes
-import android.support.v4.app.Fragment
 import android.view.Window
 import android.view.WindowManager
+import androidx.annotation.CallSuper
+import androidx.annotation.IntDef
+import androidx.annotation.LayoutRes
+import androidx.fragment.app.Fragment
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -33,7 +33,7 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.navigation.Navigator
 import de.markusressel.k4ever.view.IconHandler
 import de.markusressel.k4ever.view.ThemeHandler
-import de.markusressel.kutepreferences.library.persistence.KutePreferenceDataProvider
+import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
 import kotlinx.android.synthetic.main.view__toolbar.*
 import javax.inject.Inject
 

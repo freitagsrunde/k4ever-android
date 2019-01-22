@@ -18,10 +18,10 @@
 package de.markusressel.k4ever.view.fragment.moneytransfer
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.Lifecycle
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.view.View
+import androidx.annotation.CallSuper
+import androidx.lifecycle.Lifecycle
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
