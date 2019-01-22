@@ -27,11 +27,11 @@ import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.IconHandler
 import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
 import de.markusressel.kutepreferences.core.preference.category.KuteCategory
-import de.markusressel.kutepreferences.core.preference.category.KuteDivider
-import de.markusressel.kutepreferences.preference.boolean.KuteBooleanPreference
+import de.markusressel.kutepreferences.core.preference.section.KuteSection
+import de.markusressel.kutepreferences.preference.bool.KuteBooleanPreference
 import de.markusressel.kutepreferences.preference.selection.single.KuteSingleSelectStringPreference
-import de.markusressel.kutepreferences.preference.text.KutePasswordPreference
 import de.markusressel.kutepreferences.preference.text.KuteTextPreference
+import de.markusressel.kutepreferences.preference.text.password.KutePasswordPreference
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,9 +53,9 @@ class KutePreferencesHolder @Inject constructor(private val context: Context,
                 title = context.getString(R.string.connection_title),
                 description = context.getString(R.string.connection_summary),
                 children = listOf(connectionUriPreference,
-                        KuteDivider(key = R.string.divider_authentication_key,
-                                title = context.getString(R.string.divider_authentication_title)),
-                        authUserPreference, authPasswordPreference))
+                        KuteSection(key = R.string.divider_authentication_key,
+                                title = context.getString(R.string.divider_authentication_title), children = listOf(authUserPreference, authPasswordPreference))
+                ))
     }
 
     val connectionUriPreference by lazy {

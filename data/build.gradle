@@ -63,9 +63,9 @@ dependencies {
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
 
     // Preferences
-    def kutePreferencesVersion = "v1.3.1"
+    def kutePreferencesVersion = "v1.5.2"
     api("com.github.markusressel.KutePreferences:core:${kutePreferencesVersion}")
-    api("com.github.markusressel.KutePreferences:boolean:${kutePreferencesVersion}")
+    api("com.github.markusressel.KutePreferences:bool:${kutePreferencesVersion}")
 //    api("com.github.markusressel.KutePreferences:color:${kutePreferencesVersion}")
 //    api("com.github.markusressel.KutePreferences:date:${kutePreferencesVersion}")
 //    api("com.github.markusressel.KutePreferences:number:${kutePreferencesVersion}")
