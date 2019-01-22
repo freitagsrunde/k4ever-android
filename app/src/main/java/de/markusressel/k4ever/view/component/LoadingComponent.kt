@@ -189,8 +189,8 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
                         message + "\n\n\n" + throwable.prettyPrint()
                     } ?: message
 
-                    MaterialDialog.Builder(context as Context).title(R.string.error).content(contentText)
-                            .positiveText(android.R.string.ok).show()
+            MaterialDialog(context as Context).title(R.string.error).message(text = contentText)
+                    .positiveButton { }.show()
                 }
 
         setViewVisibility(errorLayout, View.VISIBLE)
