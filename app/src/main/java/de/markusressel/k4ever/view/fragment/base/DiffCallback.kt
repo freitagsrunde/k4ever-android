@@ -17,7 +17,7 @@
 
 package de.markusressel.k4ever.view.fragment.base
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 
 /**

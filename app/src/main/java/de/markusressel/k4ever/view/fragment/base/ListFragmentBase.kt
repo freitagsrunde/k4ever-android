@@ -127,7 +127,7 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
     internal fun scrollToItemPosition(itemPosition: Int) {
         val layoutManager = recyclerView.layoutManager
         // this always returns 0 :(
-        if (itemPosition != RecyclerView.NO_POSITION && layoutManager.childCount > 0) {
+        if (layoutManager != null && itemPosition != RecyclerView.NO_POSITION && layoutManager.childCount > 0) {
             layoutManager.scrollToPosition((itemPosition.coerceIn(0, layoutManager.childCount - 1)))
         }
     }

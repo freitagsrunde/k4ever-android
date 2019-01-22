@@ -35,6 +35,7 @@ import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemBalanceHistoryItemBinding
 import de.markusressel.k4ever.databinding.ListItemPurchaseHistoryItemBinding
 import de.markusressel.k4ever.databinding.ListItemTransferHistoryItemBinding
+import de.markusressel.k4ever.extensions.common.android.context
 import de.markusressel.k4ever.extensions.common.filterByExpectedType
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel

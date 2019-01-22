@@ -38,8 +38,8 @@ import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
 import de.markusressel.k4ever.view.fragment.products.ProductDetailActivity
 import de.markusressel.k4ever.view.fragment.products.ProductDetailContentFragment
 import de.markusressel.k4ever.view.fragment.products.ProductsFragment
-import de.markusressel.kutepreferences.library.persistence.DefaultKutePreferenceDataProvider
-import de.markusressel.kutepreferences.library.persistence.KutePreferenceDataProvider
+import de.markusressel.kutepreferences.core.persistence.DefaultKutePreferenceDataProvider
+import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
 import javax.inject.Singleton
 
 /**

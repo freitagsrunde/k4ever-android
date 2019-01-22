@@ -17,9 +17,9 @@
 
 package de.markusressel.k4ever.extensions.common.android.gui
 
-import android.support.annotation.StringRes
-import android.support.design.widget.Snackbar
 import android.view.View
+import androidx.annotation.StringRes
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * Creates and instantly shows a snackbar

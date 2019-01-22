@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 import androidx.annotation.CallSuper
+import androidx.annotation.IntDef
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import dagger.android.AndroidInjection
