@@ -114,10 +114,12 @@ abstract class NavigationDrawerActivity : DaggerSupportActivityBase() {
                 //                .withCloseDrawerOnProfileListClick(false)
                 //                .withCurrentProfileHiddenInList(true)
                 //                .withHeaderBackground()
-                .withDividerBelowHeader(true).withOnAccountHeaderListener { _, profile, current ->
-                    Timber.d { "Pressed profile: '$profile' with current: '$current'" }
-                    false
-                }
+                .withDividerBelowHeader(true).withOnAccountHeaderListener(object : AccountHeader.OnAccountHeaderListener {
+                    override fun onProfileChanged(view: View?, profile: IProfile<*>, current: Boolean): Boolean {
+                        Timber.d { "Pressed profile: '$profile' with current: '$current'" }
+                        return false
+                    }
+                })
 
                 .build()
     }
@@ -129,46 +131,46 @@ abstract class NavigationDrawerActivity : DaggerSupportActivityBase() {
 
         profiles.add(ProfileDrawerItem().withName("Markus Ressel").withEmail("mail@markusressel.de").withIcon(R.mipmap.ic_launcher))
 
-        profiles.add(ProfileDrawerItem().withName("Iris Haderer").withEmail("").withIcon(R.mipmap.ic_launcher))
-
         return profiles
     }
 
-    private fun initDrawerMenuItems(): MutableList<IDrawerItem<*, *>> {
-        val menuItemList: MutableList<IDrawerItem<*, *>> = LinkedList()
+    private fun initDrawerMenuItems(): MutableList<IDrawerItem<*>> {
+        val menuItemList: MutableList<IDrawerItem<*>> = LinkedList()
 
-        val clickListener = Drawer.OnDrawerItemClickListener { _, _, drawerItem ->
+        val clickListener = object : Drawer.OnDrawerItemClickListener {
 
-            if (drawerItem.identifier == navigator.currentState.drawerMenuItem.identifier) {
-                Timber.d { "Closing navigationDrawer because the clicked item (${drawerItem.identifier}) is the currently active page" }
-                if (!isTablet()) {
+            override fun onItemClick(view: View?, position: Int, drawerItem: IDrawerItem<*>): Boolean {
+                if (drawerItem.identifier == navigator.currentState.drawerMenuItem.identifier) {
+                    Timber.d { "Closing navigationDrawer because the clicked item (${drawerItem.identifier}) is the currently active page" }
+                    if (!isTablet()) {
 
-                    navigator.drawer.closeDrawer()
+                        navigator.drawer.closeDrawer()
+                    }
+                    return true
                 }
-                return@OnDrawerItemClickListener true
+
+                val drawerMenuItem = DrawerItemHolder.fromId(drawerItem.identifier)
+
+                drawerMenuItem?.navigationPage?.let {
+                    if (it.fragment != null) {
+                        navigator.navigateTo(drawerMenuItem)
+                    } else {
+                        navigator.startActivity(applicationContext, it)
+                    }
+
+                    if (drawerItem.isSelectable) {
+                        // set new title
+                        setTitle(drawerMenuItem.title)
+                    }
+
+                    if (!isTablet()) {
+                        navigator.drawer.closeDrawer()
+                    }
+                    return true
+                }
+
+                return false
             }
-
-            val drawerMenuItem = DrawerItemHolder.fromId(drawerItem.identifier)
-
-            drawerMenuItem?.navigationPage?.let {
-                if (it.fragment != null) {
-                    navigator.navigateTo(drawerMenuItem)
-                } else {
-                    navigator.startActivity(this, it)
-                }
-
-                if (drawerItem.isSelectable) {
-                    // set new title
-                    setTitle(drawerMenuItem.title)
-                }
-
-                if (!isTablet()) {
-                    navigator.drawer.closeDrawer()
-                }
-                return@OnDrawerItemClickListener true
-            }
-
-            false
         }
 
 

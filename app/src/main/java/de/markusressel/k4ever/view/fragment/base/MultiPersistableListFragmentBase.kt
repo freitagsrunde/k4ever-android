@@ -28,7 +28,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DiffUtil
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
+import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
@@ -82,12 +82,12 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
         optionsMenuComponent
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         optionsMenuComponent.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (super.onOptionsItemSelected(item)) {
             return true
         }

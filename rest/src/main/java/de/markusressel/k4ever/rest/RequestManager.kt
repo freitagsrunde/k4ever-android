@@ -19,9 +19,9 @@ package de.markusressel.k4ever.rest
 
 import android.util.Log
 import com.github.kittinunf.fuel.core.*
-import com.github.kittinunf.fuel.rx.rx_object
-import com.github.kittinunf.fuel.rx.rx_response
-import com.github.kittinunf.result.Result
+import com.github.kittinunf.fuel.core.extensions.authentication
+import com.github.kittinunf.fuel.rx.rxObject
+import com.github.kittinunf.fuel.rx.rxResponsePair
 import com.google.gson.Gson
 import io.reactivex.Single
 
@@ -84,7 +84,7 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
      */
     private fun getAuthenticatedRequest(request: Request): Request {
         basicAuthConfig?.let {
-            return request.authenticate(username = it.username, password = it.password)
+            return request.authentication().basic(username = it.username, password = it.password)
         }
 
         return request
@@ -97,15 +97,8 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
      * @param method the request type (f.ex. GET)
      */
     fun doRequest(url: String,
-                  method: Method): Single<Pair<Response, Result<ByteArray, FuelError>>> {
-        return createRequest(url = url, method = method).rx_response().map {
-            it.second.component2()?.let {
-                throw it
-            }
-            it
-        }.map {
-            it
-        }
+                  method: Method): Single<Pair<Response, ByteArray>> {
+        return createRequest(url = url, method = method).rxResponsePair()
     }
 
     /**
@@ -117,7 +110,7 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
      */
     fun <T : Any> doRequest(url: String, method: Method,
                             deserializer: ResponseDeserializable<T>): Single<T> {
-        return createRequest(url = url, method = method).rx_object(deserializer).map {
+        return createRequest(url = url, method = method).rxObject(deserializer).map {
             it.component1() ?: throw it.component2() ?: throw Exception()
         }
     }
@@ -132,7 +125,7 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
      */
     fun <T : Any> doRequest(url: String, urlParameters: List<Pair<String, Any?>>, method: Method,
                             deserializer: ResponseDeserializable<T>): Single<T> {
-        return createRequest(url = url, urlParameters = urlParameters, method = method).rx_object(
+        return createRequest(url = url, urlParameters = urlParameters, method = method).rxObject(
                 deserializer).map {
             it.component1() ?: throw it.component2() ?: throw Exception()
         }
@@ -151,7 +144,7 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
         val json = Gson().toJson(jsonData)
 
         return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
-                .rx_object(deserializer).map {
+                .rxObject(deserializer).map {
                     it.component1() ?: throw it.component2() ?: throw Exception()
                 }
     }
@@ -164,11 +157,11 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
      * @param jsonData an Object that will be serialized to json
      */
     fun doJsonRequest(url: String, method: Method,
-                      jsonData: Any): Single<Pair<Response, Result<ByteArray, FuelError>>> {
+                      jsonData: Any): Single<Pair<Response, ByteArray>> {
         val json = Gson().toJson(jsonData)
 
         return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
-                .rx_response()
+                .rxResponsePair()
     }
 
     companion object {

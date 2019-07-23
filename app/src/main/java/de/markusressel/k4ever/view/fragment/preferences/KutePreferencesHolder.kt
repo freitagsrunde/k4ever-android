@@ -18,7 +18,7 @@
 package de.markusressel.k4ever.view.fragment.preferences
 
 import android.content.Context
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
+import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.dagger.module.Implementation
 import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum

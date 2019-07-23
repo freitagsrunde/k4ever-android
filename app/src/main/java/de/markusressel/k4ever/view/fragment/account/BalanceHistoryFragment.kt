@@ -25,7 +25,7 @@ import android.widget.CheckBox
 import androidx.annotation.CallSuper
 import com.github.nitrico.lastadapter.LastAdapter
 import com.github.zawadz88.materialpopupmenu.popupMenu
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
+import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
 import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
@@ -346,12 +346,12 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
         optionsMenuComponent
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         optionsMenuComponent.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (super.onOptionsItemSelected(item)) {
             return true
         }

@@ -50,10 +50,10 @@ dependencies {
     // Kotlin bindings for GSON
     implementation "com.github.salomonbrys.kotson:kotson:${rootProject.ext.kotsonVersion}"
     implementation "io.reactivex.rxjava2:rxkotlin:${rootProject.ext.rxKotlinVersion}"
-    implementation "androidx.annotation:annotation:1.0.1"
+    implementation "androidx.annotation:annotation:1.1.0"
 
     // Android Architecture Components
-    implementation "androidx.core:core-ktx:1.0.1"
+    implementation "androidx.core:core-ktx:1.0.2"
 
     // Logging
     api "com.github.ajalt:timberkt:${rootProject.ext.timberKtVersion}"
@@ -63,7 +63,7 @@ dependencies {
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
 
     // Preferences
-    def kutePreferencesVersion = "v1.5.2"
+    def kutePreferencesVersion = "v2.0.0"
     api("com.github.markusressel.KutePreferences:core:${kutePreferencesVersion}")
     api("com.github.markusressel.KutePreferences:bool:${kutePreferencesVersion}")
 //    api("com.github.markusressel.KutePreferences:color:${kutePreferencesVersion}")
@@ -73,8 +73,8 @@ dependencies {
     api("com.github.markusressel.KutePreferences:text:${kutePreferencesVersion}")
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation "androidx.test:runner:1.1.1"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.1.1"
+    androidTestImplementation "androidx.test:runner:1.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
 }
 
 // Needed for LastAdapter
