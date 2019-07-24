@@ -20,6 +20,6 @@ package de.markusressel.k4ever.extensions.common
 /**
  * Filters the list by the given type
  */
-inline fun <reified T : Any> Collection<*>.filterByExpectedType(): Collection<T> {
+inline fun <reified T : Any> List<*>.filterByExpectedType(): List<T> {
     return this.filter { it is T }.map { it as T }
 }

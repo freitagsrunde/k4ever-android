@@ -22,14 +22,22 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.CallSuper
+import androidx.databinding.ViewDataBinding
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.airbnb.epoxy.EpoxyModel
+import com.airbnb.epoxy.paging.PagedListEpoxyController
 import com.github.nitrico.lastadapter.BR
 import com.github.nitrico.lastadapter.LastAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import de.markusressel.k4ever.ListItemProductBindingModel_
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.business.ShoppingCart
 import de.markusressel.k4ever.business.ShoppingCartItem
@@ -37,7 +45,6 @@ import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
 import de.markusressel.k4ever.databinding.ListItemCartItemBinding
-import de.markusressel.k4ever.databinding.ListItemProductBinding
 import de.markusressel.k4ever.extensions.common.android.context
 import de.markusressel.k4ever.extensions.common.android.pxToSp
 import de.markusressel.k4ever.extensions.data.toEntity
@@ -47,7 +54,6 @@ import de.markusressel.k4ever.view.fragment.base.DiffCallback
 import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
-import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_cart.*
 import kotlinx.android.synthetic.main.list_item__cart_item.view.*
 import kotlinx.android.synthetic.main.list_item__product.view.*
@@ -68,31 +74,50 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
 
     override fun getPersistenceHandler(): PersistenceManagerBase<ProductEntity> = persistenceManager
 
-    override fun createAdapter(): LastAdapter {
-        return LastAdapter(listValues, BR.item).map<ProductEntity, ListItemProductBinding>(
-                R.layout.list_item__product) {
-            onCreate {
-                it.binding.presenter = this@ProductsFragment
-            }
-            onBind {
-                val productItem = it.binding.item
+    private val productsViewModel: ProductsViewModel by lazy {
+        ViewModelProviders.of(this).get(ProductsViewModel::class.java)
+    }
 
-                val productImage = it.binding.root.productImage
-                val favoriteButton = it.binding.root.favoriteButton
+    override fun createViewDataBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewDataBinding? {
+        productsViewModel.getListLiveData(getPersistenceHandler()).observe(this, Observer {
+            epoxyController.submitList(it)
+        })
 
-                productItem?.let {
-                    productImage.setOnClickListener {
-                        favoriteButton.setChecked(!productItem.isFavorite, true)
-                    }
-                    favoriteButton.setOnCheckStateChangeListener { view, checked ->
-                        setFavorite(productItem, checked)
-                    }
+        return super.createViewDataBinding(inflater, container, savedInstanceState)
+    }
+
+    override fun createEpoxyController(): PagedListEpoxyController<ProductEntity> {
+        return object : PagedListEpoxyController<ProductEntity>() {
+            override fun buildItemModel(currentPosition: Int, item: ProductEntity?): EpoxyModel<*> {
+                return if (item == null) {
+                    ListItemProductBindingModel_()
+                            .id(-currentPosition)
+                } else {
+                    ListItemProductBindingModel_()
+                            .id(item.id)
+                            .item(item)
+                            .presenter(this@ProductsFragment)
+                            .onBind { model, view, position ->
+                                val productItem = model.item()
+
+                                val productImage = view.dataBinding.root.productImage
+                                val favoriteButton = view.dataBinding.root.favoriteButton
+
+                                productItem?.let {
+                                    productImage.setOnClickListener {
+                                        favoriteButton.setChecked(!productItem.isFavorite, true)
+                                    }
+                                    favoriteButton.setOnCheckStateChangeListener { view, checked ->
+                                        setFavorite(productItem, checked)
+                                    }
+                                }
+                            }
+                            .onclick { model, parentView, clickedView, position ->
+                                openDetailView(model.item())
+                            }
                 }
             }
-            onClick {
-                openDetailView(listValues[it.adapterPosition])
-            }
-        }.into(recyclerView)
+        }
     }
 
     override fun loadListDataFromSource(): Single<List<ProductModel>> {
@@ -390,10 +415,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         product.isFavorite = isFavorite
         persistenceManager.getStore().put(product)
 
-
         // TODO: maybe wait a short period before updating the list?
-
-        updateListFromPersistence()
 
         // TODO: eventually send this to the server
     }

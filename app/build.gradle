@@ -125,6 +125,12 @@ dependencies {
     // Shine Button (fancy animated buttons)
     implementation 'com.github.ChadCSong:ShineButton:d992d78032'
 
+    // Epoxy - RecyclerView
+    api "com.airbnb.android:epoxy:$epoxyVersion"
+    api "com.airbnb.android:epoxy-databinding:$epoxyVersion"
+    implementation "com.airbnb.android:epoxy-paging:$epoxyVersion"
+    kapt "com.airbnb.android:epoxy-processor:$epoxyVersion"
+
     // LastAdapter
     implementation 'com.github.nitrico.lastadapter:lastadapter:2.3.0'
     kapt "com.android.databinding:compiler:$gradle_plugin_version"

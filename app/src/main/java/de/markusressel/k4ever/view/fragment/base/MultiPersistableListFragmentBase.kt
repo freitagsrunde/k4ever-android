@@ -25,7 +25,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
-import androidx.recyclerview.widget.DiffUtil
+import com.airbnb.epoxy.EpoxyController
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
@@ -34,13 +34,10 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment__recyclerview.*
-import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
@@ -50,7 +47,14 @@ import java.util.concurrent.TimeUnit
  */
 abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
 
-    protected val listValues: MutableList<IdentifiableListItem> = ArrayList()
+    val pagedEpoxyController: EpoxyController by lazy { createEpoxyController() }
+    override fun getEpoxyController(): EpoxyController = pagedEpoxyController
+
+    /**
+     * Create the epoxy controller here.
+     * The epoxy controller defines what information is displayed.
+     */
+    abstract fun createEpoxyController(): EpoxyController
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
         OptionsMenuComponent(hostFragment = this, optionsMenuRes = R.menu.options_menu_multi_list,
@@ -66,7 +70,8 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
                                 .debounce(300, TimeUnit.MILLISECONDS)
                                 .observeOn(AndroidSchedulers.mainThread()).subscribeBy(onNext = {
                                     currentSearchFilter = it.toString()
-                                    updateListFromPersistence()
+
+                                    // TODO: implement search
                                 }, onError = {
                                     Timber.e(it) { "Error filtering list" }
                                 })
@@ -88,38 +93,13 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (super.onOptionsItemSelected(item)) {
-            return true
-        }
-        return optionsMenuComponent.onOptionsItemSelected(item)
+        return super.onOptionsItemSelected(item) || optionsMenuComponent.onOptionsItemSelected(item)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         reloadDataFromSource()
-    }
-
-    /**
-     * Loads the data using {@link loadListDataFromPersistence()}
-     */
-    protected fun updateListFromPersistence() {
-        setRefreshing(true)
-
-        Observable.fromIterable(loadListDataFromPersistence()).toList()
-                .map { filterAndSortList(it) }.map { createListDiff(listValues, it) to it }
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
-                    updateAdapterList(it.first, it.second)
-                    scrollToItemPosition(lastScrollPosition)
-                }, onError = {
-                    if (it is CancellationException) {
-                        Timber.d { "reload from persistence cancelled" }
-                    } else {
-                        loadingComponent.showError(it)
-                        setRefreshing(false)
-                    }
-                })
     }
 
     /**
@@ -139,37 +119,12 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
         }
     }
 
-    protected fun createListDiff(oldData: List<IdentifiableListItem>,
-                                 newData: List<IdentifiableListItem>): DiffUtil.DiffResult {
-        val diffCallback = DiffCallback(oldData, newData)
-        return DiffUtil.calculateDiff(diffCallback)
-    }
-
-    /**
-     * Updates the content of the adapter behind the recyclerview
-     */
-    protected fun updateAdapterList(diffResult: DiffUtil.DiffResult,
-                                    newData: List<IdentifiableListItem>) {
-        listValues.clear()
-        listValues.addAll(newData)
-
-        if (listValues.isEmpty()) {
-            showEmpty()
-        } else {
-            hideEmpty()
-        }
-        setRefreshing(false)
-
-        diffResult.dispatchUpdatesTo(recyclerViewAdapter)
-        recyclerViewAdapter.notifyDataSetChanged()
-        recyclerView.invalidate()
-    }
-
     /**
      * Filters and sorts the given list by the currently active filter and sort options
      * Remember to call this before using {@link updateAdapterList }
      */
     private fun filterAndSortList(newData: List<IdentifiableListItem>): List<IdentifiableListItem> {
+        // TODO: do this in viewmodel instead
         val filteredNewData = newData.filter {
             currentSearchFilter.isEmpty() || itemContainsCurrentSearchString(it)
         }.filter { filterListItem(it) }.toList()
@@ -187,20 +142,17 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     override fun reloadDataFromSource() {
         setRefreshing(true)
 
-        getLoadDataFromSourceFunction().map {
-            it.map { mapToEntity(it) }
-        }.map {
-            persistListData(it)
-            it
-        }.map {
-            filterAndSortList(it)
-        }.map {
-            createListDiff(listValues, it) to it
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
+        getLoadDataFromSourceFunction()
+                .map {
+                    it.map { mapToEntity(it) }
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
+                .subscribeBy(onSuccess = {
+                    persistListData(it)
                     updateLastUpdatedFromSource()
-                    updateAdapterList(it.first, it.second)
-                    scrollToItemPosition(lastScrollPosition)
+                    setRefreshing(false)
                 }, onError = {
                     if (it is CancellationException) {
                         Timber.d { "reload from source cancelled" }
@@ -234,10 +186,5 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     private fun updateLastUpdatedFromSource() {
         // TODO:
     }
-
-    /**
-     * Load the data to be displayed in the list from the persistence
-     */
-    abstract fun loadListDataFromPersistence(): List<IdentifiableListItem>
 
 }

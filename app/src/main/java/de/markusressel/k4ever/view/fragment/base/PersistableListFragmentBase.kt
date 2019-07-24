@@ -25,7 +25,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
-import androidx.recyclerview.widget.DiffUtil
+import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.paging.PagedListEpoxyController
 import com.github.ajalt.timberkt.Timber
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
@@ -35,12 +36,10 @@ import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
@@ -52,6 +51,15 @@ import java.util.concurrent.TimeUnit
 abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFragmentBase() where EntityType : IdentifiableListItem {
 
     protected val listValues: MutableList<EntityType> = ArrayList()
+
+    val epoxyController: PagedListEpoxyController<EntityType> by lazy { createEpoxyController() }
+    override fun getEpoxyController(): EpoxyController = epoxyController
+
+    /**
+     * Create the epoxy controller here.
+     * The epoxy controller defines what information is displayed.
+     */
+    abstract fun createEpoxyController(): PagedListEpoxyController<EntityType>
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
         OptionsMenuComponent(hostFragment = this, optionsMenuRes = R.menu.options_menu_list,
@@ -76,7 +84,8 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
                                 .debounce(300, TimeUnit.MILLISECONDS)
                                 .observeOn(AndroidSchedulers.mainThread()).subscribeBy(onNext = {
                                     currentSearchFilter = it.toString()
-                                    updateListFromPersistence()
+
+                                    // TODO: implement search
                                 }, onError = {
                                     Timber.e(it) { "Error filtering list" }
                                 })
@@ -119,59 +128,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
             reloadDataFromSource()
         } else {
             Timber.d { "Persisted list data is probably still valid, just loading from persistence" }
-            updateListFromPersistence()
         }
-    }
-
-    /**
-     * Loads the data using {@link loadListDataFromPersistence()}
-     */
-    protected fun updateListFromPersistence() {
-        setRefreshing(true)
-
-        Observable.fromIterable(loadListDataFromPersistence()).toList()
-                .map { filterAndSortList(it) }.map {
-                    createListDiff(listValues, it) to it
-                }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
-                    updateAdapterList(it.first, it.second)
-                    scrollToItemPosition(lastScrollPosition)
-                }, onError = {
-                    if (it is CancellationException) {
-                        Timber.d { "reload from persistence cancelled" }
-                    } else {
-                        loadingComponent.showError(it)
-                        setRefreshing(false)
-                    }
-                })
-    }
-
-    /**
-     * Creates a diff of two lists
-     */
-    protected fun createListDiff(oldData: List<EntityType>,
-                                 newData: List<EntityType>): DiffUtil.DiffResult {
-        val diffCallback = DiffCallback(oldData, newData)
-        return DiffUtil.calculateDiff(diffCallback)
-    }
-
-    /**
-     * Updates the content of the adapter behind the recyclerview
-     */
-    protected fun updateAdapterList(diffResult: DiffUtil.DiffResult, newData: List<EntityType>) {
-        listValues.clear()
-        listValues.addAll(newData)
-
-        if (listValues.isEmpty()) {
-            showEmpty()
-        } else {
-            hideEmpty()
-        }
-        setRefreshing(false)
-
-        diffResult.dispatchUpdatesTo(recyclerViewAdapter)
-        recyclerViewAdapter.notifyDataSetChanged()
-        recyclerView.invalidate()
     }
 
     /**
@@ -179,6 +136,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
      * Remember to call this before using {@link updateAdapterList }
      */
     private fun filterAndSortList(newData: List<EntityType>): List<EntityType> {
+        // TODO: do this in viewmodel
         val filteredNewData = newData.filter {
             currentSearchFilter.isEmpty() || itemContainsCurrentSearchString(it)
         }.toList()
@@ -254,15 +212,11 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
         }.map {
             persistListData(it)
             it
-        }.map {
-            filterAndSortList(it)
-        }.map {
-            createListDiff(listValues, it) to it
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
+                    persistListData(it)
                     updateLastUpdatedFromSource()
-                    updateAdapterList(it.first, it.second)
-                    scrollToItemPosition(lastScrollPosition)
+                    setRefreshing(false)
                 }, onError = {
                     setRefreshing(false)
 

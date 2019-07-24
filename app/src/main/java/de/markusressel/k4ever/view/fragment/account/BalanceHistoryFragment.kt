@@ -23,21 +23,24 @@ import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
 import androidx.annotation.CallSuper
-import com.github.nitrico.lastadapter.LastAdapter
+import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.Typed3EpoxyController
 import com.github.zawadz88.materialpopupmenu.popupMenu
 import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
-import de.markusressel.k4ever.BR
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.account.*
 import de.markusressel.k4ever.data.persistence.user.UserEntity_
 import de.markusressel.k4ever.data.persistence.user.UserPersistenceManager
-import de.markusressel.k4ever.databinding.ListItemBalanceHistoryItemBinding
-import de.markusressel.k4ever.databinding.ListItemPurchaseHistoryItemBinding
-import de.markusressel.k4ever.databinding.ListItemTransferHistoryItemBinding
 import de.markusressel.k4ever.extensions.common.android.context
 import de.markusressel.k4ever.extensions.common.filterByExpectedType
 import de.markusressel.k4ever.extensions.data.toEntity
+import de.markusressel.k4ever.listItemBalanceHistoryItem
+import de.markusressel.k4ever.listItemPurchaseHistoryItem
+import de.markusressel.k4ever.listItemTransferHistoryItem
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
@@ -49,7 +52,6 @@ import de.markusressel.k4ever.view.fragment.base.MultiPersistableListFragmentBas
 import io.reactivex.Single
 import io.reactivex.functions.Function4
 import kotlinx.android.synthetic.main.fragment__account__balance_history.*
-import kotlinx.android.synthetic.main.fragment__recyclerview.*
 import kotlinx.android.synthetic.main.list_item__balance_history_item.view.*
 import kotlinx.android.synthetic.main.list_item__purchase_history_item.view.*
 import kotlinx.android.synthetic.main.list_item__transfer_history_item.view.*
@@ -92,76 +94,97 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
     @Inject
     lateinit var userPersistenceManager: UserPersistenceManager
 
-    override fun createAdapter(): LastAdapter {
-        return LastAdapter(listValues,
-                BR.item).map<BalanceHistoryItemEntity, ListItemBalanceHistoryItemBinding>(
-                R.layout.list_item__balance_history_item) {
-            onCreate {
-                it.binding.presenter = this@BalanceHistoryFragment
-            }
-            onBind {
-                onBind { holder ->
-                    val balanceItem = holder.binding.item
+    private val balanceHistoryViewModel: BalanceHistoryViewModel by lazy {
+        val factory = BalanceHistoryViewModelFactory(balancePersistenceManager, purchasePersistenceManager, tranferPersistenceManager)
+        ViewModelProviders.of(this, factory).get(BalanceHistoryViewModel::class.java)
+    }
 
-                    val money_amount_balance = holder.binding.root.money_amount_balance
+    override fun createViewDataBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewDataBinding? {
+        balanceHistoryViewModel.entityLiveData.observe(this, Observer {
+            val t = (pagedEpoxyController as Typed3EpoxyController<List<BalanceHistoryItemEntity>, List<PurchaseHistoryItemEntity>, List<TransferHistoryItemEntity>>)
 
-                    balanceItem?.let {
-                        holder.binding.root.balance_history_item_description.text = if (balanceItem.amount < 0) {
-                            getString(R.string.withdrawal)
-                        } else {
-                            getString(R.string.deposition)
+            // TODO: this is so crappy, there has to be a better way to do this
+            val flat = (it as List<List<Any>>).flatten()
+
+            val balanceItems: List<BalanceHistoryItemEntity> = flat.filterByExpectedType()
+            val purchaseItems: List<PurchaseHistoryItemEntity> = flat.filterByExpectedType()
+            val transferItems: List<TransferHistoryItemEntity> = flat.filterByExpectedType()
+
+            t.setData(balanceItems, purchaseItems, transferItems)
+        })
+
+        return super.createViewDataBinding(inflater, container, savedInstanceState)
+    }
+
+    override fun createEpoxyController(): EpoxyController {
+        return object : Typed3EpoxyController<List<BalanceHistoryItemEntity>, List<PurchaseHistoryItemEntity>, List<TransferHistoryItemEntity>>() {
+            override fun buildModels(balanceItems: List<BalanceHistoryItemEntity>?, purchaseItems: List<PurchaseHistoryItemEntity>?, transferItems: List<TransferHistoryItemEntity>?) {
+                balanceItems?.forEach {
+                    listItemBalanceHistoryItem {
+                        id(it.id)
+                        item(it)
+                        presenter(this@BalanceHistoryFragment)
+//                                .onclick { model, parentView, clickedView, position ->
+//                                    openDetailView(model.item())
+//                                }
+                        onBind { model, holder, position: Int ->
+                            val balanceItem = model.item()
+
+                            val money_amount_balance = holder.dataBinding.root.money_amount_balance
+
+                            balanceItem?.let {
+                                holder.dataBinding.root.balance_history_item_description.text = if (balanceItem.amount < 0) {
+                                    getString(R.string.withdrawal)
+                                } else {
+                                    getString(R.string.deposition)
+                                }
+
+                                money_amount_balance.text = getString(R.string.shopping_cart__item_cost,
+                                        balanceItem.amount)
+                                money_amount_balance.setTextColor(
+                                        themeHandler.getBalanceColor(balanceItem.amount))
+                            }
                         }
-
-                        money_amount_balance.text = getString(R.string.shopping_cart__item_cost,
-                                balanceItem.amount)
-                        money_amount_balance.setTextColor(
-                                themeHandler.getBalanceColor(balanceItem.amount))
                     }
                 }
-            }
-            onClick {
-                // TODO: should there be any detail view of balance history items?
-                //                        openDetailView(listValues[it.adapterPosition])
-            }
-        }
-                .map<PurchaseHistoryItemEntity, ListItemPurchaseHistoryItemBinding>(
-                        R.layout.list_item__purchase_history_item) {
-                    onCreate {
-                        it.binding.presenter = this@BalanceHistoryFragment
-                    }
-                    onBind {
-                        onBind { holder ->
-                            val purchaseItem = holder.binding.item
+                purchaseItems?.forEach {
+                    listItemPurchaseHistoryItem {
+                        id(it.id)
+                        item(it)
+                        presenter(this@BalanceHistoryFragment)
+//                                .onclick { model, parentView, clickedView, position ->
+//                                    openDetailView(model.item())
+//                                }
+                        onBind { model, holder, position ->
+                            val purchaseItem = model.item()
 
                             purchaseItem?.let {
-                                holder.binding.root.products.text = purchaseItem.products.size.toString()
+                                holder.dataBinding.root.products.text = purchaseItem.products.size.toString()
 
                                 val purchaseTotalCost = purchaseItem.products.map { it.price }.sum()
-                                holder.binding.root.total_price.text = getString(
+                                holder.dataBinding.root.total_price.text = getString(
                                         R.string.shopping_cart__item_cost, purchaseTotalCost)
-                                holder.binding.root.total_price.setTextColor(
+                                holder.dataBinding.root.total_price.setTextColor(
                                         themeHandler.getBalanceColor(-1.0))
                             }
                         }
                     }
-                    onClick {
-                        // TODO: should there be any detail view of purchase history items?
-                        //                        openDetailView(listValues[it.adapterPosition])
-                    }
                 }
-                .map<TransferHistoryItemEntity, ListItemTransferHistoryItemBinding>(
-                        R.layout.list_item__transfer_history_item) {
-                    onCreate {
-                        it.binding.presenter = this@BalanceHistoryFragment
-                    }
-                    onBind {
-                        onBind { holder ->
-                            val transferItem = holder.binding.item
+                transferItems?.forEach {
+                    listItemTransferHistoryItem {
+                        id(it.id)
+                        item(it)
+                        presenter(this@BalanceHistoryFragment)
+//                                .onclick { model, parentView, clickedView, position ->
+//                                    openDetailView(model.item())
+//                                }
+                        onBind { model, holder, position ->
+                            val transferItem = model.item()
 
                             transferItem?.let {
-                                holder.binding.root.money_amount_transfer.text = getString(
+                                holder.dataBinding.root.money_amount_transfer.text = getString(
                                         R.string.shopping_cart__item_cost, transferItem.amount)
-                                holder.binding.root.icon_transfer.icon = if (transferItem.amount > 0) {
+                                holder.dataBinding.root.icon_transfer.icon = if (transferItem.amount > 0) {
                                     iconHandler.getHistoryItemIcon(
                                             MaterialDesignIconic.Icon.gmi_chevron_down)
                                 } else {
@@ -169,19 +192,16 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                                             MaterialDesignIconic.Icon.gmi_chevron_up)
                                 }
 
-                                holder.binding.root.money_amount_transfer.text = getString(
+                                holder.dataBinding.root.money_amount_transfer.text = getString(
                                         R.string.shopping_cart__item_cost, transferItem.amount)
-                                holder.binding.root.money_amount_transfer.setTextColor(
+                                holder.dataBinding.root.money_amount_transfer.setTextColor(
                                         themeHandler.getBalanceColor(transferItem.amount))
                             }
                         }
                     }
-                    onClick {
-                        it.binding.item?.let {
-                            openTransferDetailView(it)
-                        }
-                    }
-                }.into(recyclerView)
+                }
+            }
+        }
     }
 
     override fun getLoadDataFromSourceFunction(): Single<List<Any>> {
@@ -233,13 +253,6 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
         tranferPersistenceManager.getStore().put(data.filterByExpectedType())
     }
 
-    override fun loadListDataFromPersistence(): List<IdentifiableListItem> {
-        val transfers = tranferPersistenceManager.getStore().all
-        val purchases = purchasePersistenceManager.getStore().all
-        val balances = balancePersistenceManager.getStore().all
-        return listOf<List<IdentifiableListItem>>(balances, purchases, transfers).flatten()
-    }
-
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
         OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_filter,
                 onCreateOptionsMenu = { menu: Menu?, menuInflater: MenuInflater? ->
@@ -273,8 +286,8 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         checkBox.isChecked = showBalanceHistory
                     }
                     callback = {
+                        // TODO: set on viewmodel
                         showBalanceHistory = !showBalanceHistory
-                        updateListFromPersistence()
                     }
                 }
                 customItem {
@@ -285,8 +298,8 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         checkBox.isChecked = showPurchaseHistory
                     }
                     callback = {
+                        // TODO: set on viewmodel
                         showPurchaseHistory = !showPurchaseHistory
-                        updateListFromPersistence()
                     }
                 }
                 customItem {
@@ -297,8 +310,8 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         checkBox.isChecked = showTransferHistory
                     }
                     callback = {
+                        // TODO: set on viewmodel
                         showTransferHistory = !showTransferHistory
-                        updateListFromPersistence()
                     }
 
                 }

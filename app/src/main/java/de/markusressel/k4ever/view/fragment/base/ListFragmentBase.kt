@@ -28,7 +28,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.github.nitrico.lastadapter.LastAdapter
+import com.airbnb.epoxy.EpoxyController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxbinding2.view.RxView
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
@@ -71,8 +71,6 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
             right = mutableListOf())
     private val fabButtonViews = mutableListOf<FloatingActionButton>()
 
-    internal lateinit var recyclerViewAdapter: LastAdapter
-
     internal var currentSearchFilter: String by savedInstanceState("")
 
     override fun initComponents(context: Context) {
@@ -90,11 +88,8 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loadingComponent.showContent()
+        recyclerView.setController(getEpoxyController())
 
-        recyclerViewAdapter = createAdapter()
-
-        recyclerView.adapter = recyclerViewAdapter
         val layoutManager = StaggeredGridLayoutManager(
                 resources.getInteger(R.integer.list_column_count),
                 StaggeredGridLayoutManager.VERTICAL)
@@ -108,7 +103,11 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
         swipeRefreshLayoutEmpty.setOnRefreshListener {
             reloadDataFromSource()
         }
+
+        loadingComponent.showContent()
     }
+
+    abstract fun getEpoxyController(): EpoxyController
 
     override fun onStop() {
         val layoutManager = recyclerView.layoutManager
@@ -136,11 +135,6 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
      * Reload list data from it's original source, persist it and display it to the user afterwards
      */
     abstract fun reloadDataFromSource()
-
-    /**
-     * Create the adapter used for the recyclerview
-     */
-    abstract fun createAdapter(): LastAdapter
 
     /**
      * Override this in subclasses if necessary
