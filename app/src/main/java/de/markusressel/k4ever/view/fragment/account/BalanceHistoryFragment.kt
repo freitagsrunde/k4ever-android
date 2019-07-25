@@ -213,7 +213,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
     override fun mapToEntity(it: Any): IdentifiableListItem {
         return when (it) {
-            is BalanceHistoryItemModel -> BalanceHistoryItemEntity(0, it.id, it.amount, it.date)
+            is BalanceHistoryItemModel -> BalanceHistoryItemEntity(it.id, it.amount, it.date)
             is TransferHistoryItemModel -> {
                 val sender = userPersistenceManager.getStore().query().run {
                     equal(UserEntity_.id, it.sender.id)
@@ -229,16 +229,17 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
                 item
             }
-            is PurchaseHistoryItemModel -> PurchaseHistoryItemEntity(0, it.id,
+            is PurchaseHistoryItemModel -> PurchaseHistoryItemEntity(it.id,
                     it.products.map { it.toEntity() }, it.date)
             else -> throw IllegalArgumentException("No mapping function for '${it.javaClass}'")
         }
     }
 
     override fun persistListData(data: List<IdentifiableListItem>) {
-        balancePersistenceManager.getStore().removeAll()
-        purchasePersistenceManager.getStore().removeAll()
-        tranferPersistenceManager.getStore().removeAll()
+        // TODO: existing entities should be reused and not deleted so existing list items don't randomly change position
+//        balancePersistenceManager.getStore().removeAll()
+//        purchasePersistenceManager.getStore().removeAll()
+//        tranferPersistenceManager.getStore().removeAll()
 
         balancePersistenceManager.getStore().put(data.filterByExpectedType())
         purchasePersistenceManager.getStore().put(data.filterByExpectedType())
@@ -383,7 +384,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
     private fun openTransferDetailView(item: TransferHistoryItemEntity) {
         val detailPage = DetailActivityBase.newInstanceIntent(TransferDetailActivity::class.java,
-                context(), item.entityId)
+                context(), item.id)
         startActivity(detailPage)
     }
 

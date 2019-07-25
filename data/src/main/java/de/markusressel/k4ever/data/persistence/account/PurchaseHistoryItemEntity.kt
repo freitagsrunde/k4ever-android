@@ -25,7 +25,7 @@ import io.objectbox.annotation.Id
 import java.util.*
 
 @Entity
-data class PurchaseHistoryItemEntity(@Id var entityId: Long = 0, val id: Long = -1,
+data class PurchaseHistoryItemEntity(@Id(assignable = true) var id: Long = 0,
                                      val products: List<ProductEntity> = emptyList(),
                                      val date: Date = Date()) : IdentifiableListItem, SearchableListItem {
     override fun getItemId(): Long = id

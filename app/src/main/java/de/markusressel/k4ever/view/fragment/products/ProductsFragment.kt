@@ -369,7 +369,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
      */
     private fun openDetailView(productEntity: ProductEntity) {
         val detailPage = DetailActivityBase.newInstanceIntent(ProductDetailActivity::class.java,
-                context(), productEntity.entityId)
+                context(), productEntity.id)
         startActivity(detailPage)
     }
 
@@ -410,7 +410,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
      */
     fun setFavorite(product: ProductEntity, isFavorite: Boolean) {
         // changing state on model entities can break stuff, therefore we reload the entity from db
-        val productEntity = persistenceManager.getStore().get(product.entityId)
+        val productEntity = persistenceManager.getStore().get(product.id)
         productEntity.isFavorite = isFavorite
         persistenceManager.getStore().put(productEntity)
 

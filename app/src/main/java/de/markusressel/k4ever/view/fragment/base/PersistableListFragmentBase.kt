@@ -236,7 +236,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
     protected abstract fun getPersistenceHandler(): PersistenceManagerBase<EntityType>
 
     private fun persistListData(data: List<EntityType>) {
-        getPersistenceHandler().getStore().removeAll()
+        // TODO: remove missing items
         getPersistenceHandler().getStore().put(data)
     }
 
@@ -259,8 +259,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
      * Load the data to be displayed in the list asEntity the persistence
      */
     open fun loadListDataFromPersistence(): List<EntityType> {
-        val persistenceHandler = getPersistenceHandler()
-        return persistenceHandler.getStore().all
+        return getPersistenceHandler().getStore().all
     }
 
     /**

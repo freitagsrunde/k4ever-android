@@ -40,21 +40,21 @@ class K4EverRestClientDummy : K4EverRestApiClient {
         return when (userName) {
             "g_markus" -> "android.resource://de.markusressel.k4ever/${R.drawable.demo_avatar__markus}"
             else -> "https://api.adorable.io/avatars/285/$userName.png"
-        //            else -> "https://ui-avatars.com/api/?name=$userName"
+            //            else -> "https://ui-avatars.com/api/?name=$userName"
         }
     }
 
     companion object {
-        private val p1 = ProductModel(0, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, "000000000",
+        private val p1 = ProductModel(1, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, "000000000",
                 listOf(), true)
-        private val p2 = ProductModel(1, "Club Mate", "Getränk der Studenten", 0.8, 0.2,
+        private val p2 = ProductModel(2, "Club Mate", "Getränk der Studenten", 0.8, 0.2,
                 "000000001", listOf(), true)
-        private val p3 = ProductModel(2, "Cola", "Zucker", 1.0, 0.2, "000000002", listOf(), false)
-        private val p4 = ProductModel(3, "Spezi", "Zucker ^2", 1.0, 0.2, "000000003", listOf(),
+        private val p3 = ProductModel(3, "Cola", "Zucker", 1.0, 0.2, "000000002", listOf(), false)
+        private val p4 = ProductModel(4, "Spezi", "Zucker ^2", 1.0, 0.2, "000000003", listOf(),
                 false)
-        private val p5 = ProductModel(4, "Snickers", "Zucker ^5", 1.0, 0.0, "000000004", listOf(),
+        private val p5 = ProductModel(5, "Snickers", "Zucker ^5", 1.0, 0.0, "000000004", listOf(),
                 false)
-        private val p6 = ProductModel(5, "Coca Cola Zero ®",
+        private val p6 = ProductModel(6, "Coca Cola Zero ®",
                 "Spritziges Erfrischungsgetränk, so schwarz wie deine Seele \uD83D\uDE08", 1.1,
                 0.25, "000000005", listOf(), true)
 
@@ -67,9 +67,9 @@ class K4EverRestClientDummy : K4EverRestApiClient {
         private val products = listOf(fakeRealProducts, randomProducts).flatten()
 
 
-        private val u1 = UserModel(0, "g_markus", "Markus Ressel", 20.0, listOf())
-        private val u2 = UserModel(1, "max", "Max Rosin", -50.0, listOf())
-        private val u3 = UserModel(2, "phillip", "Zucker", 0.0, listOf())
+        private val u1 = UserModel(1, "g_markus", "Markus Ressel", 20.0, listOf())
+        private val u2 = UserModel(2, "max", "Max Rosin", -50.0, listOf())
+        private val u3 = UserModel(3, "phillip", "Phillip", 0.0, listOf())
 
         private val fakeRealUsers = listOf(u1, u2, u3)
 
@@ -81,18 +81,30 @@ class K4EverRestClientDummy : K4EverRestApiClient {
 
 
         private val balanceItems = 10.rangeTo(100).map { it.toLong() }.map {
-            BalanceHistoryItemModel(it, ((it - 20) % 10).toDouble(), Date(Date().time + it))
+            BalanceHistoryItemModel(it,
+                    ((it - 20) % 10).toDouble(),
+                    Date(Date().time + it))
         }
 
     }
 
     private val purchaseItems = 10.rangeTo(100).map { it.toLong() }.map {
-        PurchaseHistoryItemModel(it, listOf(getProduct(it).blockingGet()), Date(Date().time + it))
+        PurchaseHistoryItemModel(it,
+                listOf(getProduct(it).blockingGet()),
+                Date(Date().time + it))
     }
 
     private val transferItems = 10.rangeTo(100).map { it.toLong() }.map {
-        TransferHistoryItemModel(it, 5.0, "Money transfer description #$it",
-                getUser(0).blockingGet(), getUser(1).blockingGet(),
+        val userIdFrom = (1..3).random().toLong()
+        var userIdTo = userIdFrom
+        while (userIdTo == userIdFrom) {
+            userIdTo = (1..3).random().toLong()
+        }
+
+        TransferHistoryItemModel(it, 5.0,
+                "Money transfer description #$it",
+                getUser(userIdFrom).blockingGet(),
+                getUser(userIdTo).blockingGet(),
                 Date(Date().time + it))
     }
 

@@ -23,7 +23,7 @@ import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 
 @Entity
-data class ProductEntity(@Id var entityId: Long = 0, val id: Long = -1L, val name: String = "",
+data class ProductEntity(@Id(assignable = true) var id: Long = -1L, val name: String = "",
                          val description: String = "", val price: Double = 0.0,
                          val deposit: Double = 0.0, val barcode: String = "",
                          val typeId: List<ProductTypeEntity> = emptyList(),
