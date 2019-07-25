@@ -58,11 +58,6 @@ import kotlinx.android.synthetic.main.list_item__transfer_history_item.view.*
 import javax.inject.Inject
 
 
-/**
- * Server Status fragment
- *
- * Created by Markus on 07.01.2018.
- */
 class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
     override val layoutRes: Int
@@ -103,12 +98,9 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
         balanceHistoryViewModel.entityLiveData.observe(this, Observer {
             val t = (pagedEpoxyController as Typed3EpoxyController<List<BalanceHistoryItemEntity>, List<PurchaseHistoryItemEntity>, List<TransferHistoryItemEntity>>)
 
-            // TODO: this is so crappy, there has to be a better way to do this
-            val flat = (it as List<List<Any>>).flatten()
-
-            val balanceItems: List<BalanceHistoryItemEntity> = flat.filterByExpectedType()
-            val purchaseItems: List<PurchaseHistoryItemEntity> = flat.filterByExpectedType()
-            val transferItems: List<TransferHistoryItemEntity> = flat.filterByExpectedType()
+            val balanceItems: List<BalanceHistoryItemEntity> = it.filterByExpectedType()
+            val purchaseItems: List<PurchaseHistoryItemEntity> = it.filterByExpectedType()
+            val transferItems: List<TransferHistoryItemEntity> = it.filterByExpectedType()
 
             t.setData(balanceItems, purchaseItems, transferItems)
         })
@@ -124,9 +116,9 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         id(it.id)
                         item(it)
                         presenter(this@BalanceHistoryFragment)
-//                                .onclick { model, parentView, clickedView, position ->
-//                                    openDetailView(model.item())
-//                                }
+                        onclick { model, parentView, clickedView, position ->
+                            // openDetailView(model.item())
+                        }
                         onBind { model, holder, position: Int ->
                             val balanceItem = model.item()
 
@@ -152,9 +144,9 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         id(it.id)
                         item(it)
                         presenter(this@BalanceHistoryFragment)
-//                                .onclick { model, parentView, clickedView, position ->
-//                                    openDetailView(model.item())
-//                                }
+                        onclick { model, parentView, clickedView, position ->
+                            // openDetailView(model.item())
+                        }
                         onBind { model, holder, position ->
                             val purchaseItem = model.item()
 
@@ -175,9 +167,9 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         id(it.id)
                         item(it)
                         presenter(this@BalanceHistoryFragment)
-//                                .onclick { model, parentView, clickedView, position ->
-//                                    openDetailView(model.item())
-//                                }
+                        onclick { model, parentView, clickedView, position ->
+                            openTransferDetailView(model.item())
+                        }
                         onBind { model, holder, position ->
                             val transferItem = model.item()
 

@@ -35,11 +35,6 @@ import kotlinx.android.synthetic.main.fragment__account__overview.*
 import javax.inject.Inject
 
 
-/**
- * Server Status fragment
- *
- * Created by Markus on 07.01.2018.
- */
 class AccountOverviewFragment : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int

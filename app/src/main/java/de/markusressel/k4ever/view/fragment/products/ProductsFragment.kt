@@ -61,9 +61,6 @@ import nl.dionsegijn.steppertouch.OnStepCallback
 import javax.inject.Inject
 
 
-/**
- * Created by Markus on 07.01.2018.
- */
 class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity>() {
 
     override val layoutRes: Int
@@ -412,8 +409,10 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
      * Toggles the "favorite" state of a product
      */
     fun setFavorite(product: ProductEntity, isFavorite: Boolean) {
-        product.isFavorite = isFavorite
-        persistenceManager.getStore().put(product)
+        // changing state on model entities can break stuff, therefore we reload the entity from db
+        val productEntity = persistenceManager.getStore().get(product.entityId)
+        productEntity.isFavorite = isFavorite
+        persistenceManager.getStore().put(productEntity)
 
         // TODO: maybe wait a short period before updating the list?
 
