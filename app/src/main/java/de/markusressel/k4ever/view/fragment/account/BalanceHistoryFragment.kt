@@ -237,9 +237,6 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
     override fun persistListData(data: List<IdentifiableListItem>) {
         // TODO: existing entities should be reused and not deleted so existing list items don't randomly change position
-//        balancePersistenceManager.getStore().removeAll()
-//        purchasePersistenceManager.getStore().removeAll()
-//        tranferPersistenceManager.getStore().removeAll()
 
         balancePersistenceManager.getStore().put(data.filterByExpectedType())
         purchasePersistenceManager.getStore().put(data.filterByExpectedType())

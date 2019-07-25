@@ -50,8 +50,6 @@ import java.util.concurrent.TimeUnit
  */
 abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFragmentBase() where EntityType : IdentifiableListItem {
 
-    protected val listValues: MutableList<EntityType> = ArrayList()
-
     val epoxyController: PagedListEpoxyController<EntityType> by lazy { createEpoxyController() }
     override fun getEpoxyController(): EpoxyController = epoxyController
 
