@@ -41,42 +41,51 @@
         android:layout_height="wrap_content"
         android:onClick="@{onclick}">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/history_list_item_height"
-            android:baselineAligned="false"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
             android:padding="8dp">
 
             <com.mikepenz.iconics.view.IconicsImageView
-                android:id="@+id/icon"
+                android:id="@+id/icon_purchase"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginRight="16dp"
                 app:iiv_color="?android:attr/textColorSecondary"
-                app:iiv_icon="gmi-shopping-cart" />
+                app:iiv_icon="gmi-shopping-cart"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/products"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/purchase_history_item_date"
+                app:layout_constraintStart_toEndOf="@+id/icon_purchase"
+                app:layout_constraintTop_toTopOf="@+id/icon_purchase" />
 
-                <TextView
-                    android:id="@+id/products"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/purchase_history_item_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/icon_purchase"
+                app:layout_constraintStart_toEndOf="@+id/icon_purchase"
+                app:layout_constraintTop_toBottomOf="@+id/products" />
 
             <TextView
                 android:id="@+id/total_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold" />
+                android:layout_marginEnd="8dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/icon_purchase"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/icon_purchase" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 

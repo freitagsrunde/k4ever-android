@@ -131,6 +131,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                                     getString(R.string.deposition)
                                 }
 
+                                holder.dataBinding.root.balance_history_item_date.text = balanceItem.date.toLocaleString()
                                 money_amount_balance.text = getString(R.string.shopping_cart__item_cost,
                                         balanceItem.amount)
                                 money_amount_balance.setTextColor(
@@ -152,6 +153,8 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
                             purchaseItem?.let {
                                 holder.dataBinding.root.products.text = purchaseItem.products.size.toString()
+
+                                holder.dataBinding.root.purchase_history_item_date.text = purchaseItem.date.toLocaleString()
 
                                 val purchaseTotalCost = purchaseItem.products.map { it.price }.sum()
                                 holder.dataBinding.root.total_price.text = getString(
@@ -184,6 +187,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                                             MaterialDesignIconic.Icon.gmi_chevron_up)
                                 }
 
+                                holder.dataBinding.root.transfer_history_item_date.text = transferItem.date.toLocaleString()
                                 holder.dataBinding.root.money_amount_transfer.text = getString(
                                         R.string.shopping_cart__item_cost, transferItem.amount)
                                 holder.dataBinding.root.money_amount_transfer.setTextColor(
