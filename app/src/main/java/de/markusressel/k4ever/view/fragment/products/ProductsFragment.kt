@@ -30,12 +30,9 @@ import androidx.databinding.ViewDataBinding
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.paging.PagedListEpoxyController
-import com.github.nitrico.lastadapter.BR
-import com.github.nitrico.lastadapter.LastAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.markusressel.k4ever.ListItemProductBindingModel_
 import de.markusressel.k4ever.R
@@ -44,21 +41,18 @@ import de.markusressel.k4ever.business.ShoppingCartItem
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import de.markusressel.k4ever.data.persistence.product.ProductPersistenceManager
-import de.markusressel.k4ever.databinding.ListItemCartItemBinding
 import de.markusressel.k4ever.extensions.common.android.context
 import de.markusressel.k4ever.extensions.common.android.pxToSp
 import de.markusressel.k4ever.extensions.data.toEntity
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.activity.base.DetailActivityBase
-import de.markusressel.k4ever.view.fragment.base.DiffCallback
 import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
 import io.reactivex.Single
 import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_cart.*
-import kotlinx.android.synthetic.main.list_item__cart_item.view.*
 import kotlinx.android.synthetic.main.list_item__product.view.*
-import nl.dionsegijn.steppertouch.OnStepCallback
 import javax.inject.Inject
+import kotlin.math.cos
 
 
 class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity>() {
@@ -104,6 +98,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                                     productImage.setOnClickListener {
                                         favoriteButton.setChecked(!productItem.isFavorite, true)
                                     }
+
                                     favoriteButton.setOnCheckStateChangeListener { view, checked ->
                                         setFavorite(productItem, checked)
                                     }
@@ -136,7 +131,6 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
 
     private lateinit var shoppingCartBottomSheetBehaviour: BottomSheetBehavior<View>
 
-    private lateinit var shoppingCartItemsAdapter: LastAdapter
     private lateinit var shoppingCartItemList: MutableList<ShoppingCartItem>
 
     val normalPriceSize by lazy { totalItemCountAndCost.textSize.pxToSp(context()) }
@@ -169,6 +163,8 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                     }
+                    BottomSheetBehavior.STATE_HALF_EXPANDED -> {
+                    }
                     BottomSheetBehavior.STATE_EXPANDED -> {
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
@@ -190,46 +186,12 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         }
     }
 
-    // map to remember the callbacks associated with a counter
-    // (needed because the view has no support for removing all or replacing a listener)
-    private val callbackMap = mutableMapOf<Any, OnStepCallback>()
+    private val shoppingCartEpoxyController by lazy { ShoppingCartEpoxyController(this) }
 
     private fun initShoppingCartList() {
         shoppingCartItemList = shoppingCart.items.toMutableList()
-        shoppingCartItemsAdapter = LastAdapter(shoppingCartItemList,
-                BR.item).map<ShoppingCartItem, ListItemCartItemBinding>(
-                R.layout.list_item__cart_item) {
-            onCreate {
-                it.binding.presenter = this@ProductsFragment
-                val stepper = it.binding.root.productAmountStepper
-                stepper.enableSideTap(true)
-                stepper.stepper.setMin(0)
-            }
-            onBind { holder ->
-                val cartItem = holder.binding.item
 
-                cartItem?.let {
-                    val stepper = holder.binding.root.productAmountStepper
-
-                    // remove any existing callback
-                    callbackMap[stepper]?.let {
-                        stepper.stepper.removeStepCallback(it)
-                    }
-
-                    stepper.stepper.setValue(it.amount)
-
-                    // create new one to use correct product item
-                    val callback = object : OnStepCallback {
-                        override fun onStep(value: Int, positive: Boolean) {
-                            setShoppingCardItemAmount({ holder.binding.item!!.product }(),
-                                    cartItem.withDeposit, value, false)
-                        }
-                    }
-                    stepper.stepper.addStepCallback(callback)
-                    callbackMap[stepper] = callback
-                }
-            }
-        }.into(shoppingCartItemsLayout)
+        shoppingCartItemsLayout.setController(shoppingCartEpoxyController)
 
         val layoutManager = LinearLayoutManager(context)
         shoppingCartItemsLayout.layoutManager = layoutManager
@@ -238,7 +200,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
     private fun setCardViewPeekHeight() {
         val elevation = shoppingCartCardView.maxCardElevation
         val radius = shoppingCartCardView.radius
-        val cos45 = Math.cos(Math.toRadians(45.0))
+        val cos45 = cos(Math.toRadians(45.0))
 
         val horizontalPadding = (elevation + (1 - cos45) * radius).toInt()
         //        val verticalPadding = (elevation * 1.5 + (1 - cos45) * radius).toInt()
@@ -256,14 +218,11 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         animateTotalItemCountAndCost(oldTotalPrice)
 
         if (notifyListAdapter) {
+            // TODO: remove this intermediate list and use the shopping cart directly using livedata
             val newData = shoppingCart.items.toList()
-            val diffCallback = DiffCallback(shoppingCartItemList, newData)
-            val diff = DiffUtil.calculateDiff(diffCallback)
-
             shoppingCartItemList.clear()
             shoppingCartItemList.addAll(newData)
-
-            diff.dispatchUpdatesTo(shoppingCartItemsAdapter)
+            shoppingCartEpoxyController.setData(shoppingCartItemList)
         }
     }
 
