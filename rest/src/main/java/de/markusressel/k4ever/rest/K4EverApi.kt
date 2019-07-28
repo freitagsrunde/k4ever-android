@@ -25,4 +25,11 @@ import de.markusressel.k4ever.rest.users.UserApi
  *
  * Created by Markus on 09.07.2018.
  */
-interface K4EverApi : ProductApi, UserApi
+interface K4EverApi : ProductApi, UserApi {
+
+    /**
+     * Get version information
+     */
+    suspend fun getVersion(): String
+
+}

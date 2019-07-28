@@ -19,16 +19,22 @@ package de.markusressel.k4ever.rest
 
 import android.util.Log
 import com.github.kittinunf.fuel.core.*
-import com.github.kittinunf.fuel.core.extensions.authentication
+import com.github.kittinunf.fuel.coroutines.awaitObject
 import com.github.kittinunf.fuel.rx.rxObject
 import com.github.kittinunf.fuel.rx.rxResponsePair
+import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Markus on 08.02.2018.
  */
-class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicAuthConfig? = null) {
+class RequestManager(hostname: String = "k4ever.freitagsrunde.dev", var basicAuthConfig: BasicAuthConfig? = null) {
 
     var hostname: String = hostname
         set(value) {
@@ -37,10 +43,12 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
         }
 
     private val fuelManager = FuelManager()
+    private var jwtToken: JwtTokenModel? = null
 
     init {
         addLogger()
         updateBaseUrl()
+        setConfig()
     }
 
     /**
@@ -60,11 +68,12 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
      * Updates the base URL in Fuel client according to configuration parameters
      */
     private fun updateBaseUrl() {
-        if (hostname.startsWith("http")) {
-            fuelManager.basePath = hostname
-        } else {
-            fuelManager.basePath = "http://$hostname"
-        }
+        fuelManager.basePath = "https://$hostname"
+    }
+
+    private fun setConfig() {
+        fuelManager.timeoutInMillisecond = TimeUnit.SECONDS.toMillis(2).toInt()
+        fuelManager.timeoutReadInMillisecond = TimeUnit.SECONDS.toMillis(2).toInt()
     }
 
     /**
@@ -83,11 +92,60 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
      * Applies basic authentication parameters to a request
      */
     private fun getAuthenticatedRequest(request: Request): Request {
-        basicAuthConfig?.let {
-            return request.authentication().basic(username = it.username, password = it.password)
+        if (!jwtIsValid()) {
+            // TODO: switch to coroutines instead of rxjava
+            runBlocking(Dispatchers.IO) {
+                jwtToken = login("admin", "admin")
+            }
         }
 
+        val request = addBasicAuth(request)
+        return addJwt(request)
+    }
+
+    private fun addJwt(request: Request): Request {
+        // jwt headers
+        return request.appendHeader(
+                "Authorization" to "Bearer ${jwtToken!!.token}"
+        )
+    }
+
+    private fun addBasicAuth(request: Request): Request {
+        // TODO: basic auth is currently neither in use nor supported
+//        basicAuthConfig?.let {
+//            return request.authentication().basic(username = it.username, password = it.password)
+//        }
+
         return request
+    }
+
+    /**
+     * Sends a login request
+     *
+     * @return a valid jwt token
+     */
+    private suspend fun login(username: String, password: String): JwtTokenModel {
+        val jsonData = jsonObject(
+                "name" to username,
+                "password" to password
+        )
+        val json = Gson().toJson(jsonData)
+
+        var request = fuelManager.request(Method.GET, "/login/")
+        request = addBasicAuth(request)
+
+        val deserializer = singleDeserializer<JwtTokenModel>()
+        return request.body(json)
+                .header(HEADER_CONTENT_TYPE_JSON)
+                .await(deserializer)
+    }
+
+    private fun jwtIsValid(): Boolean {
+        jwtToken?.let {
+            return Calendar.getInstance().time.before(it.expire)
+        }
+
+        return false
     }
 
     /**
@@ -98,7 +156,7 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
      */
     fun doRequest(url: String,
                   method: Method): Single<Pair<Response, ByteArray>> {
-        return createRequest(url = url, method = method).rxResponsePair()
+        return createRequest(url = url, method = method).rxResponsePair().subscribeOn(Schedulers.io())
     }
 
     /**
@@ -112,7 +170,19 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
                             deserializer: ResponseDeserializable<T>): Single<T> {
         return createRequest(url = url, method = method).rxObject(deserializer).map {
             it.component1() ?: throw it.component2() ?: throw Exception()
-        }
+        }.subscribeOn(Schedulers.io())
+    }
+
+    /**
+     * Do a simple request that expects a json response body
+     *
+     * @param url the URL
+     * @param method the request type (f.ex. GET)
+     * @param deserializer a deserializer for the response json body
+     */
+    suspend fun <T : Any> awaitRequest(url: String, method: Method,
+                                       deserializer: ResponseDeserializable<T>): T {
+        return createRequest(url = url, method = method).awaitObject(deserializer)
     }
 
     /**
@@ -128,7 +198,20 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
         return createRequest(url = url, urlParameters = urlParameters, method = method).rxObject(
                 deserializer).map {
             it.component1() ?: throw it.component2() ?: throw Exception()
-        }
+        }.subscribeOn(Schedulers.io())
+    }
+
+    /**
+     * Do a request with query parameters that expects a json response body
+     *
+     * @param url the URL
+     * @param urlParameters url query parameters
+     * @param method the request type (f.ex. GET)
+     * @param deserializer a deserializer for the <b>response</b> json body
+     */
+    suspend fun <T : Any> awaitRequest(url: String, urlParameters: List<Pair<String, Any?>>, method: Method,
+                                       deserializer: ResponseDeserializable<T>): T {
+        return createRequest(url = url, urlParameters = urlParameters, method = method).awaitObject(deserializer)
     }
 
     /**
@@ -142,11 +225,10 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
     fun <T : Any> doJsonRequest(url: String, method: Method, jsonData: Any,
                                 deserializer: ResponseDeserializable<T>): Single<T> {
         val json = Gson().toJson(jsonData)
-
         return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
                 .rxObject(deserializer).map {
                     it.component1() ?: throw it.component2() ?: throw Exception()
-                }
+                }.subscribeOn(Schedulers.io())
     }
 
     /**
@@ -159,9 +241,8 @@ class RequestManager(hostname: String = "localhost", var basicAuthConfig: BasicA
     fun doJsonRequest(url: String, method: Method,
                       jsonData: Any): Single<Pair<Response, ByteArray>> {
         val json = Gson().toJson(jsonData)
-
         return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
-                .rxResponsePair()
+                .rxResponsePair().subscribeOn(Schedulers.io())
     }
 
     companion object {

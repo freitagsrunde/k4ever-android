@@ -30,6 +30,11 @@ import io.reactivex.Single
 import java.util.*
 
 class K4EverRestClientDummy : K4EverRestApiClient {
+
+    override suspend fun getVersion(): String {
+        return "v0.0.0"
+    }
+
     override fun getUserAvatar(id: Long): Single<Drawable> {
         throw NotImplementedError()
     }

@@ -207,7 +207,8 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
 
         loadListDataFromSource().map {
             it.map { mapToEntity(it) }
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
                     persistListData(it)
                     updateLastUpdatedFromSource()

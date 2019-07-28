@@ -17,6 +17,7 @@
 
 package de.markusressel.k4ever.rest
 
+import com.github.kittinunf.fuel.core.Method
 import de.markusressel.k4ever.rest.products.ProductApi
 import de.markusressel.k4ever.rest.products.ProductManager
 import de.markusressel.k4ever.rest.users.UserApi
@@ -51,6 +52,10 @@ class K4EverRestClient(private val requestManager: RequestManager = RequestManag
      */
     override fun setBasicAuthConfig(basicAuthConfig: BasicAuthConfig) {
         requestManager.basicAuthConfig = basicAuthConfig
+    }
+
+    override suspend fun getVersion(): String {
+        return requestManager.awaitRequest("/version/", Method.GET, singleDeserializer())
     }
 
 }
