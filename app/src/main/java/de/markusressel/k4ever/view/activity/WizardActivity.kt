@@ -7,6 +7,7 @@ import android.os.Bundle
 import com.github.paolorotolo.appintro.AppIntroFragment
 import com.github.paolorotolo.appintro.model.SliderPage
 import de.markusressel.k4ever.view.activity.base.WizardActivityBase
+import de.markusressel.k4ever.view.fragment.wizard.ServerPage
 
 
 class WizardActivity : WizardActivityBase() {
@@ -19,7 +20,11 @@ class WizardActivity : WizardActivityBase() {
         sliderPage.description = "Description"
 //        sliderPage.imageDrawable = image
         sliderPage.bgColor = Color.DKGRAY
+
         addSlide(AppIntroFragment.newInstance(sliderPage))
+
+        val serverPage = ServerPage()
+        addSlide(serverPage)
     }
 
     companion object {

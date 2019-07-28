@@ -18,6 +18,8 @@
 <resources>
     <string name="app_name" translatable="false">k4ever</string>
 
+    <string name="login">Login</string>
+
     <string name="menu_item_products">Products</string>
     <string name="menu_item_account">Account</string>
     <string name="menu_item__money_transfer">Money Transfer</string>

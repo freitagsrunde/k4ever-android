@@ -16,6 +16,8 @@
   -->
 
 <resources>
+    <string name="login">Login</string>
+
     <string name="menu_item_products">Produkte</string>
     <string name="menu_item_account">Konto</string>
     <string name="menu_item__money_transfer">Geld senden</string>

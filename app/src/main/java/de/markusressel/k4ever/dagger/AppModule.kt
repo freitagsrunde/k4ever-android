@@ -37,11 +37,13 @@ import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailActiv
 import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailContentFragment
 import de.markusressel.k4ever.view.fragment.base.DaggerDialogFragmentBase
 import de.markusressel.k4ever.view.fragment.base.TabNavigationFragment
+import de.markusressel.k4ever.view.fragment.base.WizardPageBase
 import de.markusressel.k4ever.view.fragment.moneytransfer.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
 import de.markusressel.k4ever.view.fragment.products.ProductDetailActivity
 import de.markusressel.k4ever.view.fragment.products.ProductDetailContentFragment
 import de.markusressel.k4ever.view.fragment.products.ProductsFragment
+import de.markusressel.k4ever.view.fragment.wizard.ServerPage
 import de.markusressel.kutepreferences.core.persistence.DefaultKutePreferenceDataProvider
 import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
 import javax.inject.Singleton
@@ -66,6 +68,12 @@ abstract class AppModule {
 
     @ContributesAndroidInjector
     internal abstract fun WizardMainActivity(): WizardActivity
+
+    @ContributesAndroidInjector
+    internal abstract fun WizardPageBase(): WizardPageBase
+
+    @ContributesAndroidInjector
+    internal abstract fun ServerPage(): ServerPage
 
     @ContributesAndroidInjector
     internal abstract fun ProductsListFragment(): ProductsFragment
