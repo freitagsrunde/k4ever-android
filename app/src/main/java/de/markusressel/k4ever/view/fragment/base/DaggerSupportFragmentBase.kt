@@ -72,7 +72,7 @@ abstract class DaggerSupportFragmentBase : LifecycleFragmentBase(), HasSupportFr
     protected lateinit var themeHandler: ThemeHandler
 
     @Inject
-    @field:Implementation(ImplementationTypeEnum.REAL)
+    @field:Implementation(ImplementationTypeEnum.DUMMY)
     lateinit var restClient: K4EverRestApiClient
 
     /**
