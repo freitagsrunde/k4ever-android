@@ -20,13 +20,10 @@ package de.markusressel.k4ever.view.fragment.account.transfer
 import android.os.Bundle
 import android.view.View
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.dagger.module.Implementation
-import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.data.persistence.account.TransferHistoryItemEntity
 import de.markusressel.k4ever.data.persistence.account.TransferHistoryItemPersistenceManager
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.data.persistence.user.UserEntity
-import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.fragment.base.DetailContentFragmentBase
 import kotlinx.android.synthetic.main.layout__item_detail__transfer.*
 import kotlinx.coroutines.Dispatchers
@@ -43,10 +40,6 @@ class TransferDetailContentFragment : DetailContentFragmentBase<TransferHistoryI
     protected lateinit var persistenceManager: TransferHistoryItemPersistenceManager
 
     override fun getPersistenceHandler(): PersistenceManagerBase<TransferHistoryItemEntity> = persistenceManager
-
-    @Inject
-    @field:Implementation(ImplementationTypeEnum.DUMMY)
-    lateinit var restClient: K4EverRestApiClient
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

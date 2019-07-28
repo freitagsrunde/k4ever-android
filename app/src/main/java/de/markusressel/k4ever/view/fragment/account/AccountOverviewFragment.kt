@@ -26,23 +26,15 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.CallSuper
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.dagger.module.Implementation
-import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
-import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.base.DaggerSupportFragmentBase
 import kotlinx.android.synthetic.main.fragment__account__overview.*
-import javax.inject.Inject
 
 
 class AccountOverviewFragment : DaggerSupportFragmentBase() {
 
     override val layoutRes: Int
         get() = R.layout.fragment__account__overview
-
-    @Inject
-    @field:Implementation(ImplementationTypeEnum.DUMMY)
-    lateinit var restClient: K4EverRestApiClient
 
     private val optionsMenuComponent: OptionsMenuComponent by lazy {
         OptionsMenuComponent(this, optionsMenuRes = R.menu.options_menu_none,

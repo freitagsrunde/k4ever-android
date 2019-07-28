@@ -33,12 +33,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxbinding2.view.RxView
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
-import de.markusressel.k4ever.dagger.module.Implementation
-import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
-import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.component.LoadingComponent
 import kotlinx.android.synthetic.main.fragment__recyclerview.*
-import javax.inject.Inject
 
 
 /**
@@ -60,10 +56,6 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
             reloadDataFromSource()
         })
     }
-
-    @Inject
-    @field:Implementation(ImplementationTypeEnum.REAL)
-    lateinit var restClient: K4EverRestApiClient
 
     protected var lastScrollPosition by savedInstanceState(0)
 

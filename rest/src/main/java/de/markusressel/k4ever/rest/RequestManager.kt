@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by Markus on 08.02.2018.
  */
-class RequestManager(hostname: String = "k4ever.freitagsrunde.dev", var basicAuthConfig: BasicAuthConfig? = null) {
+class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var basicAuthConfig: BasicAuthConfig? = null) {
 
     var hostname: String = hostname
         set(value) {
@@ -68,7 +68,12 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.dev", var basicAut
      * Updates the base URL in Fuel client according to configuration parameters
      */
     private fun updateBaseUrl() {
-        fuelManager.basePath = "https://$hostname"
+        if (hostname.startsWith("https://")) {
+            fuelManager.basePath = hostname
+        } else {
+            fuelManager.basePath = "https://$hostname"
+        }
+
     }
 
     private fun setConfig() {
@@ -130,7 +135,6 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.dev", var basicAut
                 "password" to password
         )
         val json = Gson().toJson(jsonData)
-
         var request = fuelManager.request(Method.GET, "/login/")
         request = addBasicAuth(request)
 

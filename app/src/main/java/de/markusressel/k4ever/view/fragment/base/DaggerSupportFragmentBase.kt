@@ -29,7 +29,11 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.HasSupportFragmentInjector
+import de.markusressel.k4ever.dagger.module.Implementation
+import de.markusressel.k4ever.dagger.module.ImplementationTypeEnum
 import de.markusressel.k4ever.navigation.Navigator
+import de.markusressel.k4ever.rest.BasicAuthConfig
+import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.IconHandler
 import de.markusressel.k4ever.view.ThemeHandler
 import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
@@ -67,6 +71,10 @@ abstract class DaggerSupportFragmentBase : LifecycleFragmentBase(), HasSupportFr
     @Inject
     protected lateinit var themeHandler: ThemeHandler
 
+    @Inject
+    @field:Implementation(ImplementationTypeEnum.REAL)
+    lateinit var restClient: K4EverRestApiClient
+
     /**
      * The layout resource for this Activity
      */
@@ -74,6 +82,14 @@ abstract class DaggerSupportFragmentBase : LifecycleFragmentBase(), HasSupportFr
     protected abstract val layoutRes: Int
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        restClient.setHostname(preferencesHolder.connectionUriPreference.persistedValue)
+        restClient.setBasicAuthConfig(
+                BasicAuthConfig(
+                        preferencesHolder.authUserPreference.persistedValue,
+                        preferencesHolder.authPasswordPreference.persistedValue
+                )
+        )
+
         val viewModel = createViewDataBinding(inflater, container, savedInstanceState)
         return if (viewModel != null) {
             viewModel.root
@@ -87,6 +103,7 @@ abstract class DaggerSupportFragmentBase : LifecycleFragmentBase(), HasSupportFr
                     ?: newContainer
         }
     }
+
 
     /**
      * Optionally create and setup your ViewDataBinding and ViewModel in this method
