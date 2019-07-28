@@ -22,15 +22,19 @@ import de.markusressel.k4ever.data.persistence.SearchableListItem
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
+import io.objectbox.relation.ToMany
 import java.util.*
+
 
 @Entity
 data class PurchaseHistoryItemEntity(@Id(assignable = true) var id: Long = 0,
-                                     val products: List<ProductEntity> = emptyList(),
                                      val date: Date = Date()) : IdentifiableListItem, SearchableListItem {
     override fun getItemId(): Long = id
+
+    lateinit var products: ToMany<ProductEntity>
 
     override fun getSearchableContent(): List<Any> {
         return listOf(products.map { it.name }, products.map { it.description }).flatten()
     }
+
 }

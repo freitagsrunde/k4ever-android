@@ -64,7 +64,7 @@ class K4EverRestClientDummy : K4EverRestApiClient {
                 0.25, "000000005", listOf(), true)
 
         private val fakeRealProducts = listOf(p1, p2, p3, p4, p5, p6)
-        private val randomProducts = 10.rangeTo(100).map { it.toLong() }.map {
+        private val randomProducts = ((fakeRealProducts.size + 1)..100L).map {
             ProductModel(it, "Product $it", "Product description ($it)", 1.0 + it.toDouble() / 100,
                     0.2 + it.toDouble() / 100, "$it", listOf(), false)
         }
@@ -78,34 +78,43 @@ class K4EverRestClientDummy : K4EverRestApiClient {
 
         private val fakeRealUsers = listOf(u1, u2, u3)
 
-        private val randomUsers = 10.rangeTo(100).map { it.toLong() }.map {
+        private val randomUsers = (10L..100).map {
             UserModel(it, "User_$it", "User $it", it.toDouble(), listOf())
         }
 
         private val users = listOf(fakeRealUsers, randomUsers).flatten()
 
 
-        private val balanceItems = 10.rangeTo(100).map { it.toLong() }.map {
+        private val balanceItems = (10L..100).map {
             BalanceHistoryItemModel(it,
-                    ((it - 20) % 10).toDouble(),
+                    (1 - (it % 2) * 2) * (it % 24 + 1) / 10.toDouble(),
                     Date(Date().time + it))
         }
 
     }
 
-    private val purchaseItems = 10.rangeTo(100).map { it.toLong() }.map {
+    private val purchaseItems = (10L..100).map {
         runBlocking {
+            val products = (1L..100).shuffled().take((1..10).random()).map {
+                val product = getProduct(it)!!
+                val list = mutableListOf(product)
+                repeat((1..3).random()) {
+                    list.add(product)
+                }
+                list
+            }.flatten()
+
             PurchaseHistoryItemModel(it,
-                    listOf(getProduct(it)!!),
+                    products,
                     Date(Date().time + it))
         }
     }
 
-    private val transferItems = 10.rangeTo(100).map { it.toLong() }.map {
-        val userIdFrom = (1..3).random().toLong()
+    private val transferItems = (10L..100).map {
+        val userIdFrom = (1L..3).random()
         var userIdTo = userIdFrom
         while (userIdTo == userIdFrom) {
-            userIdTo = (1..3).random().toLong()
+            userIdTo = (1L..3).random()
         }
 
         runBlocking {

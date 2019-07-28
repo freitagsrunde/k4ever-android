@@ -129,6 +129,16 @@
                 <TextView
                     style="@style/detail_item_header"
                     android:paddingTop="8dp"
+                    android:text="@string/date" />
+
+                <TextView
+                    android:id="@+id/transferDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/detail_item_header"
+                    android:paddingTop="8dp"
                     android:text="@string/description" />
 
                 <TextView
