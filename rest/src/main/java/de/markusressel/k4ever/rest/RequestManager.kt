@@ -20,12 +20,9 @@ package de.markusressel.k4ever.rest
 import android.util.Log
 import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.coroutines.awaitObject
-import com.github.kittinunf.fuel.rx.rxObject
-import com.github.kittinunf.fuel.rx.rxResponsePair
+import com.github.kittinunf.fuel.coroutines.awaitString
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -98,7 +95,6 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
      */
     private fun getAuthenticatedRequest(request: Request): Request {
         if (!jwtIsValid()) {
-            // TODO: switch to coroutines instead of rxjava
             runBlocking(Dispatchers.IO) {
                 login("admin", "admin")
             }
@@ -156,9 +152,9 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
      * @param url the URL
      * @param method the request type (f.ex. GET)
      */
-    fun doRequest(url: String,
-                  method: Method): Single<Pair<Response, ByteArray>> {
-        return createRequest(url = url, method = method).rxResponsePair().subscribeOn(Schedulers.io())
+    suspend fun awaitRequest(url: String,
+                             method: Method): String {
+        return createRequest(url = url, method = method).awaitString()
     }
 
     /**
@@ -194,13 +190,10 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
      * @param jsonData an Object that will be serialized to json
      * @param deserializer a deserializer for the <b>response</b> json body
      */
-    fun <T : Any> doJsonRequest(url: String, method: Method, jsonData: Any,
-                                deserializer: ResponseDeserializable<T>): Single<T> {
+    suspend fun <T : Any> awaitJsonRequest(url: String, method: Method, jsonData: Any,
+                                           deserializer: ResponseDeserializable<T>): T {
         val json = Gson().toJson(jsonData)
-        return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
-                .rxObject(deserializer).map {
-                    it.component1() ?: throw it.component2() ?: throw Exception()
-                }.subscribeOn(Schedulers.io())
+        return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON).awaitObject(deserializer)
     }
 
     /**
@@ -210,11 +203,12 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
      * @param method the request type (f.ex. GET)
      * @param jsonData an Object that will be serialized to json
      */
-    fun doJsonRequest(url: String, method: Method,
-                      jsonData: Any): Single<Pair<Response, ByteArray>> {
+    suspend fun awaitJsonRequest(url: String, method: Method,
+                                 jsonData: Any): String {
         val json = Gson().toJson(jsonData)
-        return createRequest(url = url, method = method).body(json).header(HEADER_CONTENT_TYPE_JSON)
-                .rxResponsePair().subscribeOn(Schedulers.io())
+        return createRequest(url = url, method = method).body(json)
+                .header(HEADER_CONTENT_TYPE_JSON)
+                .awaitString()
     }
 
     companion object {
