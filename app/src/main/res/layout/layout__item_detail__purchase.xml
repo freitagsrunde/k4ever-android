@@ -54,10 +54,23 @@
                     android:paddingTop="8dp"
                     android:text="@string/products" />
 
+                <LinearLayout
+                    android:id="@+id/productsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/colorAccent"
+                    android:paddingBottom="8dp" />
+
                 <TextView
-                    android:id="@+id/purchaseProducts"
+                    android:id="@+id/purchasePriceTotal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end" />
 
             </LinearLayout>
 

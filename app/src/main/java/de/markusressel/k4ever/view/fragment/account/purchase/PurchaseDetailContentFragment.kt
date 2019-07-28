@@ -19,6 +19,8 @@ package de.markusressel.k4ever.view.fragment.account.purchase
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.account.PurchaseHistoryItemEntity
 import de.markusressel.k4ever.data.persistence.account.PurchaseHistoryItemPersistenceManager
@@ -45,10 +47,27 @@ class PurchaseDetailContentFragment : DetailContentFragmentBase<PurchaseHistoryI
 
         purchaseDate.text = entity.date.toLocaleString()
 
-        val productsText = entity.products.groupBy { it.id }.map {
-            "${it.value.size}x ${it.value[0].name}"
-        }.joinToString(separator = "\n")
-        purchaseProducts.text = productsText
+        entity.products.groupBy { it.id }.map {
+            val productView = layoutInflater.inflate(R.layout.list_item__purchase_product, null)
+            val productImage: ImageView = productView.findViewById(R.id.productImage)
+            val productName: TextView = productView.findViewById(R.id.productName)
+            val productPriceSingle: TextView = productView.findViewById(R.id.singlePrice)
+            val productPriceGroup: TextView = productView.findViewById(R.id.groupPrice)
+
+            val sampleEntity = it.value[0]
+
+            // TODO: set product image
+            productName.text = "${it.value.size}x ${sampleEntity.name}"
+            productPriceSingle.text = getString(R.string.shopping_cart__item_cost, sampleEntity.price)
+            productPriceGroup.text = getString(R.string.shopping_cart__item_cost, it.value.map { it.price }.sum())
+
+            productsLayout.addView(productView)
+        }
+
+        val totalPrice = entity.products.map { it.price }.sum()
+        val totalPriceText = getString(R.string.shopping_cart__item_cost, totalPrice)
+
+        purchasePriceTotal.text = "Total: $totalPriceText"
     }
 
 }
