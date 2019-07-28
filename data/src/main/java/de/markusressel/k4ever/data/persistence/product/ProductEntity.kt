@@ -19,10 +19,8 @@ package de.markusressel.k4ever.data.persistence.product
 
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
-import de.markusressel.k4ever.data.persistence.account.PurchaseHistoryItemEntity
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
-import io.objectbox.relation.ToOne
 
 @Entity
 data class ProductEntity(@Id(assignable = true) var id: Long = -1L, val name: String = "",
@@ -36,7 +34,5 @@ data class ProductEntity(@Id(assignable = true) var id: Long = -1L, val name: St
     override fun getSearchableContent(): List<Any> {
         return listOf(name, description)
     }
-
-    lateinit var purchases: ToOne<PurchaseHistoryItemEntity>
 
 }

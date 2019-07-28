@@ -20,7 +20,6 @@ package de.markusressel.k4ever.data.persistence.account
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
 import de.markusressel.k4ever.data.persistence.product.ProductEntity
-import io.objectbox.annotation.Backlink
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 import io.objectbox.relation.ToMany
@@ -32,8 +31,6 @@ data class PurchaseHistoryItemEntity(@Id(assignable = true) var id: Long = 0,
                                      val date: Date = Date()) : IdentifiableListItem, SearchableListItem {
     override fun getItemId(): Long = id
 
-    // 'to' is optional if only one relation matches
-    @Backlink(to = "purchases")
     lateinit var products: ToMany<ProductEntity>
 
     override fun getSearchableContent(): List<Any> {

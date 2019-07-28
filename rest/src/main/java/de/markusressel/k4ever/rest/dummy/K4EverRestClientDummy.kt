@@ -87,7 +87,7 @@ class K4EverRestClientDummy : K4EverRestApiClient {
 
         private val balanceItems = (10L..100).map {
             BalanceHistoryItemModel(it,
-                    (1 - (it % 2)) * (it % 24 + 1) / 10.toDouble(),
+                    (1 - (it % 2) * 2) * (it % 24 + 1) / 10.toDouble(),
                     Date(Date().time + it))
         }
 
