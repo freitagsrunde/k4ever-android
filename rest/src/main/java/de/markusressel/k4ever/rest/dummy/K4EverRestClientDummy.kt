@@ -26,7 +26,7 @@ import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.UserModel
-import io.reactivex.Single
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class K4EverRestClientDummy : K4EverRestApiClient {
@@ -35,12 +35,12 @@ class K4EverRestClientDummy : K4EverRestApiClient {
         return "v0.0.0"
     }
 
-    override fun getUserAvatar(id: Long): Single<Drawable> {
+    override suspend fun getUserAvatar(id: Long): Drawable {
         throw NotImplementedError()
     }
 
-    override fun getUserAvatarURL(id: Long): String {
-        val userName = getUser(id).blockingGet().user_name
+    override suspend fun getUserAvatarURL(id: Long): String {
+        val userName = getUser(id)?.user_name
 
         return when (userName) {
             "g_markus" -> "android.resource://de.markusressel.k4ever/${R.drawable.demo_avatar__markus}"
@@ -94,9 +94,11 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     private val purchaseItems = 10.rangeTo(100).map { it.toLong() }.map {
-        PurchaseHistoryItemModel(it,
-                listOf(getProduct(it).blockingGet()),
-                Date(Date().time + it))
+        runBlocking {
+            PurchaseHistoryItemModel(it,
+                    listOf(getProduct(it)!!),
+                    Date(Date().time + it))
+        }
     }
 
     private val transferItems = 10.rangeTo(100).map { it.toLong() }.map {
@@ -106,41 +108,42 @@ class K4EverRestClientDummy : K4EverRestApiClient {
             userIdTo = (1..3).random().toLong()
         }
 
-        TransferHistoryItemModel(it, 5.0,
-                "Money transfer description #$it",
-                getUser(userIdFrom).blockingGet(),
-                getUser(userIdTo).blockingGet(),
-                Date(Date().time + it))
+        runBlocking {
+            TransferHistoryItemModel(it, 5.0,
+                    "Money transfer description #$it",
+                    getUser(userIdFrom)!!,
+                    getUser(userIdTo)!!,
+                    Date(Date().time + it))
+        }
     }
 
-    override fun getAllProducts(): Single<List<ProductModel>> {
-        return Single.just(products.shuffled())
+    override suspend fun getAllProducts(): List<ProductModel> {
+        return products.shuffled()
     }
 
-    override fun getProduct(id: Long): Single<ProductModel> {
-        val productModel = getAllProducts().blockingGet().find { it.id == id }
-        return Single.just(productModel)
+    override suspend fun getProduct(id: Long): ProductModel? {
+        return getAllProducts().find { it.id == id }
     }
 
-    override fun getAllUsers(): Single<List<UserModel>> {
-        return Single.just(users.shuffled())
+    override suspend fun getAllUsers(): List<UserModel> {
+        return users.shuffled()
     }
 
-    override fun getUser(id: Long): Single<UserModel> {
-        val productModel = getAllUsers().blockingGet().find { it.id == id }
-        return Single.just(productModel)
+    override suspend fun getUser(id: Long): UserModel? {
+        return getAllUsers().find { it.id == id }
+
     }
 
-    override fun getBalanceHistory(id: Long): Single<List<BalanceHistoryItemModel>> {
-        return Single.just(balanceItems.shuffled())
+    override suspend fun getBalanceHistory(id: Long): List<BalanceHistoryItemModel> {
+        return balanceItems.shuffled()
     }
 
-    override fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>> {
-        return Single.just(purchaseItems.shuffled())
+    override suspend fun getPurchaseHistory(id: Long): List<PurchaseHistoryItemModel> {
+        return purchaseItems.shuffled()
     }
 
-    override fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>> {
-        return Single.just(transferItems.shuffled())
+    override suspend fun getTransferHistory(id: Long): List<TransferHistoryItemModel> {
+        return transferItems.shuffled()
     }
 
     override fun setHostname(hostname: String) {

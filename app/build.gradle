@@ -85,6 +85,8 @@ dependencies {
     implementation "com.mikepenz:iconics-views:${iconicsVersion}@aar"
     implementation 'com.mikepenz:material-design-iconic-typeface:2.2.0.6-kotlin@aar'
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
+
     // RxLifecycle to prevent memory leaks
     def rxLifecycleVersion = rootProject.ext.rxLifecycleVersion
     implementation "com.trello.rxlifecycle2:rxlifecycle:$rxLifecycleVersion"

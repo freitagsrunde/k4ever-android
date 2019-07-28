@@ -22,16 +22,15 @@ import de.markusressel.k4ever.rest.RequestManager
 import de.markusressel.k4ever.rest.listDeserializer
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.rest.singleDeserializer
-import io.reactivex.Single
 
 class ProductManager(val requestManager: RequestManager) : ProductApi {
 
-    override fun getAllProducts(): Single<List<ProductModel>> {
-        return requestManager.doRequest("/products/", Method.GET, listDeserializer())
+    override suspend fun getAllProducts(): List<ProductModel> {
+        return requestManager.awaitRequest("/products/", Method.GET, listDeserializer())
     }
 
-    override fun getProduct(id: Long): Single<ProductModel> {
-        return requestManager.doRequest("/product/$id/", Method.GET, singleDeserializer())
+    override suspend fun getProduct(id: Long): ProductModel {
+        return requestManager.awaitRequest("/product/$id/", Method.GET, singleDeserializer())
     }
 
 }

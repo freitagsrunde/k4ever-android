@@ -36,12 +36,11 @@ import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
 import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.util.*
-import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
 
@@ -205,23 +204,20 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
     override fun reloadDataFromSource() {
         setRefreshing(true)
 
-        loadListDataFromSource().map {
-            it.map { mapToEntity(it) }
-        }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .bindUntilEvent(this, Lifecycle.Event.ON_STOP).subscribeBy(onSuccess = {
-                    persistListData(it)
-                    updateLastUpdatedFromSource()
-                    setRefreshing(false)
-                }, onError = {
-                    setRefreshing(false)
-
-                    if (it is CancellationException) {
-                        Timber.d { "reload from source cancelled" }
-                    } else {
-                        loadingComponent.showError(it)
-                    }
-                })
+        try {
+            runBlocking(Dispatchers.IO) {
+                val newData = loadListDataFromSource().map {
+                    mapToEntity(it)
+                }
+                persistListData(newData)
+                updateLastUpdatedFromSource()
+                setRefreshing(false)
+            }
+        } catch (ex: Exception) {
+            loadingComponent.showError(ex)
+        } finally {
+            setRefreshing(false)
+        }
     }
 
     /**
@@ -264,6 +260,6 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
     /**
      * Load the data to be displayed in the list from it's original source
      */
-    abstract fun loadListDataFromSource(): Single<List<ModelType>>
+    abstract suspend fun loadListDataFromSource(): List<ModelType>
 
 }

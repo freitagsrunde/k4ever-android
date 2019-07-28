@@ -29,6 +29,8 @@ import de.markusressel.k4ever.data.persistence.user.UserEntity
 import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.fragment.base.DetailContentFragmentBase
 import kotlinx.android.synthetic.main.layout__item_detail__transfer.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
@@ -60,7 +62,9 @@ class TransferDetailContentFragment : DetailContentFragmentBase<TransferHistoryI
     }
 
     private fun getAvatarUrl(user: UserEntity): String {
-        return restClient.getUserAvatarURL(user.id)
+        return runBlocking(Dispatchers.IO) {
+            restClient.getUserAvatarURL(user.id)
+        }
     }
 
 }

@@ -62,7 +62,7 @@ abstract class ListFragmentBase : DaggerSupportFragmentBase() {
     }
 
     @Inject
-    @field:Implementation(ImplementationTypeEnum.DUMMY)
+    @field:Implementation(ImplementationTypeEnum.REAL)
     lateinit var restClient: K4EverRestApiClient
 
     protected var lastScrollPosition by savedInstanceState(0)

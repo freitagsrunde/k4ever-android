@@ -28,6 +28,8 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.user.UserEntity
 import de.markusressel.k4ever.extensions.common.android.layoutInflater
 import de.markusressel.k4ever.rest.K4EverRestApiClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 
 class UserArrayAdapter(context: Context, private val restClient: K4EverRestApiClient,
                        private val currentItems: MutableList<UserEntity> = mutableListOf()) : ArrayAdapter<UserEntity>(
@@ -63,7 +65,10 @@ class UserArrayAdapter(context: Context, private val restClient: K4EverRestApiCl
         val user = getItem(position)
 
         val userAvatar: SimpleDraweeView = itemView.findViewById(R.id.userAvatar)
-        userAvatar.setImageURI(restClient.getUserAvatarURL(user.id))
+        val imageUrl = runBlocking(Dispatchers.IO) {
+            restClient.getUserAvatarURL(user!!.id)
+        }
+        userAvatar.setImageURI(imageUrl)
 
         val userName: TextView = itemView.findViewById(R.id.userName)
         userName.text = "${user.display_name} (${user.user_name})"
@@ -87,8 +92,8 @@ class UserArrayAdapter(context: Context, private val restClient: K4EverRestApiCl
             }
         }
 
-        override fun performFiltering(constraint: CharSequence?): Filter.FilterResults {
-            val results = Filter.FilterResults()
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            val results = FilterResults()
 
             if (constraint.isNullOrEmpty()) {
                 results.values = originalItems
@@ -108,7 +113,7 @@ class UserArrayAdapter(context: Context, private val restClient: K4EverRestApiCl
             return results
         }
 
-        override fun publishResults(constraint: CharSequence?, results: Filter.FilterResults) {
+        override fun publishResults(constraint: CharSequence?, results: FilterResults) {
             currentItems.clear()
             currentItems.addAll(results.values as List<UserEntity>)
 

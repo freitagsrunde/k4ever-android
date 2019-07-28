@@ -49,8 +49,6 @@ import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailActivity
 import de.markusressel.k4ever.view.fragment.base.FabConfig
 import de.markusressel.k4ever.view.fragment.base.MultiPersistableListFragmentBase
-import io.reactivex.Single
-import io.reactivex.functions.Function4
 import kotlinx.android.synthetic.main.fragment__account__balance_history.*
 import kotlinx.android.synthetic.main.list_item__balance_history_item.view.*
 import kotlinx.android.synthetic.main.list_item__purchase_history_item.view.*
@@ -200,19 +198,19 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
         }
     }
 
-    override fun getLoadDataFromSourceFunction(): Single<List<Any>> {
+    override suspend fun getDataFromSource(): List<Any> {
         val currentUserId = 1L
 
         // download all data and wrap them in a new Single object
-        return Single.zip(restClient.getAllUsers(), restClient.getBalanceHistory(currentUserId),
-                restClient.getPurchaseHistory(currentUserId),
-                restClient.getTransferHistory(currentUserId), Function4 { t1, t2, t3, t4 ->
+        val t1 = restClient.getAllUsers()
+        val t2 = restClient.getBalanceHistory(currentUserId)
+        val t3 = restClient.getPurchaseHistory(currentUserId)
+        val t4 = restClient.getTransferHistory(currentUserId)
 
-            userPersistenceManager.getStore().removeAll()
-            userPersistenceManager.getStore().put(t1.map { it.toEntity() })
+        userPersistenceManager.getStore().removeAll()
+        userPersistenceManager.getStore().put(t1.map { it.toEntity() })
 
-            listOf(t2, t3, t4).flatten()
-        })
+        return listOf(t2, t3, t4).flatten()
     }
 
     override fun mapToEntity(it: Any): IdentifiableListItem {

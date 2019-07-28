@@ -34,10 +34,10 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
@@ -142,31 +142,30 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     override fun reloadDataFromSource() {
         setRefreshing(true)
 
-        getLoadDataFromSourceFunction()
-                .map {
-                    it.map { mapToEntity(it) }
+        try {
+            runBlocking(Dispatchers.IO) {
+                val sourceData = getDataFromSource().map {
+                    mapToEntity(it)
                 }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-                .subscribeBy(onSuccess = {
-                    persistListData(it)
-                    updateLastUpdatedFromSource()
-                    setRefreshing(false)
-                }, onError = {
-                    if (it is CancellationException) {
-                        Timber.d { "reload from source cancelled" }
-                    } else {
-                        loadingComponent.showError(it)
-                        setRefreshing(false)
-                    }
-                })
+
+                persistListData(sourceData)
+                updateLastUpdatedFromSource()
+            }
+        } catch (ex: Exception) {
+            if (ex is CancellationException) {
+                Timber.d { "reload from source cancelled" }
+            } else {
+                loadingComponent.showError(ex)
+            }
+        } finally {
+            setRefreshing(false)
+        }
     }
 
     /**
      * Define a Single that returns the complete list of data from the (server) source
      */
-    abstract internal fun getLoadDataFromSourceFunction(): Single<List<Any>>
+    internal abstract suspend fun getDataFromSource(): List<Any>
 
     /**
      * Map the source object to the persistence object
@@ -176,7 +175,7 @@ abstract class MultiPersistableListFragmentBase : ListFragmentBase() {
     /**
      * Persist the current list data
      */
-    abstract internal fun persistListData(data: List<IdentifiableListItem>)
+    internal abstract fun persistListData(data: List<IdentifiableListItem>)
 
     private fun getLastUpdatedFromSource(): Long {
         // TODO:

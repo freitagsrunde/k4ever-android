@@ -22,47 +22,46 @@ import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.UserModel
-import io.reactivex.Single
 
 interface UserApi {
 
     /**
      * Get a list of all users
      */
-    fun getAllUsers(): Single<List<UserModel>>
+    suspend fun getAllUsers(): List<UserModel>
 
     /**
      * Get a single user
      * @param id the id of the product
      */
-    fun getUser(id: Long): Single<UserModel>
+    suspend fun getUser(id: Long): UserModel?
 
     /**
      * Get a list of all balance history items of a specific user
      * @param id the id of the user
      */
-    fun getBalanceHistory(id: Long): Single<List<BalanceHistoryItemModel>>
+    suspend fun getBalanceHistory(id: Long): List<BalanceHistoryItemModel>
 
     /**
      * Get a list of all purchase history items of a specific user
      * @param id the id of the user
      */
-    fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>>
+    suspend fun getPurchaseHistory(id: Long): List<PurchaseHistoryItemModel>
 
     /**
      * Get a list of all transfer history items of a specific user
      * @param id the id of the user
      */
-    fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>>
+    suspend fun getTransferHistory(id: Long): List<TransferHistoryItemModel>
 
     /**
      * Download the avatar of a user
      */
-    fun getUserAvatar(id: Long): Single<Drawable>
+    suspend fun getUserAvatar(id: Long): Drawable
 
     /**
      * Get the URL to download the avatar of a user
      */
-    fun getUserAvatarURL(id: Long): String
+    suspend fun getUserAvatarURL(id: Long): String
 
 }

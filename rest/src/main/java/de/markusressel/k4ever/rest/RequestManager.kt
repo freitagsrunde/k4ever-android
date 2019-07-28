@@ -166,39 +166,9 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.dev", var basicAut
      * @param method the request type (f.ex. GET)
      * @param deserializer a deserializer for the response json body
      */
-    fun <T : Any> doRequest(url: String, method: Method,
-                            deserializer: ResponseDeserializable<T>): Single<T> {
-        return createRequest(url = url, method = method).rxObject(deserializer).map {
-            it.component1() ?: throw it.component2() ?: throw Exception()
-        }.subscribeOn(Schedulers.io())
-    }
-
-    /**
-     * Do a simple request that expects a json response body
-     *
-     * @param url the URL
-     * @param method the request type (f.ex. GET)
-     * @param deserializer a deserializer for the response json body
-     */
     suspend fun <T : Any> awaitRequest(url: String, method: Method,
                                        deserializer: ResponseDeserializable<T>): T {
         return createRequest(url = url, method = method).awaitObject(deserializer)
-    }
-
-    /**
-     * Do a request with query parameters that expects a json response body
-     *
-     * @param url the URL
-     * @param urlParameters url query parameters
-     * @param method the request type (f.ex. GET)
-     * @param deserializer a deserializer for the <b>response</b> json body
-     */
-    fun <T : Any> doRequest(url: String, urlParameters: List<Pair<String, Any?>>, method: Method,
-                            deserializer: ResponseDeserializable<T>): Single<T> {
-        return createRequest(url = url, urlParameters = urlParameters, method = method).rxObject(
-                deserializer).map {
-            it.component1() ?: throw it.component2() ?: throw Exception()
-        }.subscribeOn(Schedulers.io())
     }
 
     /**

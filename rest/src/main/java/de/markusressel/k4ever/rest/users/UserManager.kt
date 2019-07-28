@@ -26,38 +26,37 @@ import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.UserModel
-import io.reactivex.Single
 
 class UserManager(val requestManager: RequestManager) : UserApi {
 
-    override fun getAllUsers(): Single<List<UserModel>> {
-        return requestManager.doRequest("/users/", Method.GET, listDeserializer())
+    override suspend fun getAllUsers(): List<UserModel> {
+        return requestManager.awaitRequest("/users/", Method.GET, listDeserializer())
     }
 
-    override fun getUser(id: Long): Single<UserModel> {
-        return requestManager.doRequest("/user/$id/", Method.GET, singleDeserializer())
+    override suspend fun getUser(id: Long): UserModel {
+        return requestManager.awaitRequest("/user/$id/", Method.GET, singleDeserializer())
     }
 
-    override fun getBalanceHistory(id: Long): Single<List<BalanceHistoryItemModel>> {
-        return requestManager.doRequest("/user/$id/balance_history/", Method.GET,
+    override suspend fun getBalanceHistory(id: Long): List<BalanceHistoryItemModel> {
+        return requestManager.awaitRequest("/user/$id/balance_history/", Method.GET,
                 singleDeserializer())
     }
 
-    override fun getPurchaseHistory(id: Long): Single<List<PurchaseHistoryItemModel>> {
-        return requestManager.doRequest("/user/$id/purchase_history/", Method.GET,
+    override suspend fun getPurchaseHistory(id: Long): List<PurchaseHistoryItemModel> {
+        return requestManager.awaitRequest("/user/$id/purchase_history/", Method.GET,
                 singleDeserializer())
     }
 
-    override fun getTransferHistory(id: Long): Single<List<TransferHistoryItemModel>> {
-        return requestManager.doRequest("/user/$id/transfer_history/", Method.GET,
+    override suspend fun getTransferHistory(id: Long): List<TransferHistoryItemModel> {
+        return requestManager.awaitRequest("/user/$id/transfer_history/", Method.GET,
                 singleDeserializer())
     }
 
-    override fun getUserAvatar(id: Long): Single<Drawable> {
+    override suspend fun getUserAvatar(id: Long): Drawable {
         throw NotImplementedError()
     }
 
-    override fun getUserAvatarURL(id: Long): String {
+    override suspend fun getUserAvatarURL(id: Long): String {
         return "${requestManager.hostname}/user/$id/image/"
     }
 

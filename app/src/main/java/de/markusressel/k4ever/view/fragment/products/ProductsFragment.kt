@@ -48,7 +48,6 @@ import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.view.activity.base.DetailActivityBase
 import de.markusressel.k4ever.view.fragment.base.PersistableListFragmentBase
 import de.markusressel.k4ever.view.fragment.base.SortOption
-import io.reactivex.Single
 import kotlinx.android.synthetic.main.layout__bottom_sheet__shopping_cart.*
 import kotlinx.android.synthetic.main.list_item__product.view.*
 import javax.inject.Inject
@@ -112,7 +111,7 @@ class ProductsFragment : PersistableListFragmentBase<ProductModel, ProductEntity
         }
     }
 
-    override fun loadListDataFromSource(): Single<List<ProductModel>> {
+    override suspend fun loadListDataFromSource(): List<ProductModel> {
         return restClient.getAllProducts()
     }
 
