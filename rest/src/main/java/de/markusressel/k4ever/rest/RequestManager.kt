@@ -100,7 +100,7 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
         if (!jwtIsValid()) {
             // TODO: switch to coroutines instead of rxjava
             runBlocking(Dispatchers.IO) {
-                jwtToken = login("admin", "admin")
+                login("admin", "admin")
             }
         }
 
@@ -126,20 +126,18 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
 
     /**
      * Sends a login request
-     *
-     * @return a valid jwt token
      */
-    private suspend fun login(username: String, password: String): JwtTokenModel {
+    private suspend fun login(username: String, password: String) {
         val jsonData = jsonObject(
                 "name" to username,
                 "password" to password
         )
         val json = Gson().toJson(jsonData)
-        var request = fuelManager.request(Method.GET, "/login/")
+        var request = fuelManager.request(Method.POST, "/login/")
         request = addBasicAuth(request)
 
         val deserializer = singleDeserializer<JwtTokenModel>()
-        return request.body(json)
+        jwtToken = request.body(json)
                 .header(HEADER_CONTENT_TYPE_JSON)
                 .await(deserializer)
     }
