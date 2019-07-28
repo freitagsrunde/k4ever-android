@@ -50,6 +50,7 @@ class PurchaseDetailContentFragment : DetailContentFragmentBase<PurchaseHistoryI
         entity.products.groupBy { it.id }.map {
             val productView = layoutInflater.inflate(R.layout.list_item__purchase_product, null)
             val productImage: ImageView = productView.findViewById(R.id.productImage)
+            val productAmount: TextView = productView.findViewById(R.id.productAmount)
             val productName: TextView = productView.findViewById(R.id.productName)
             val productPriceSingle: TextView = productView.findViewById(R.id.singlePrice)
             val productPriceGroup: TextView = productView.findViewById(R.id.groupPrice)
@@ -57,7 +58,8 @@ class PurchaseDetailContentFragment : DetailContentFragmentBase<PurchaseHistoryI
             val sampleEntity = it.value[0]
 
             // TODO: set product image
-            productName.text = "${it.value.size}x ${sampleEntity.name}"
+            productAmount.text = "${it.value.size}x"
+            productName.text = sampleEntity.name
             productPriceSingle.text = getString(R.string.shopping_cart__item_cost, sampleEntity.price)
             productPriceGroup.text = getString(R.string.shopping_cart__item_cost, it.value.map { it.price }.sum())
 
