@@ -48,6 +48,7 @@ class TransferDetailContentFragment : DetailContentFragmentBase<TransferHistoryI
         transferSender.text = entity.sender.target.display_name
         transferRecipient.text = entity.recipient.target.display_name
         transferAmount.text = getString(R.string.shopping_cart__item_cost, entity.amount)
+        transferDate.text = entity.date.toLocaleString()
         transferDescription.text = entity.description
 
         sender_avatar.setImageURI(getAvatarUrl(entity.sender.target))

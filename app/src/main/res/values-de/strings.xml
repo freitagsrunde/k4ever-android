@@ -55,6 +55,7 @@
     <string name="product_details">Produkt Details</string>
 
     <string name="description">Beschreibung</string>
+    <string name="date">Datum</string>
     <string name="price">Preis</string>
     <string name="deposit">Pfand</string>
     <string name="barcode">Barcode</string>
@@ -62,6 +63,8 @@
     <string name="sender">Sender</string>
     <string name="recipient">Empfänger</string>
     <string name="amount">Wert</string>
+
+    <string name="products">Produkte</string>
 
     <string name="hint__money_transfer__recipient">Benutzername eingeben…</string>
     <string name="hint__money_transfer__description">Pizza Bestellung 🍕</string>

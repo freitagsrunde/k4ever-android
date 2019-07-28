@@ -25,7 +25,7 @@
     },
     {
       "id": "2:4389980685422372833",
-      "lastPropertyId": "7:5568312579433758641",
+      "lastPropertyId": "8:4729092503727339971",
       "name": "ProductEntity",
       "properties": [
         {
@@ -55,6 +55,11 @@
         {
           "id": "7:5568312579433758641",
           "name": "isFavorite"
+        },
+        {
+          "id": "8:4729092503727339971",
+          "indexId": "3:7500807981187398303",
+          "name": "purchasesId"
         }
       ],
       "relations": [
@@ -132,12 +137,7 @@
           "name": "date"
         }
       ],
-      "relations": [
-        {
-          "id": "2:898719593151321327",
-          "name": "products"
-        }
-      ]
+      "relations": []
     },
     {
       "id": "6:1361195870181138656",
@@ -198,7 +198,7 @@
     }
   ],
   "lastEntityId": "7:396079171914609861",
-  "lastIndexId": "2:1959883576592893402",
+  "lastIndexId": "3:7500807981187398303",
   "lastRelationId": "3:2339540172667503915",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
@@ -206,6 +206,8 @@
   "retiredEntityUids": [],
   "retiredIndexUids": [],
   "retiredPropertyUids": [],
-  "retiredRelationUids": [],
+  "retiredRelationUids": [
+    898719593151321327
+  ],
   "version": 1
 }

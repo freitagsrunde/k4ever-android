@@ -46,6 +46,7 @@ import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.view.activity.base.DetailActivityBase
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
+import de.markusressel.k4ever.view.fragment.account.purchase.PurchaseDetailActivity
 import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailActivity
 import de.markusressel.k4ever.view.fragment.base.FabConfig
 import de.markusressel.k4ever.view.fragment.base.MultiPersistableListFragmentBase
@@ -144,7 +145,7 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
                         item(it)
                         presenter(this@BalanceHistoryFragment)
                         onclick { model, parentView, clickedView, position ->
-                            // openDetailView(model.item())
+                            openPurchaseDetailView(model.item())
                         }
                         onBind { model, holder, position ->
                             val purchaseItem = model.item()
@@ -231,8 +232,12 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
                 item
             }
-            is PurchaseHistoryItemModel -> PurchaseHistoryItemEntity(it.id,
-                    it.products.map { it.toEntity() }, it.date)
+            is PurchaseHistoryItemModel -> {
+                val entity = PurchaseHistoryItemEntity(it.id, it.date)
+                purchasePersistenceManager.getStore().attach(entity)
+                entity.products.addAll(it.products.map { it.toEntity() })
+                entity
+            }
             else -> throw IllegalArgumentException("No mapping function for '${it.javaClass}'")
         }
     }
@@ -383,6 +388,12 @@ class BalanceHistoryFragment : MultiPersistableListFragmentBase() {
 
     private fun openTransferDetailView(item: TransferHistoryItemEntity) {
         val detailPage = DetailActivityBase.newInstanceIntent(TransferDetailActivity::class.java,
+                context(), item.id)
+        startActivity(detailPage)
+    }
+
+    private fun openPurchaseDetailView(item: PurchaseHistoryItemEntity) {
+        val detailPage = DetailActivityBase.newInstanceIntent(PurchaseDetailActivity::class.java,
                 context(), item.id)
         startActivity(detailPage)
     }

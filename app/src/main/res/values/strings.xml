@@ -62,6 +62,7 @@
     <string name="no_items_found">No items found</string>
 
     <string name="description">Description</string>
+    <string name="date">Date</string>
     <string name="price">Price</string>
     <string name="deposit">Deposit</string>
     <string name="barcode">Barcode</string>
@@ -69,6 +70,8 @@
     <string name="sender">Sender</string>
     <string name="recipient">Recipient</string>
     <string name="amount">Amount</string>
+
+    <string name="products">Products</string>
 
     <string name="hint__money_transfer__recipient">Enter username…</string>
     <string name="hint__money_transfer__description">Pizza order 🍕</string>
