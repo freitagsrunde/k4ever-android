@@ -25,7 +25,9 @@ import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import de.markusressel.k4ever.application.App
 import de.markusressel.k4ever.view.activity.MainActivity
+import de.markusressel.k4ever.view.activity.WizardActivity
 import de.markusressel.k4ever.view.activity.base.DaggerSupportActivityBase
+import de.markusressel.k4ever.view.activity.base.WizardActivityBase
 import de.markusressel.k4ever.view.fragment.account.AccountOverviewFragment
 import de.markusressel.k4ever.view.fragment.account.AccountTabFragment
 import de.markusressel.k4ever.view.fragment.account.BalanceHistoryFragment
@@ -58,6 +60,12 @@ abstract class AppModule {
 
     @ContributesAndroidInjector
     internal abstract fun MainActivity(): MainActivity
+
+    @ContributesAndroidInjector
+    internal abstract fun WizardActivityBase(): WizardActivityBase
+
+    @ContributesAndroidInjector
+    internal abstract fun WizardMainActivity(): WizardActivity
 
     @ContributesAndroidInjector
     internal abstract fun ProductsListFragment(): ProductsFragment

@@ -119,6 +119,9 @@ dependencies {
         transitive = true
     }
 
+    // Wizard
+    implementation 'com.github.apl-devs:appintro:5.1.0'
+
     // Increase/Decrease number
     implementation 'com.github.DanielMartinus:Stepper-Touch:0.8'
 
