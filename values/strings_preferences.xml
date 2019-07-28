@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string-array name="theme_names">
+        <item>@string/theme_light_value_name</item>
+        <item>@string/theme_dark_value_name</item>
+    </string-array>
+    <string name="category_general">General</string>
+    <string name="connection_title">Connection</string>
+    <string name="connection_summary">Server connection configuration</string>
+    <string name="connection_host_title">Server URL</string>
+    <string name="divider_authentication_title">Authentication</string>
+    <string name="connection_auth_user_title">User</string>
+    <string name="connection_auth_password_title">Password</string>
+    <string name="category_products_title">Products</string>
+    <string name="category_products_summary">Customization options for the products page</string>
+    <string name="show_prices_with_deposit_title">Show prices with deposit</string>
+    <string name="show_prices_with_deposit_description_on">Deposit will be shown</string>
+    <string name="show_prices_with_deposit_description_off">Deposit will NOT be shown</string>
+    <string name="security_title">Security</string>
+    <string name="security_summary">App related security settings</string>
+    <!-- Theme -->
+    <string name="theme_title">Theme</string>
+    <string name="theme_summary">Application theme</string>
+    <string name="theme_light_value_name">Light</string>
+    <string name="theme_dark_value_name">Dark</string>
+</resources>
