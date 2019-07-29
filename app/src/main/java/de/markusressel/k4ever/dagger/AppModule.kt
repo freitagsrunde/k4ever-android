@@ -43,7 +43,7 @@ import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
 import de.markusressel.k4ever.view.fragment.products.ProductDetailActivity
 import de.markusressel.k4ever.view.fragment.products.ProductDetailContentFragment
 import de.markusressel.k4ever.view.fragment.products.ProductsFragment
-import de.markusressel.k4ever.view.fragment.wizard.ServerPage
+import de.markusressel.k4ever.view.fragment.wizard.LoginPage
 import de.markusressel.kutepreferences.core.persistence.DefaultKutePreferenceDataProvider
 import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
 import javax.inject.Singleton
@@ -73,7 +73,7 @@ abstract class AppModule {
     internal abstract fun WizardPageBase(): WizardPageBase
 
     @ContributesAndroidInjector
-    internal abstract fun ServerPage(): ServerPage
+    internal abstract fun ServerPage(): LoginPage
 
     @ContributesAndroidInjector
     internal abstract fun ProductsListFragment(): ProductsFragment

@@ -17,10 +17,7 @@
 
 package de.markusressel.k4ever.view.fragment.base
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.databinding.ViewDataBinding
+import com.github.paolorotolo.appintro.ISlidePolicy
 
 
 /**
@@ -28,10 +25,20 @@ import androidx.databinding.ViewDataBinding
  *
  * Created by Markus on 07.01.2018.
  */
-abstract class WizardPageBase : DaggerSupportFragmentBase() {
+abstract class WizardPageBase : DaggerSupportFragmentBase(), ISlidePolicy {
 
-    override fun createViewDataBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewDataBinding? {
-        return super.createViewDataBinding(inflater, container, savedInstanceState)
+    /**
+     * Checks if the user input of the current page is valid
+     *
+     * @return true if valid, false otherwise
+     */
+    abstract fun isValid(): Boolean
+
+    override fun isPolicyRespected(): Boolean {
+        return isValid()
     }
 
+    override fun onUserIllegallyRequestedNextPage() {
+        // do nothing
+    }
 }
