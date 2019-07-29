@@ -40,6 +40,7 @@ class LoginPage : WizardPageBase() {
         }
 
         return runBlocking(Dispatchers.IO) {
+            restClient.setHostname(url)
             restClient.checkLogin(username, password)
         }
     }

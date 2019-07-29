@@ -69,6 +69,7 @@ abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportF
         super.onDonePressed(currentFragment)
         val page = currentFragment as WizardPageBase
         if (page.isValid()) {
+            page.save()
             preferencesHolder.shouldShowWizard.persistedValue = false
             finish()
         }
