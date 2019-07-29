@@ -21,6 +21,8 @@
 
     <string name="wizard_page_login_title">Login</string>
     <string name="wizard_page_login_description">Gib deine persönlichen Zugangsdaten ein. Wenn du noch keine hast, melde dich bitte bei einem Mitglied der Freitagsrunde.</string>
+    <string name="wizard_page_login_hint_username">Benutzername</string>
+    <string name="wizard_page_login_hint_password">Passwort</string>
 
     <string name="menu_item_products">Produkte</string>
     <string name="menu_item_account">Konto</string>

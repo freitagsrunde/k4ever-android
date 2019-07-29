@@ -15,6 +15,8 @@ class WizardActivity : WizardActivityBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        skipButtonEnabled = false
+
         // welcome page
         val sliderPage = SliderPage()
         sliderPage.title = getString(R.string.wizard_page_welcome_title)

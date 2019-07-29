@@ -54,6 +54,15 @@ class K4EverRestClient(private val requestManager: RequestManager = RequestManag
         requestManager.basicAuthConfig = basicAuthConfig
     }
 
+    override suspend fun checkLogin(username: String, password: String): Boolean {
+        return try {
+            requestManager.login(username, password)
+            true
+        } catch (ex: Exception) {
+            false
+        }
+    }
+
     override suspend fun getVersion(): VersionModel {
         return requestManager.awaitRequest("/version/", Method.GET, singleDeserializer())
     }

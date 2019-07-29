@@ -46,4 +46,10 @@
     <string name="theme_light_value_name">Hell</string>
     <string name="theme_dark_value_name">Dunkel</string>
 
+    <string name="debug_title">Debug</string>
+    <string name="debug_summary">Entwickleroptionen - Nutzung auf eigene gefahr!</string>
+
+    <string name="open_wizard_title">Wizard öffnen</string>
+    <string name="open_wizard_summary">Öffnet den initialen app Wizard</string>
+
 </resources>

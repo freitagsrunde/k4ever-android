@@ -39,4 +39,13 @@ interface RestApiClient {
      */
     fun setBasicAuthConfig(basicAuthConfig: BasicAuthConfig)
 
+    /**
+     * Checks if the given credentials are valid
+     *
+     * @param username username
+     * @param password password
+     * @return true if valid, false otherwise
+     */
+    suspend fun checkLogin(username: String, password: String): Boolean
+
 }

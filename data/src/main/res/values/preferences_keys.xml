@@ -29,5 +29,7 @@
 
     <string name="should_show_wizard_key">should_show_wizard_key</string>
 
+    <string name="category_debug_key">category_debug_key</string>
+    <string name="open_wizard_key">open_wizard_key</string>
 
 </resources>

@@ -57,7 +57,9 @@ abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportF
 
     override fun onSlideChanged(oldFragment: Fragment?, newFragment: Fragment?) {
         if (oldFragment is WizardPageBase) {
-            oldFragment.save()
+            if (oldFragment.isValid()) {
+                oldFragment.save()
+            }
         }
 
         super.onSlideChanged(oldFragment, newFragment)

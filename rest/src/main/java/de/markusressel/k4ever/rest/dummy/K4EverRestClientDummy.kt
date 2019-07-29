@@ -32,6 +32,10 @@ import java.util.*
 
 class K4EverRestClientDummy : K4EverRestApiClient {
 
+    override suspend fun checkLogin(username: String, password: String): Boolean {
+        return true
+    }
+
     override suspend fun getVersion(): VersionModel {
         return VersionModel(
                 "0.0.1",
@@ -56,23 +60,20 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     companion object {
-        private val p1 = ProductModel(1, "Mio Mate", "Getränk der Studenten", 1.0, 0.2, "000000000",
-                listOf(), true)
-        private val p2 = ProductModel(2, "Club Mate", "Getränk der Studenten", 0.8, 0.2,
-                "000000001", listOf(), true)
-        private val p3 = ProductModel(3, "Cola", "Zucker", 1.0, 0.2, "000000002", listOf(), false)
-        private val p4 = ProductModel(4, "Spezi", "Zucker ^2", 1.0, 0.2, "000000003", listOf(),
-                false)
-        private val p5 = ProductModel(5, "Snickers", "Zucker ^5", 1.0, 0.0, "000000004", listOf(),
-                false)
-        private val p6 = ProductModel(6, "Coca Cola Zero ®",
+        private val p1 = ProductModel(1, "Mio Mate", false, "Getränk der Studenten", 1.0, 0.2, "000000000", null, null, 0, 0)
+        private val p2 = ProductModel(2, "Club Mate", false, "Getränk der Studenten", 0.8, 0.2,
+                "000000001", null, null, 0, 0)
+        private val p3 = ProductModel(3, "Cola", false, "Zucker", 1.0, 0.2, "000000002", null, null, 0, 0)
+        private val p4 = ProductModel(4, "Spezi", false, "Zucker ^2", 1.0, 0.2, "000000003", null, null, 0, 0)
+        private val p5 = ProductModel(5, "Snickers", false, "Zucker ^5", 1.0, 0.0, "000000004", null, null, 0, 0)
+        private val p6 = ProductModel(6, "Coca Cola Zero ®", false,
                 "Spritziges Erfrischungsgetränk, so schwarz wie deine Seele \uD83D\uDE08", 1.1,
-                0.25, "000000005", listOf(), true)
+                0.25, "000000005", null, null, 0, 0)
 
         private val fakeRealProducts = listOf(p1, p2, p3, p4, p5, p6)
         private val randomProducts = ((fakeRealProducts.size + 1)..100L).map {
-            ProductModel(it, "Product $it", "Product description ($it)", 1.0 + it.toDouble() / 100,
-                    0.2 + it.toDouble() / 100, "$it", listOf(), false)
+            ProductModel(it, "Product $it", false, "Product description ($it)", 1.0 + it.toDouble() / 100,
+                    0.2 + it.toDouble() / 100, "$it", null, null, 0, 0)
         }
 
         private val products = listOf(fakeRealProducts, randomProducts).flatten()

@@ -43,9 +43,8 @@ import javax.inject.Singleton
 class KutePreferencesHolder @Inject constructor(private val context: Context,
                                                 private val iconHelper: IconHandler,
                                                 private val dataProvider: KutePreferenceDataProvider,
-
-                                                @param:Implementation(
-                                                        ImplementationTypeEnum.DUMMY) private val restClient: K4EverRestApiClient) {
+                                                @param:Implementation(ImplementationTypeEnum.REAL)
+                                                private val restClient: K4EverRestApiClient) {
 
     val connectionCategory by lazy {
         KuteCategory(key = R.string.category_connection_key,

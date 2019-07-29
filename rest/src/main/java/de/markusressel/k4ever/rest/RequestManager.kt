@@ -96,7 +96,7 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
     private fun getAuthenticatedRequest(request: Request): Request {
         if (!jwtIsValid()) {
             runBlocking(Dispatchers.IO) {
-                login("admin", "admin")
+                login(basicAuthConfig!!.username, basicAuthConfig!!.password)
             }
         }
 
@@ -124,7 +124,7 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
     /**
      * Sends a login request
      */
-    private suspend fun login(username: String, password: String) {
+    suspend fun login(username: String, password: String) {
         val jsonData = jsonObject(
                 "name" to username,
                 "password" to password

@@ -54,7 +54,7 @@ class MoneyTransferFragment : DaggerDialogFragmentBase() {
     lateinit var userPersistenceManager: UserPersistenceManager
 
     @Inject
-    @field:Implementation(ImplementationTypeEnum.DUMMY)
+    @field:Implementation(ImplementationTypeEnum.REAL)
     lateinit var restClient: K4EverRestApiClient
 
     private lateinit var autocompleteUsersArrayAdapter: UserArrayAdapter

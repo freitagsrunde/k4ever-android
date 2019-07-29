@@ -27,9 +27,20 @@ import de.markusressel.k4ever.rest.users.model.PermissionModel
 import de.markusressel.k4ever.rest.users.model.UserModel
 
 fun ProductModel.toEntity(): ProductEntity {
-    return ProductEntity(id = this.id, name = this.name, description = this.description,
-            price = this.price, deposit = this.deposit, barcode = this.barcode,
-            typeId = this.types.map { it.toEntity() }, isFavorite = this.isFavorite)
+    return ProductEntity(id = this.id,
+            name = name,
+            disabled = disabled,
+            description = description,
+            price = price,
+            deposit = deposit,
+            barcode = barcode,
+            image = image,
+            last_bought = last_bought,
+            times_bought = times_bought,
+            times_bought_total = times_bought_total
+//            typeId = this.types.map { it.toEntity() },
+//            isFavorite = this.isFavorite
+    )
 }
 
 fun ProductTypeModel.toEntity(): ProductTypeEntity {

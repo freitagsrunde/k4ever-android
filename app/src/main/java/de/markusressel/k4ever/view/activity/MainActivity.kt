@@ -26,6 +26,8 @@ class MainActivity : NavigationDrawerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startActivity(WizardActivity.getLaunchIntent(this))
+        if (preferencesHolder.shouldShowWizard.persistedValue) {
+            startActivity(WizardActivity.getLaunchIntent(this))
+        }
     }
 }
