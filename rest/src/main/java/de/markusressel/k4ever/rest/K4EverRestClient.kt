@@ -54,7 +54,7 @@ class K4EverRestClient(private val requestManager: RequestManager = RequestManag
         requestManager.basicAuthConfig = basicAuthConfig
     }
 
-    override suspend fun getVersion(): String {
+    override suspend fun getVersion(): VersionModel {
         return requestManager.awaitRequest("/version/", Method.GET, singleDeserializer())
     }
 

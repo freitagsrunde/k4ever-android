@@ -95,12 +95,8 @@ abstract class DaggerSupportFragmentBase : LifecycleFragmentBase(), HasSupportFr
             viewModel.root
         } else {
             val newContainer = inflater.inflate(layoutRes, container, false) as ViewGroup
-
-            val alternative = super
-                    .onCreateView(inflater, newContainer, savedInstanceState)
-
-            alternative
-                    ?: newContainer
+            val alternative = super.onCreateView(inflater, newContainer, savedInstanceState)
+            alternative ?: newContainer
         }
     }
 

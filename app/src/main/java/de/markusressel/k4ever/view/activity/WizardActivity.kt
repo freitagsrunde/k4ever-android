@@ -2,14 +2,11 @@ package de.markusressel.k4ever.view.activity
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import com.github.paolorotolo.appintro.AppIntroFragment
 import com.github.paolorotolo.appintro.model.SliderPage
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.view.activity.base.WizardActivityBase
-import de.markusressel.k4ever.view.fragment.base.WizardPageBase
 import de.markusressel.k4ever.view.fragment.wizard.LoginPage
 
 
@@ -23,7 +20,6 @@ class WizardActivity : WizardActivityBase() {
         sliderPage.title = getString(R.string.wizard_page_welcome_title)
         sliderPage.description = getString(R.string.wizard_page_welcome_description)
         sliderPage.imageDrawable = R.drawable.ic_launcher_foreground
-        sliderPage.bgColor = Color.DKGRAY
         addSlide(AppIntroFragment.newInstance(sliderPage))
 
         // login page
@@ -32,14 +28,6 @@ class WizardActivity : WizardActivityBase() {
 
         // TODO: theme page
         // TODO: camera page (when barscanner is implemented)
-    }
-
-    override fun onDonePressed(currentFragment: Fragment) {
-        super.onDonePressed(currentFragment)
-        val page = currentFragment as WizardPageBase
-        if (page.isValid()) {
-            finish()
-        }
     }
 
     companion object {

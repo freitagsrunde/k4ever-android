@@ -30,6 +30,6 @@ interface K4EverApi : ProductApi, UserApi {
     /**
      * Get version information
      */
-    suspend fun getVersion(): String
+    suspend fun getVersion(): VersionModel
 
 }

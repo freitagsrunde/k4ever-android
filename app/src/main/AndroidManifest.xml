@@ -36,7 +36,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".view.activity.WizardActivity" />
+        <activity
+            android:name=".view.activity.WizardActivity"
+            android:theme="@style/AppThemeLight" />
 
         <activity
             android:name=".view.fragment.products.ProductDetailActivity"

@@ -34,6 +34,11 @@ abstract class WizardPageBase : DaggerSupportFragmentBase(), ISlidePolicy {
      */
     abstract fun isValid(): Boolean
 
+    /**
+     * Saves user input of this page
+     */
+    abstract fun save()
+
     override fun isPolicyRespected(): Boolean {
         return isValid()
     }

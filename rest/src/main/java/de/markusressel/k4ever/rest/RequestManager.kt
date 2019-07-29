@@ -100,8 +100,9 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
             }
         }
 
-        val request = addBasicAuth(request)
-        return addJwt(request)
+        addBasicAuth(request)
+        addJwt(request)
+        return request
     }
 
     private fun addJwt(request: Request): Request {

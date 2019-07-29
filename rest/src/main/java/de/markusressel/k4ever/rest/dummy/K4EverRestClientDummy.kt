@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable
 import de.markusressel.k4ever.rest.BasicAuthConfig
 import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.rest.R
+import de.markusressel.k4ever.rest.VersionModel
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.rest.users.model.BalanceHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
@@ -31,8 +32,13 @@ import java.util.*
 
 class K4EverRestClientDummy : K4EverRestApiClient {
 
-    override suspend fun getVersion(): String {
-        return "v0.0.0"
+    override suspend fun getVersion(): VersionModel {
+        return VersionModel(
+                "0.0.1",
+                "HEAD",
+                "6b850d0aefe23a11cd5d6622bb2e07d9b428544c",
+                Calendar.getInstance().time
+        )
     }
 
     override suspend fun getUserAvatar(id: Long): Drawable {
