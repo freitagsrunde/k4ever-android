@@ -27,5 +27,7 @@
     <string name="connection_password_key">connection_password_key</string>
     <string name="hide_prices_with_deposit_key">hide_prices_with_deposit_key</string>
 
+    <string name="should_show_wizard_key">should_show_wizard_key</string>
+
 
 </resources>

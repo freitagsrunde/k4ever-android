@@ -12,6 +12,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.view.ThemeHandler
 import de.markusressel.k4ever.view.fragment.base.WizardPageBase
+import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
 import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
 import javax.inject.Inject
 
@@ -27,6 +28,9 @@ abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportF
 
     @Inject
     lateinit var themeHandler: ThemeHandler
+
+    @Inject
+    lateinit var preferencesHolder: KutePreferencesHolder
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,14 +51,8 @@ abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportF
     }
 
     private fun initTheme() {
-        val theme = preferencesDataProvider.getValueUnsafe(R.string.theme_key,
-                getString(R.string.theme_dark_value))
-
-        //        if (style == DIALOG) {
-        //            themeHandler.applyDialogTheme(this, theme)
-        //        } else {
+        val theme = preferencesDataProvider.getValueUnsafe(R.string.theme_key, getString(R.string.theme_dark_value))
         themeHandler.applyTheme(this, theme)
-        //        }
     }
 
     override fun onSlideChanged(oldFragment: Fragment?, newFragment: Fragment?) {
@@ -69,6 +67,7 @@ abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportF
         super.onDonePressed(currentFragment)
         val page = currentFragment as WizardPageBase
         if (page.isValid()) {
+            preferencesHolder.shouldShowWizard.persistedValue = false
             finish()
         }
     }

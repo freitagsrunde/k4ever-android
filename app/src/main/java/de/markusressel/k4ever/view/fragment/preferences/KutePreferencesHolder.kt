@@ -115,12 +115,22 @@ class KutePreferencesHolder @Inject constructor(private val context: Context,
                 title = context.getString(R.string.theme_title),
                 possibleValues = mapOf(R.string.theme_dark_value to R.string.theme_dark_value_name,
                         R.string.theme_light_value to R.string.theme_light_value_name),
-                defaultValue = R.string.theme_dark_value, dataProvider = dataProvider,
+                defaultValue = R.string.theme_dark_value,
+                dataProvider = dataProvider,
                 onPreferenceChangedListener = { old, new ->
                     // TODO: restart application/activity
                     //            Bus
                     //                    .send(ThemeChangedEvent(new))
                 })
+    }
+
+    val shouldShowWizard by lazy {
+        KuteBooleanPreference(
+                key = R.string.should_show_wizard_key,
+                title = "",
+                defaultValue = true,
+                dataProvider = dataProvider
+        )
     }
 
 }
