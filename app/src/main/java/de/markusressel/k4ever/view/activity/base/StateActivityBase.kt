@@ -17,9 +17,12 @@
 
 package de.markusressel.k4ever.view.activity.base
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import co.lokalise.android.sdk.core.LokaliseContextWrapper
 import de.markusressel.k4ever.view.InstanceStateProvider
+
 
 /**
  * Created by Markus on 21.02.2018.
@@ -27,6 +30,11 @@ import de.markusressel.k4ever.view.InstanceStateProvider
 abstract class StateActivityBase : AppCompatActivity() {
 
     private val stateBundle = Bundle()
+
+    override fun attachBaseContext(newBase: Context?) {
+        // Inject the Lokalise SDK into the activity context
+        super.attachBaseContext(LokaliseContextWrapper.wrap(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {

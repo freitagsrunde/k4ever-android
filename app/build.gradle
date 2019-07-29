@@ -114,6 +114,10 @@ dependencies {
     // RxBus (event bus)
     implementation 'com.eightbitlab:rxbus:1.0.2'
 
+    // Lokalise
+    implementation 'com.lokalise.android:ota-sdk:1.+'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
     // Material Drawer
     implementation("com.mikepenz:materialdrawer:${materialdrawerVersion}@aar") {
         transitive = true

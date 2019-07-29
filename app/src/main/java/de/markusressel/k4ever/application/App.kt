@@ -17,6 +17,7 @@
 
 package de.markusressel.k4ever.application
 
+import co.lokalise.android.sdk.LokaliseSDK
 import com.facebook.drawee.backends.pipeline.Fresco
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
@@ -44,10 +45,26 @@ class App : DaggerApplicationBase() {
 
         plantTimberTrees()
 
+        initLokalise()
+
         createListeners()
 
         Fresco.initialize(this)
 
+    }
+
+    private fun initLokalise() {
+        // Initialise Lokalise SDK with projects SDK token and project id
+        // It is important to call this right after the "super.onCreate()"
+        // If you are using AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+        // make sure it is called before LokaliseSDK.init()
+        LokaliseSDK.init("f1def8862d1499e05f7aa6f6e5b0482bef9d99ca", "481343335d3e1e02b4b8f6.52342493", this)
+
+        // Add this only if you want to use pre-release bundles
+        LokaliseSDK.setPreRelease(true)
+
+        // Fetch the latest translations from Lokalise (can be called anywhere)
+        LokaliseSDK.updateTranslations()
     }
 
     private fun createListeners() {
