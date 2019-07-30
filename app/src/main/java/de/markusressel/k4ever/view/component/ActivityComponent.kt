@@ -15,22 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.rest.products
+package de.markusressel.k4ever.view.component
 
-import com.github.kittinunf.fuel.core.Method
-import de.markusressel.k4ever.rest.RequestManager
-import de.markusressel.k4ever.rest.listDeserializer
-import de.markusressel.k4ever.rest.products.model.ProductModel
-import de.markusressel.k4ever.rest.singleDeserializer
+import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 
-class ProductManager(private val requestManager: RequestManager) : ProductApi {
+abstract class ActivityComponent(private val hostActivity: AppCompatActivity) {
 
-    override suspend fun getAllProducts(): List<ProductModel> {
-        return requestManager.awaitRequest("/products/", Method.GET, listDeserializer())
-    }
+    protected val activity
+        get() = hostActivity
 
-    override suspend fun getProduct(id: Long): ProductModel {
-        return requestManager.awaitRequest("/product/$id/", Method.GET, singleDeserializer())
-    }
+    val context: Context = hostActivity
 
 }

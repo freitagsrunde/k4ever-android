@@ -1,9 +1,10 @@
 package de.markusressel.k4ever.view.activity.base
 
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
-import com.github.paolorotolo.appintro.AppIntro
+import com.github.paolorotolo.appintro.AppIntro2
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -11,12 +12,14 @@ import dagger.android.HasFragmentInjector
 import dagger.android.support.HasSupportFragmentInjector
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.view.ThemeHandler
+import de.markusressel.k4ever.view.component.LoadingWizardPageComponent
 import de.markusressel.k4ever.view.fragment.base.WizardPageBase
 import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
 import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
-abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportFragmentInjector {
+abstract class WizardActivityBase : AppIntro2(), HasFragmentInjector, HasSupportFragmentInjector {
 
     @Inject
     internal lateinit var supportFragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -32,6 +35,10 @@ abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportF
     @Inject
     lateinit var preferencesHolder: KutePreferencesHolder
 
+    private val loadingWizardPageComponent by lazy {
+        LoadingWizardPageComponent(this)
+    }
+
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -40,6 +47,10 @@ abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportF
         initTheme()
 
         super.onCreate(savedInstanceState)
+
+        val rootView: ViewGroup = findViewById(android.R.id.content)
+        loadingWizardPageComponent.onCreateView(rootView)
+        loadingWizardPageComponent.showContent(false)
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment>? {
@@ -56,22 +67,54 @@ abstract class WizardActivityBase : AppIntro(), HasFragmentInjector, HasSupportF
     }
 
     override fun onSlideChanged(oldFragment: Fragment?, newFragment: Fragment?) {
-        if (oldFragment is WizardPageBase) {
-            if (oldFragment.isValid()) {
-                oldFragment.save()
+        val oldIndex = slides.indexOf(oldFragment)
+        val newIndex = slides.indexOf(newFragment)
+
+        if (oldIndex == -1) return
+        if (newIndex == -1) return
+
+        loadingWizardPageComponent.showLoading()
+        GlobalScope.launch {
+            try {
+                if (oldIndex < newIndex) {
+                    if (oldFragment is WizardPageBase) {
+                        val valid = runBlocking {
+                            oldFragment.validate()
+                        }
+                        if (valid) {
+                            oldFragment.save()
+                        } else {
+                            return@launch
+                        }
+                    }
+                }
+
+                super.onSlideChanged(oldFragment, newFragment)
+            } finally {
+                withContext(Dispatchers.Main) {
+                    loadingWizardPageComponent.showContent(true)
+                }
             }
         }
-
-        super.onSlideChanged(oldFragment, newFragment)
     }
 
     override fun onDonePressed(currentFragment: Fragment) {
+        loadingWizardPageComponent.showLoading()
+
         super.onDonePressed(currentFragment)
         val page = currentFragment as WizardPageBase
-        if (page.isValid()) {
-            page.save()
-            preferencesHolder.shouldShowWizard.persistedValue = false
-            finish()
+
+        GlobalScope.launch {
+            val valid = page.validate()
+            if (valid) {
+                page.save()
+                preferencesHolder.shouldShowWizard.persistedValue = false
+                finish()
+            } else {
+                withContext(Dispatchers.Main) {
+                    loadingWizardPageComponent.showContent(true)
+                }
+            }
         }
     }
 

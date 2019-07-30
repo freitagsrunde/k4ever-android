@@ -27,7 +27,7 @@ import de.markusressel.k4ever.rest.users.model.PurchaseHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.TransferHistoryItemModel
 import de.markusressel.k4ever.rest.users.model.UserModel
 
-class UserManager(val requestManager: RequestManager) : UserApi {
+class UserManager(private val requestManager: RequestManager) : UserApi {
 
     override suspend fun getAllUsers(): List<UserModel> {
         return requestManager.awaitRequest("/users/", Method.GET, listDeserializer())

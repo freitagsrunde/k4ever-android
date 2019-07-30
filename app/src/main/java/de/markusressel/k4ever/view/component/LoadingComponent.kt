@@ -36,6 +36,7 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.extensions.common.android.prettyPrint
 import de.markusressel.k4ever.view.fragment.base.LifecycleFragmentBase
+import io.reactivex.rxkotlin.subscribeBy
 
 /**
  * Created by Markus on 15.02.2018.
@@ -179,19 +180,22 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
 
         errorDescription.text = errorDescriptionText
 
-        RxView.clicks(errorLayout).bindToLifecycle(errorLayout).subscribe {
+        RxView.clicks(errorLayout).bindToLifecycle(errorLayout)
+                .subscribeBy(onNext = {
                     onErrorClicked?.let {
                         it(message, throwable)
-                        return@subscribe
+                        return@subscribeBy
                     }
 
                     val contentText = throwable?.let {
                         message + "\n\n\n" + throwable.prettyPrint()
                     } ?: message
 
-            MaterialDialog(context as Context).title(R.string.error).message(text = contentText)
-                    .positiveButton { }.show()
-                }
+                    MaterialDialog(context as Context).title(R.string.error).message(text = contentText)
+                            .positiveButton { }.show()
+                }, onError = {
+                    Timber.e(it)
+                })
 
         setViewVisibility(errorLayout, View.VISIBLE)
         contentView?.let {
@@ -221,15 +225,15 @@ class LoadingComponent(hostFragment: LifecycleFragmentBase, val onShowContent: (
         }
 
         view.animate().alpha(alpha).setDuration(duration).setInterpolator(interpolator).withStartAction {
-                    if (alpha > 0) {
-                        view.alpha = 0f
-                        view.visibility = View.VISIBLE
-                    }
-                }.withEndAction {
-                    if (alpha <= 0) {
-                        view.visibility = View.GONE
-                    }
-                }
+            if (alpha > 0) {
+                view.alpha = 0f
+                view.visibility = View.VISIBLE
+            }
+        }.withEndAction {
+            if (alpha <= 0) {
+                view.visibility = View.GONE
+            }
+        }
     }
 
     companion object {

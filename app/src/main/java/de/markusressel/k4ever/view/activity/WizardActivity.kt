@@ -16,6 +16,7 @@ class WizardActivity : WizardActivityBase() {
         super.onCreate(savedInstanceState)
 
         skipButtonEnabled = false
+        pager.isNextPagingEnabled = false
 
         // welcome page
         val sliderPage = SliderPage()

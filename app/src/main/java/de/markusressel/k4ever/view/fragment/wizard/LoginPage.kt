@@ -8,7 +8,7 @@ import de.markusressel.k4ever.rest.BasicAuthConfig
 import de.markusressel.k4ever.view.fragment.base.WizardPageBase
 import kotlinx.android.synthetic.main.wizard_page_login.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class LoginPage : WizardPageBase() {
 
@@ -21,28 +21,42 @@ class LoginPage : WizardPageBase() {
         text_input_url.editText?.setText(preferencesHolder.connectionUriPreference.persistedValue)
     }
 
-    override fun isValid(): Boolean {
-        val url = text_input_url.editText!!.text.toString()
-        val username = text_input_username.editText!!.text.toString()
-        val password = text_input_username.editText!!.text.toString()
+    private val url
+        get() = text_input_url.editText!!.text.toString()
+    private val username
+        get() = text_input_username.editText!!.text.toString()
+    private val password
+        get() = text_input_username.editText!!.text.toString()
 
+    override suspend fun validate(): Boolean {
         if (!isUrlValid(url)) {
-            text_input_username.error = "Invalid URL"
+            withContext(Dispatchers.Main) {
+                text_input_username.error = "Invalid URL"
+            }
             return false
         } else {
-            text_input_username.error = null
+            withContext(Dispatchers.Main) {
+                text_input_username.error = null
+            }
         }
         if (!isUsernameValid(username)) {
-            text_input_username.error = "Invalid username"
+            withContext(Dispatchers.Main) {
+                text_input_username.error = "Invalid username"
+            }
             return false
         } else {
-            text_input_username.error = null
+            withContext(Dispatchers.Main) {
+                text_input_username.error = null
+            }
         }
 
-        return runBlocking(Dispatchers.IO) {
-            restClient.setHostname(url)
-            restClient.checkLogin(username, password)
-        }
+        return checkLogin()
+    }
+
+    private suspend fun checkLogin(): Boolean {
+        restClient.setHostname(url)
+        val valid = restClient.checkLogin(username, password)
+        return valid
     }
 
     private fun isUrlValid(url: String): Boolean {
@@ -59,10 +73,6 @@ class LoginPage : WizardPageBase() {
     }
 
     override fun save() {
-        val url = text_input_url.editText!!.text.toString()
-        val username = text_input_username.editText!!.text.toString()
-        val password = text_input_username.editText!!.text.toString()
-
         restClient.setHostname(url)
         restClient.setBasicAuthConfig(
                 BasicAuthConfig(username, password)

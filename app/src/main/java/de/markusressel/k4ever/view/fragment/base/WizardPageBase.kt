@@ -18,6 +18,7 @@
 package de.markusressel.k4ever.view.fragment.base
 
 import com.github.paolorotolo.appintro.ISlidePolicy
+import de.markusressel.k4ever.view.activity.base.WizardActivityBase
 
 
 /**
@@ -27,12 +28,15 @@ import com.github.paolorotolo.appintro.ISlidePolicy
  */
 abstract class WizardPageBase : DaggerSupportFragmentBase(), ISlidePolicy {
 
+    protected val wizardActivity: WizardActivityBase
+        get() = activity as WizardActivityBase
+
     /**
      * Checks if the user input of the current page is valid
      *
      * @return true if valid, false otherwise
      */
-    abstract fun isValid(): Boolean
+    abstract suspend fun validate(): Boolean
 
     /**
      * Saves user input of this page
@@ -40,7 +44,7 @@ abstract class WizardPageBase : DaggerSupportFragmentBase(), ISlidePolicy {
     abstract fun save()
 
     override fun isPolicyRespected(): Boolean {
-        return isValid()
+        return true
     }
 
     override fun onUserIllegallyRequestedNextPage() {
