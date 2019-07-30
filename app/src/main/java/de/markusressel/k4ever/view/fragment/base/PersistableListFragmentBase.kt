@@ -127,6 +127,11 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        reloadDataFromSource()
+    }
+
     /**
      * Filters and sorts the given list by the currently active filter and sort options
      * Remember to call this before using {@link updateAdapterList }
@@ -216,6 +221,7 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
                     persistListData(newData)
                     updateLastUpdatedFromSource()
                 }
+                loadingComponent.showContent()
                 setRefreshing(false)
             }
         } catch (ex: Exception) {
