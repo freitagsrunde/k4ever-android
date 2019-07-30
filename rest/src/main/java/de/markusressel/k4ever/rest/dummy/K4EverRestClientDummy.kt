@@ -50,7 +50,7 @@ class K4EverRestClientDummy : K4EverRestApiClient {
     }
 
     override suspend fun getUserAvatarURL(id: Long): String {
-        val userName = getUser(id)?.user_name
+        val userName = getUser(id)?.name
 
         return when (userName) {
             "g_markus" -> "android.resource://de.markusressel.k4ever/${R.drawable.demo_avatar__markus}"

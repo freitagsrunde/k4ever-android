@@ -17,4 +17,8 @@
 
 package de.markusressel.k4ever.rest.users.model
 
-data class PermissionModel(val id: Long, val name: String, val description: String)
+data class PermissionModel(
+        val id: Long,
+        val Name: String,
+        val Description: String
+)

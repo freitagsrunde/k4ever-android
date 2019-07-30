@@ -48,10 +48,12 @@ fun ProductTypeModel.toEntity(): ProductTypeEntity {
 }
 
 fun UserModel.toEntity(): UserEntity {
-    return UserEntity(id = this.id, display_name = this.display_name, user_name = this.user_name,
-            balance = this.balance, permissions = this.permissions.map { it.toEntity() })
+    val permissions = this.permissions ?: emptyList()
+
+    return UserEntity(id = this.id, display_name = this.display_name, user_name = this.name,
+            balance = this.balance, permissions = permissions.map { it.toEntity() })
 }
 
 fun PermissionModel.toEntity(): PermissionEntity {
-    return PermissionEntity(id = this.id, name = this.name, description = this.description)
+    return PermissionEntity(id = this.id, name = this.Name, description = this.Description)
 }

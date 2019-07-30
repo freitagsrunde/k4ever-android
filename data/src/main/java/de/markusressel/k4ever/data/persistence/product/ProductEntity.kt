@@ -24,7 +24,8 @@ import io.objectbox.annotation.Id
 import java.util.*
 
 @Entity
-data class ProductEntity(@Id(assignable = true) var id: Long = -1L,
+data class ProductEntity(@Id(assignable = true)
+                         var id: Long = -1L,
                          val name: String = "",
                          val disabled: Boolean = false,
                          val description: String = "",
