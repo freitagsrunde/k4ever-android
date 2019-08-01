@@ -33,6 +33,7 @@ import de.markusressel.k4ever.R
 import de.markusressel.k4ever.navigation.Navigator
 import de.markusressel.k4ever.view.IconHandler
 import de.markusressel.k4ever.view.ThemeHandler
+import de.markusressel.k4ever.view.fragment.preferences.KutePreferencesHolder
 import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
 import kotlinx.android.synthetic.main.view__toolbar.*
 import javax.inject.Inject
@@ -52,6 +53,9 @@ abstract class DaggerSupportActivityBase : LifecycleActivityBase(), HasFragmentI
 
     @Inject
     lateinit var preferencesDataProvider: KutePreferenceDataProvider
+
+    @Inject
+    lateinit var preferencesHolder: KutePreferencesHolder
 
     @Inject
     lateinit var iconHandler: IconHandler

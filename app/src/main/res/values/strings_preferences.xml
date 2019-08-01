@@ -50,4 +50,10 @@
         <item>@string/theme_dark_value_name</item>
     </string-array>
 
+    <string name="debug_title">Debug</string>
+    <string name="debug_summary">Developer preferences - Use at your own risk!</string>
+
+    <string name="open_wizard_title">Open Wizard</string>
+    <string name="open_wizard_summary">Reopens the initial setup wizard</string>
+
 </resources>

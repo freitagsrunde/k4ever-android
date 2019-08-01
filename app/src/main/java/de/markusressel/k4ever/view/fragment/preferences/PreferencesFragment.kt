@@ -17,6 +17,7 @@
 
 package de.markusressel.k4ever.view.fragment.preferences
 
+import de.markusressel.k4ever.BuildConfig
 import de.markusressel.k4ever.view.fragment.preferences.base.LifecyclePreferenceFragmentBase
 import de.markusressel.kutepreferences.core.KutePreferenceListItem
 import javax.inject.Inject
@@ -26,10 +27,20 @@ class PreferencesFragment : LifecyclePreferenceFragmentBase() {
     @Inject
     lateinit var preferenceHolder: KutePreferencesHolder
 
+    @Inject
+    lateinit var debugPreferencesHolder: KuteDebugPreferencesHolder
+
     override fun initPreferenceTree(): Array<KutePreferenceListItem> {
-        return arrayOf(preferenceHolder.connectionCategory,
+
+        var items = arrayOf(preferenceHolder.connectionCategory,
                 preferenceHolder.productsCategory,
                 preferenceHolder.themePreference)
+
+        if (BuildConfig.DEBUG) {
+            items += debugPreferencesHolder.debugCategory
+        }
+
+        return items
     }
 
 }

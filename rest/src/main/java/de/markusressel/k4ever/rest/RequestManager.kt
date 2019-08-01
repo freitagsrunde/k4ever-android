@@ -85,9 +85,15 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
      * @param urlParameters query parameters
      * @param method the request type (f.ex. GET)
      */
-    private fun createRequest(url: String, urlParameters: List<Pair<String, Any?>> = emptyList(),
-                              method: Method): Request {
-        return getAuthenticatedRequest(fuelManager.request(method, url, urlParameters))
+    private fun createRequest(url: String,
+                              urlParameters: List<Pair<String, Any?>> = emptyList(),
+                              method: Method,
+                              skipLogin: Boolean = false): Request {
+        val request = fuelManager.request(method, url, urlParameters)
+        return when {
+            skipLogin -> request
+            else -> getAuthenticatedRequest(request)
+        }
     }
 
     /**
@@ -96,12 +102,13 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
     private fun getAuthenticatedRequest(request: Request): Request {
         if (!jwtIsValid()) {
             runBlocking(Dispatchers.IO) {
-                login("admin", "admin")
+                login(basicAuthConfig!!.username, basicAuthConfig!!.password)
             }
         }
 
-        val request = addBasicAuth(request)
-        return addJwt(request)
+        addBasicAuth(request)
+        addJwt(request)
+        return request
     }
 
     private fun addJwt(request: Request): Request {
@@ -123,7 +130,7 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
     /**
      * Sends a login request
      */
-    private suspend fun login(username: String, password: String) {
+    suspend fun login(username: String, password: String) {
         val jsonData = jsonObject(
                 "name" to username,
                 "password" to password
@@ -163,10 +170,12 @@ class RequestManager(hostname: String = "k4ever.freitagsrunde.org/api/v1", var b
      * @param url the URL
      * @param method the request type (f.ex. GET)
      * @param deserializer a deserializer for the response json body
+     * @param skipLogin whether to skip login request
      */
     suspend fun <T : Any> awaitRequest(url: String, method: Method,
-                                       deserializer: ResponseDeserializable<T>): T {
-        return createRequest(url = url, method = method).awaitObject(deserializer)
+                                       deserializer: ResponseDeserializable<T>,
+                                       skipLogin: Boolean = false): T {
+        return createRequest(url = url, method = method, skipLogin = skipLogin).awaitObject(deserializer)
     }
 
     /**

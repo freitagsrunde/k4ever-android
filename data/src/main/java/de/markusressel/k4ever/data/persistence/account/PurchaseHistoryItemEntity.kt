@@ -27,7 +27,8 @@ import java.util.*
 
 
 @Entity
-data class PurchaseHistoryItemEntity(@Id(assignable = true) var id: Long = 0,
+data class PurchaseHistoryItemEntity(@Id(assignable = true)
+                                     var id: Long = 0,
                                      val date: Date = Date()) : IdentifiableListItem, SearchableListItem {
     override fun getItemId(): Long = id
 

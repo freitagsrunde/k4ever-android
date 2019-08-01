@@ -23,7 +23,7 @@ import de.markusressel.k4ever.rest.listDeserializer
 import de.markusressel.k4ever.rest.products.model.ProductModel
 import de.markusressel.k4ever.rest.singleDeserializer
 
-class ProductManager(val requestManager: RequestManager) : ProductApi {
+class ProductManager(private val requestManager: RequestManager) : ProductApi {
 
     override suspend fun getAllProducts(): List<ProductModel> {
         return requestManager.awaitRequest("/products/", Method.GET, listDeserializer())

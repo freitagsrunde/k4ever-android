@@ -25,7 +25,9 @@ import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import de.markusressel.k4ever.application.App
 import de.markusressel.k4ever.view.activity.MainActivity
+import de.markusressel.k4ever.view.activity.WizardActivity
 import de.markusressel.k4ever.view.activity.base.DaggerSupportActivityBase
+import de.markusressel.k4ever.view.activity.base.WizardActivityBase
 import de.markusressel.k4ever.view.fragment.account.AccountOverviewFragment
 import de.markusressel.k4ever.view.fragment.account.AccountTabFragment
 import de.markusressel.k4ever.view.fragment.account.BalanceHistoryFragment
@@ -35,11 +37,13 @@ import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailActiv
 import de.markusressel.k4ever.view.fragment.account.transfer.TransferDetailContentFragment
 import de.markusressel.k4ever.view.fragment.base.DaggerDialogFragmentBase
 import de.markusressel.k4ever.view.fragment.base.TabNavigationFragment
+import de.markusressel.k4ever.view.fragment.base.WizardPageBase
 import de.markusressel.k4ever.view.fragment.moneytransfer.MoneyTransferFragment
 import de.markusressel.k4ever.view.fragment.preferences.PreferencesFragment
 import de.markusressel.k4ever.view.fragment.products.ProductDetailActivity
 import de.markusressel.k4ever.view.fragment.products.ProductDetailContentFragment
 import de.markusressel.k4ever.view.fragment.products.ProductsFragment
+import de.markusressel.k4ever.view.fragment.wizard.LoginPage
 import de.markusressel.kutepreferences.core.persistence.DefaultKutePreferenceDataProvider
 import de.markusressel.kutepreferences.core.persistence.KutePreferenceDataProvider
 import javax.inject.Singleton
@@ -58,6 +62,18 @@ abstract class AppModule {
 
     @ContributesAndroidInjector
     internal abstract fun MainActivity(): MainActivity
+
+    @ContributesAndroidInjector
+    internal abstract fun WizardActivityBase(): WizardActivityBase
+
+    @ContributesAndroidInjector
+    internal abstract fun WizardMainActivity(): WizardActivity
+
+    @ContributesAndroidInjector
+    internal abstract fun WizardPageBase(): WizardPageBase
+
+    @ContributesAndroidInjector
+    internal abstract fun ServerPage(): LoginPage
 
     @ContributesAndroidInjector
     internal abstract fun ProductsListFragment(): ProductsFragment

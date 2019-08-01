@@ -18,6 +18,15 @@
 <resources>
     <string name="app_name" translatable="false">k4ever</string>
 
+    <string name="wizard_page_welcome_title">Welcome!</string>
+    <string name="wizard_page_welcome_description">The fast and easy way to buy products at Freitagsrunde.</string>
+
+    <string name="wizard_page_login_title">Login</string>
+    <string name="wizard_page_login_description">Provide your personal credentials to access k4ever. If do not have any yet, please contact a member of Freitagsrunde.</string>
+    <string name="wizard_page_login_url_hint" translatable="false">URL</string>
+    <string name="wizard_page_login_hint_username">Username</string>
+    <string name="wizard_page_login_hint_password">Password</string>
+
     <string name="menu_item_products">Products</string>
     <string name="menu_item_account">Account</string>
     <string name="menu_item__money_transfer">Money Transfer</string>

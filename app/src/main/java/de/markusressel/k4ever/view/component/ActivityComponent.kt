@@ -15,12 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.markusressel.k4ever.rest.users.model
+package de.markusressel.k4ever.view.component
 
-data class UserModel(
-        val id: Long,
-        val name: String,
-        val display_name: String,
-        val balance: Double,
-        val permissions: List<PermissionModel> = emptyList()
-)
+import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
+
+abstract class ActivityComponent(private val hostActivity: AppCompatActivity) {
+
+    protected val activity
+        get() = hostActivity
+
+    val context: Context = hostActivity
+
+}

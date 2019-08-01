@@ -20,7 +20,9 @@ package de.markusressel.k4ever.rest
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.github.salomonbrys.kotson.gsonTypeToken
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
+
 
 /**
  * Extension function to create a single element deserializer for the given type
@@ -33,7 +35,8 @@ inline fun <reified T : Any> singleDeserializer(): ResponseDeserializable<T> {
  * Extension function to create a list deserializer for the given type
  */
 inline fun <reified T : Any> listDeserializer(): ResponseDeserializable<List<T>> {
-    return ListDeserializer(gsonTypeToken<List<T>>())
+    val typeToken = TypeToken.getParameterized(List::class.java, T::class.java).type
+    return ListDeserializer(typeToken)
 }
 
 /**
@@ -41,7 +44,7 @@ inline fun <reified T : Any> listDeserializer(): ResponseDeserializable<List<T>>
  */
 class SingleDeserializer<T : Any>(val type: Type) : ResponseDeserializable<T> {
     override fun deserialize(content: String): T? {
-        return Gson().fromJson(content, type)
+        return Gson().fromJson<T>(content, type)
     }
 }
 
@@ -54,6 +57,7 @@ class ListDeserializer<T : Any>(val type: Type) : ResponseDeserializable<List<T>
             return emptyList()
         }
 
-        return Gson().fromJson(content, type)
+        val arr: ArrayList<T> = Gson().fromJson(content, type)
+        return arr.toList()
     }
 }

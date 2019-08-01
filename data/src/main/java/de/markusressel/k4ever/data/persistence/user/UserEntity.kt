@@ -24,9 +24,12 @@ import io.objectbox.annotation.Id
 import java.io.Serializable
 
 @Entity
-data class UserEntity(@Id var entityId: Long = 0, val id: Long = -1L, val user_name: String = "",
-                      val display_name: String = "", val balance: Double = -1.0,
-                      val permissions: List<PermissionEntity> = emptyList()) : Serializable, IdentifiableListItem, SearchableListItem {
+data class UserEntity(@Id(assignable = true) var id: Long = -1L,
+                      val user_name: String = "",
+                      val display_name: String = "",
+                      val balance: Double = -1.0,
+                      val permissions: List<PermissionEntity> = emptyList()
+) : Serializable, IdentifiableListItem, SearchableListItem {
 
     override fun getItemId(): Long = id
     override fun getSearchableContent(): List<Any> = listOf(user_name, display_name)

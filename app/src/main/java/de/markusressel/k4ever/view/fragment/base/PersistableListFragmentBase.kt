@@ -38,8 +38,7 @@ import de.markusressel.k4ever.data.persistence.base.PersistenceManagerBase
 import de.markusressel.k4ever.view.component.OptionsMenuComponent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -128,6 +127,11 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        reloadDataFromSource()
+    }
+
     /**
      * Filters and sorts the given list by the currently active filter and sort options
      * Remember to call this before using {@link updateAdapterList }
@@ -205,17 +209,23 @@ abstract class PersistableListFragmentBase<ModelType : Any, EntityType> : ListFr
         setRefreshing(true)
 
         try {
-            runBlocking(Dispatchers.IO) {
-                val newData = loadListDataFromSource().map {
-                    mapToEntity(it)
+            val handler = CoroutineExceptionHandler { context, exception ->
+                loadingComponent.showError(exception)
+            }
+
+            CoroutineScope(Dispatchers.Main).launch(handler) {
+                withContext(Dispatchers.IO) {
+                    val newData = loadListDataFromSource().map {
+                        mapToEntity(it)
+                    }
+                    persistListData(newData)
+                    updateLastUpdatedFromSource()
                 }
-                persistListData(newData)
-                updateLastUpdatedFromSource()
+                loadingComponent.showContent()
                 setRefreshing(false)
             }
         } catch (ex: Exception) {
             loadingComponent.showError(ex)
-        } finally {
             setRefreshing(false)
         }
     }

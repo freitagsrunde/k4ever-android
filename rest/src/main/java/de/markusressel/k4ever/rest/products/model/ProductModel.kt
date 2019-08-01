@@ -17,6 +17,19 @@
 
 package de.markusressel.k4ever.rest.products.model
 
-data class ProductModel(val id: Long, val name: String, val description: String, val price: Double,
-                        val deposit: Double, val barcode: String, val types: List<ProductTypeModel>,
-                        val isFavorite: Boolean)
+import java.util.*
+
+data class ProductModel(val id: Long,
+                        val name: String,
+                        val disabled: Boolean,
+                        val description: String,
+                        val price: Double,
+                        val deposit: Double,
+                        val barcode: String?,
+                        val image: String?,
+                        val last_bought: Date?,
+                        val times_bought: Int,
+                        val times_bought_total: Int
+//                        val types: List<ProductTypeModel>,
+//                        val isFavorite: Boolean
+)

@@ -36,7 +36,9 @@ import de.markusressel.k4ever.rest.K4EverRestApiClient
 import de.markusressel.k4ever.view.fragment.base.DaggerDialogFragmentBase
 import kotlinx.android.synthetic.main.fragment__money_transfer.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -54,7 +56,7 @@ class MoneyTransferFragment : DaggerDialogFragmentBase() {
     lateinit var userPersistenceManager: UserPersistenceManager
 
     @Inject
-    @field:Implementation(ImplementationTypeEnum.DUMMY)
+    @field:Implementation(ImplementationTypeEnum.REAL)
     lateinit var restClient: K4EverRestApiClient
 
     private lateinit var autocompleteUsersArrayAdapter: UserArrayAdapter
@@ -71,7 +73,7 @@ class MoneyTransferFragment : DaggerDialogFragmentBase() {
         recipient_searchview.setAdapter(autocompleteUsersArrayAdapter)
         recipient_searchview.threshold = 1
         recipient_searchview.setOnItemClickListener { parent, view, position, id ->
-            runBlocking(Dispatchers.IO) {
+            GlobalScope.launch(Dispatchers.IO) {
                 setSelectedUser(autocompleteUsersArrayAdapter.getItem(position)!!)
             }
         }
@@ -115,25 +117,32 @@ class MoneyTransferFragment : DaggerDialogFragmentBase() {
 
         loadUsersFromPersistence()
 
-        runBlocking(Dispatchers.IO) {
-            updateUserList()
-        }
+        updateUserList()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        runBlocking(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO) {
             applySavedInstanceState()
         }
     }
 
     private suspend fun applySavedInstanceState() {
-        currentRecipientUserId?.let {
-            recipient_avatar.setImageURI(restClient.getUserAvatarURL(it))
-        }
-
+        updateRecipientAvatar()
         money_amount_edittext.value = savedValue
         description_edittext.setText(currentDescription)
+    }
+
+    private suspend fun updateRecipientAvatar() {
+        currentRecipientUserId?.let {
+            var avatarUrl = restClient.getUserAvatarURL(it)
+            if (avatarUrl.isBlank()) {
+                avatarUrl = "https://api.adorable.io/avatars/285/$currentRecipientUserId.png"
+            }
+            withContext(Dispatchers.Main) {
+                recipient_avatar.setImageURI(avatarUrl)
+            }
+        }
     }
 
     private fun getCurrentAmount(): Double {
@@ -142,7 +151,7 @@ class MoneyTransferFragment : DaggerDialogFragmentBase() {
 
     private suspend fun setSelectedUser(userEntity: UserEntity) {
         currentRecipientUserId = userEntity.id
-        recipient_avatar.setImageURI(restClient.getUserAvatarURL(userEntity.id))
+        updateRecipientAvatar()
     }
 
     private fun loadUsersFromPersistence() {
@@ -155,7 +164,7 @@ class MoneyTransferFragment : DaggerDialogFragmentBase() {
         super.onStop()
     }
 
-    private suspend fun updateUserList() {
+    private fun updateUserList() = GlobalScope.launch(Dispatchers.IO) {
         val userData = restClient.getAllUsers().map { it.toEntity() }
         userPersistenceManager.getStore().removeAll()
         userPersistenceManager.getStore().put(userData)

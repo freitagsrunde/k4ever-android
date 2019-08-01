@@ -21,5 +21,7 @@ import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 
 @Entity
-data class PermissionEntity(@Id var entityId: Long = 0, val id: Long, val name: String,
+data class PermissionEntity(@Id(assignable = true)
+                            var id: Long = -1L,
+                            val name: String,
                             val description: String)

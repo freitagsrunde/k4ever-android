@@ -72,7 +72,7 @@ abstract class DaggerSupportFragmentBase : LifecycleFragmentBase(), HasSupportFr
     protected lateinit var themeHandler: ThemeHandler
 
     @Inject
-    @field:Implementation(ImplementationTypeEnum.DUMMY)
+    @field:Implementation(ImplementationTypeEnum.REAL)
     lateinit var restClient: K4EverRestApiClient
 
     /**
@@ -95,12 +95,8 @@ abstract class DaggerSupportFragmentBase : LifecycleFragmentBase(), HasSupportFr
             viewModel.root
         } else {
             val newContainer = inflater.inflate(layoutRes, container, false) as ViewGroup
-
-            val alternative = super
-                    .onCreateView(inflater, newContainer, savedInstanceState)
-
-            alternative
-                    ?: newContainer
+            val alternative = super.onCreateView(inflater, newContainer, savedInstanceState)
+            alternative ?: newContainer
         }
     }
 

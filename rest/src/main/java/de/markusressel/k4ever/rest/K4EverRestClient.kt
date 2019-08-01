@@ -30,8 +30,8 @@ import de.markusressel.k4ever.rest.users.UserManager
  */
 class K4EverRestClient(private val requestManager: RequestManager = RequestManager(),
                        productManager: ProductApi = ProductManager(requestManager),
-                       userManager: UserApi = UserManager(
-                               requestManager)) : K4EverRestApiClient, ProductApi by productManager, UserApi by userManager {
+                       userManager: UserApi = UserManager(requestManager))
+    : K4EverRestApiClient, ProductApi by productManager, UserApi by userManager {
 
     /**
      * Set the hostname for this client
@@ -54,8 +54,15 @@ class K4EverRestClient(private val requestManager: RequestManager = RequestManag
         requestManager.basicAuthConfig = basicAuthConfig
     }
 
-    override suspend fun getVersion(): String {
-        return requestManager.awaitRequest("/version/", Method.GET, singleDeserializer())
+    override suspend fun checkLogin(username: String, password: String): Boolean {
+        return kotlin.runCatching {
+            requestManager.login(username, password)
+        }.isSuccess
+    }
+
+    override suspend fun getVersion(): VersionModel {
+        return requestManager.awaitRequest("/version/", Method.GET, singleDeserializer(),
+                skipLogin = true)
     }
 
 }

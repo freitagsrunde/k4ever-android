@@ -26,7 +26,8 @@ import io.objectbox.relation.ToOne
 import java.util.*
 
 @Entity
-data class TransferHistoryItemEntity(@Id(assignable = true) var id: Long = 0,
+data class TransferHistoryItemEntity(@Id(assignable = true)
+                                     var id: Long = 0,
                                      val amount: Double = 0.0, val description: String = "",
                                      val date: Date = Date()) : IdentifiableListItem, SearchableListItem {
 

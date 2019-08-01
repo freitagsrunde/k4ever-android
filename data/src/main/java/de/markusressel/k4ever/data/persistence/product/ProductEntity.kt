@@ -21,13 +21,23 @@ import de.markusressel.k4ever.data.persistence.IdentifiableListItem
 import de.markusressel.k4ever.data.persistence.SearchableListItem
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
+import java.util.*
 
 @Entity
-data class ProductEntity(@Id(assignable = true) var id: Long = -1L, val name: String = "",
-                         val description: String = "", val price: Double = 0.0,
-                         val deposit: Double = 0.0, val barcode: String = "",
-                         val typeId: List<ProductTypeEntity> = emptyList(),
-                         var isFavorite: Boolean = false) : IdentifiableListItem, SearchableListItem {
+data class ProductEntity(@Id(assignable = true)
+                         var id: Long = -1L,
+                         val name: String = "",
+                         val disabled: Boolean = false,
+                         val description: String = "",
+                         val price: Double = 0.0,
+                         val deposit: Double = 0.0,
+                         val barcode: String? = null,
+                         val image: String? = null,
+                         val last_bought: Date? = null,
+                         val times_bought: Int = 0,
+                         val times_bought_total: Int = 0,
+                         var isFavorite: Boolean = false
+) : IdentifiableListItem, SearchableListItem {
 
     override fun getItemId(): Long = id
 

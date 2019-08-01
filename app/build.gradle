@@ -86,6 +86,7 @@ dependencies {
     implementation 'com.mikepenz:material-design-iconic-typeface:2.2.0.6-kotlin@aar'
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1"
 
     // RxLifecycle to prevent memory leaks
     def rxLifecycleVersion = rootProject.ext.rxLifecycleVersion
@@ -118,6 +119,9 @@ dependencies {
     implementation("com.mikepenz:materialdrawer:${materialdrawerVersion}@aar") {
         transitive = true
     }
+
+    // Wizard
+    implementation 'com.github.apl-devs:appintro:5.1.0'
 
     // Increase/Decrease number
     implementation 'com.github.DanielMartinus:Stepper-Touch:0.8'
