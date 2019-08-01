@@ -38,7 +38,7 @@
 
         <activity
             android:name=".view.activity.WizardActivity"
-            android:theme="@style/AppThemeLight" />
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".view.fragment.products.ProductDetailActivity"

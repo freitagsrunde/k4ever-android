@@ -16,24 +16,31 @@ class LoginPage : WizardPageBase() {
     override val layoutRes: Int
         get() = R.layout.wizard_page_login
 
+    private var url
+        get() = text_input_url.editText!!.text.toString()
+        set(value) = text_input_url.editText!!.setText(value)
+    private var username
+        get() = text_input_username.editText!!.text.toString()
+        set(value) = text_input_username.editText!!.setText(value)
+    private var password: String
+        get() = text_input_password.editText!!.text.toString()
+        set(value) = text_input_password.editText!!.setText(value)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        text_input_url.editText?.setText(preferencesHolder.connectionUriPreference.persistedValue)
+        url = preferencesHolder.connectionUriPreference.persistedValue
+        username = preferencesHolder.authUserPreference.persistedValue
+        password = preferencesHolder.authPasswordPreference.persistedValue
     }
-
-    private val url
-        get() = text_input_url.editText!!.text.toString()
-    private val username
-        get() = text_input_username.editText!!.text.toString()
-    private val password
-        get() = text_input_password.editText!!.text.toString()
 
     override suspend fun validate(): Boolean {
         var errorMessage: String? = null
 
         if (!isUrlValid(url)) {
             errorMessage = "Invalid URL"
+        } else {
+            preferencesHolder.connectionUriPreference.persistedValue = url
         }
         withContext(Dispatchers.Main) {
             text_input_url.error = errorMessage
@@ -42,6 +49,8 @@ class LoginPage : WizardPageBase() {
 
         if (!isUsernameValid(username)) {
             errorMessage = "Invalid username"
+        } else {
+            preferencesHolder.authUserPreference.persistedValue = username
         }
         withContext(Dispatchers.Main) {
             text_input_username.error = errorMessage
@@ -50,6 +59,8 @@ class LoginPage : WizardPageBase() {
 
         if (!checkLogin()) {
             errorMessage = "Invalid password"
+        } else {
+            preferencesHolder.authPasswordPreference.persistedValue = password
         }
         withContext(Dispatchers.Main) {
             text_input_password.error = errorMessage
