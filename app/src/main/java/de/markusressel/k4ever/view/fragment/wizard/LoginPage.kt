@@ -3,6 +3,7 @@ package de.markusressel.k4ever.view.fragment.wizard
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import com.github.ajalt.timberkt.Timber
 import de.markusressel.k4ever.R
 import de.markusressel.k4ever.rest.BasicAuthConfig
 import de.markusressel.k4ever.view.fragment.base.WizardPageBase
@@ -26,31 +27,34 @@ class LoginPage : WizardPageBase() {
     private val username
         get() = text_input_username.editText!!.text.toString()
     private val password
-        get() = text_input_username.editText!!.text.toString()
+        get() = text_input_password.editText!!.text.toString()
 
     override suspend fun validate(): Boolean {
-        if (!isUrlValid(url)) {
-            withContext(Dispatchers.Main) {
-                text_input_username.error = "Invalid URL"
-            }
-            return false
-        } else {
-            withContext(Dispatchers.Main) {
-                text_input_username.error = null
-            }
-        }
-        if (!isUsernameValid(username)) {
-            withContext(Dispatchers.Main) {
-                text_input_username.error = "Invalid username"
-            }
-            return false
-        } else {
-            withContext(Dispatchers.Main) {
-                text_input_username.error = null
-            }
-        }
+        var errorMessage: String? = null
 
-        return checkLogin()
+        if (!isUrlValid(url)) {
+            errorMessage = "Invalid URL"
+        }
+        withContext(Dispatchers.Main) {
+            text_input_url.error = errorMessage
+        }
+        if (errorMessage != null) return false
+
+        if (!isUsernameValid(username)) {
+            errorMessage = "Invalid username"
+        }
+        withContext(Dispatchers.Main) {
+            text_input_username.error = errorMessage
+        }
+        if (errorMessage != null) return false
+
+        if (!checkLogin()) {
+            errorMessage = "Invalid password"
+        }
+        withContext(Dispatchers.Main) {
+            text_input_password.error = errorMessage
+        }
+        return errorMessage == null
     }
 
     private suspend fun checkLogin(): Boolean {
@@ -59,10 +63,14 @@ class LoginPage : WizardPageBase() {
         return valid
     }
 
-    private fun isUrlValid(url: String): Boolean {
+    private suspend fun isUrlValid(url: String): Boolean {
         return try {
             Uri.parse(url)
-            true
+
+            restClient.setHostname(url)
+            val version = restClient.getVersion()
+            Timber.d { "Backend version: ${version.version} (Branch: ${version.branch}, Commit: ${version.commit}, Build Time: ${version.build_time})" }
+            return true
         } catch (ex: Exception) {
             false
         }

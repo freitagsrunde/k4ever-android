@@ -61,7 +61,8 @@ class K4EverRestClient(private val requestManager: RequestManager = RequestManag
     }
 
     override suspend fun getVersion(): VersionModel {
-        return requestManager.awaitRequest("/version/", Method.GET, singleDeserializer())
+        return requestManager.awaitRequest("/version/", Method.GET, singleDeserializer(),
+                skipLogin = true)
     }
 
 }
